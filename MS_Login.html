@@ -47,6 +47,33 @@
             outline: none;
         }
         input:focus { border-color: var(--croatia-blue); }
+
+        /* Contenedor relativo para posicionar el botón de mostrar/ocultar contraseña */
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .password-wrapper input {
+            padding-right: 38px; /* Espacio para que el texto no choque con el botón */
+        }
+        .btn-toggle-password {
+            position: absolute;
+            right: 6px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+        }
+        .btn-toggle-password:hover {
+            color: var(--croatia-blue);
+        }
+
         .btn-login {
             width: 100%;
             padding: 10px;
@@ -100,7 +127,10 @@
 
         <div class="input-group">
             <label>Lozinka (Contraseña)</label>
-            <input type="password" id="passwordLogin" placeholder="Tu contraseña de Supabase">
+            <div class="password-wrapper">
+                <input type="password" id="passwordLogin" placeholder="Tu contraseña de Supabase">
+                <button type="button" class="btn-toggle-password" id="btnTogglePass" onclick="alternarVisibilidadPassword()" title="Mostrar/Ocultar contraseña">👁️</button>
+            </div>
         </div>
 
         <button class="btn-login" onclick="iniciarSesion()">Uđi / Iniciar Sesión 🔑</button>
@@ -116,6 +146,21 @@
         const SUPABASE_URL = 'https://pizswxittpzwwrymougc.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_s9U9C-8dCR3NfP3s6MEuhA_ADfGUXu8';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        function alternarVisibilidadPassword() {
+            const inputPass = document.getElementById('passwordLogin');
+            const btnToggle = document.getElementById('btnTogglePass');
+
+            if (inputPass.type === 'password') {
+                inputPass.type = 'text';
+                btnToggle.innerText = '🙈'; // Ojo tachado o monito con los ojos tapados para indicar que se ve en texto plano
+                btnToggle.title = "Ocultar contraseña";
+            } else {
+                inputPass.type = 'password';
+                btnToggle.innerText = '👁️'; // Ojo normal para indicar que está oculta
+                btnToggle.title = "Mostrar contraseña";
+            }
+        }
 
         async function iniciarSesion() {
             const email = document.getElementById('emailLogin').value.trim();
