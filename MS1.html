@@ -377,7 +377,7 @@
 
         function reproducirAudioGeneral(nombreCategoria) {
             const audio = document.getElementById('sound-item');
-            audio.src = "Sonidos/" + nombreCategoria + ".wav";
+            audio.src = "sonidos/" + nombreCategoria + ".wav";
             audio.play().catch(err => {
                 console.log("No se pudo reproducir el audio general de la categoría");
             });
