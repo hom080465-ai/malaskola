@@ -1,8 +1,8 @@
 // ==========================================
 // CONTROL DE SESIÓN Y SEGURIDAD (Supabase)
 // ==========================================
-const SUPABASE_URL = 'https://kghpywjrvvkcsrewifpc.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_Qg9VqSnGcAC6cQLfrPUArQ_NaZpRiG7';
+const SUPABASE_URL = 'https://pizswxittpzwwrymougc.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_s9U9C-8dCR3NfP3s6MEuhA_ADfGUXu8';
 
 let supabaseClient = null;
 if (typeof supabase !== 'undefined') {
