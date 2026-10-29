@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upravljanje učenicima — Mala Škola</title>
+    <style>
+        :root {
+            --croatia-blue: #0051ba;
+            --croatia-red: #d90f13;
+            --bg-color: #1b264f;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), 
+                        url('imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
+            background-size: cover;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 10px;
+            color: #1e293b;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* Perfil flotante en la esquina superior izquierda */
+        .user-floating-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(27, 38, 79, 0.85);
+            padding: 4px 10px 4px 4px;
+            border-radius: 30px;
+            border: 2px solid var(--croatia-blue);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            z-index: 50;
+        }
+
+        .user-avatar-mini {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ffffff;
+            background: #cbd5e1;
+        }
+
+        .user-name-mini {
+            color: #ffffff;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            padding-right: 4px;
+        }
+
+        .container {
+            max-width: 680px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            padding: 15px 25px;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border: 3px solid var(--croatia-blue);
+            position: relative;
+            box-sizing: border-box;
+            max-height: 98vh;
+            overflow-y: auto;
+            margin-top: 35px;
+        }
+        
+        .badge-idioma {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            display: none; /* Oculto para evitar superposición con el perfil flotante */
+        }
+
+        .btn-cambiar-clave-top {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #f1f5f9;
+            color: var(--croatia-blue);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            border: 2px solid var(--croatia-blue);
+            cursor: pointer;
+            transition: all 0.2s;
+            z-index: 20;
+        }
+        .btn-cambiar-clave-top:hover {
+            background: var(--croatia-blue);
+            color: white;
+        }
+
+        .header-titulos {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-top: 5px;
+            margin-bottom: 8px;
+        }
+        h2 { color: var(--croatia-red); margin: 0; font-size: 1.1rem; }
+        .sub-espanol { color: var(--croatia-blue); font-weight: bold; font-size: 0.75rem; margin: 0; }
+        
+        .barra-superior-herramientas {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            background: #f8fafc;
+            padding: 4px 10px;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        .teclado-virtual {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-acento-croata {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 2px;
+            background: #fff;
+            object-fit: contain;
+            transition: all 0.2s ease;
+        }
+        .btn-acento-croata:hover {
+            transform: scale(1.08);
+            border-color: var(--croatia-blue);
+        }
+        .btn-audio-barra {
+            background: #e0f2fe;
+            border: 2px solid #38bdf8;
+            color: #0369a1;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: background 0.2s;
+        }
+        .btn-audio-barra:hover { background: #bae6fd; }
+
+        .seccion-foto-destacada {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f8fafc;
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 2px solid #cbd5e1;
+            margin-bottom: 8px;
+        }
+        .avatar-preview {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--croatia-blue);
+            background: #e2e8f0;
+            flex-shrink: 0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 5px 10px;
+            margin-bottom: 8px;
+        }
+        .form-grid-full { grid-column: span 2; }
+
+        label { display: block; font-weight: bold; margin-bottom: 1px; color: #475569; font-size: 0.75rem; }
+        
+        .campo-obligatorio {
+            border-left: 4px solid var(--croatia-red) !important;
+            background-color: #fff9f9 !important;
+        }
+        .asterisco-obligatorio {
+            color: var(--croatia-red);
+            font-weight: bold;
+        }
+
+        .sub-label {
+            display: block;
+            font-size: 0.63rem;
+            color: #94a3b8;
+            font-weight: normal;
+            margin-bottom: 2px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 5px 8px;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            outline: none;
+            box-sizing: border-box;
+            background: #fff;
+        }
+        input:focus, select:focus { border-color: var(--croatia-blue); }
+        
+        input:readonly {
+            background-color: #f1f5f9;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+
+        button.btn-accion {
+            width: 100%;
+            padding: 9px;
+            font-weight: bold;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            background: #22c55e;
+            transition: background 0.2s;
+        }
+        button.btn-accion:disabled {
+            background: #94a3b8 !important;
+            opacity: 0.6;
+            cursor: not-allowed !important;
+        }
+        button.btn-accion:not(:disabled):hover { background: #16a34a; }
+
+        .msg-estado {
+            font-size: 0.78rem;
+            margin-top: 3px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .navegacion-footer {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .btn-navegacion {
+            padding: 7px 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 0.78rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: block;
+            box-sizing: border-box;
+        }
+        .btn-config { background: #64748b; color: white; border: none; }
+        .btn-config:hover { background: #475569; }
+        .btn-volver-inicio { background: var(--croatia-blue); color: white; border: none; }
+        .btn-volver-inicio:hover { background: #003380; }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+        }
+        .modal-overlay.activo { opacity: 1; visibility: visible; }
+        
+        .modal-box {
+            background: #ffffff;
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+            border-radius: 12px;
+            border: 3px solid var(--croatia-red);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .modal-titulo { color: var(--croatia-red); font-size: 1.05rem; font-weight: bold; margin-top: 0; }
+        .modal-mensaje { color: #1e293b; font-size: 0.82rem; margin-bottom: 15px; line-height: 1.4; text-align: left; background: #fff1f2; padding: 10px; border-radius: 6px; border-left: 4px solid var(--croatia-red); }
+        
+        .btn-modal-ok {
+            background: var(--croatia-blue);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .btn-modal-cancelar {
+            background: #64748b;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Perfil Flotante en la Esquina Superior Izquierda -->
+    <div class="user-floating-badge">
+        <img id="userAvatarMini" src="imagenes/default-avatar.png" alt="Avatar" class="user-avatar-mini">
+        <span id="userNameMini" class="user-name-mini">Cargando...</span>
+    </div>
+
+    <div class="container">
+        <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()">HR-ES</span>
+        <button class="btn-cambiar-clave-top" onclick="abrirModalPassword()">Promijeni lozinku 🔑</button>
+
+        <div class="header-titulos">
+            <h2 id="tituloPrincipal">Upravljanje učenicima — Mala Škola</h2>
+            <p class="sub-espanol" id="subEspanol">Alta i Modificación de Legajos Académicos</p>
+        </div>
+
+        <div class="barra-superior-herramientas">
+            <div class="teclado-virtual">
+                <span id="labelAcentos" style="font-size: 0.75rem; font-weight: bold; color: #475569;">Naglasci / Acentos:</span>
+                <img src="imagenes/Caron.bmp" class="btn-acento-croata" id="btnCaron" onmousedown="manejarClickAcento('caron', this, event)" alt="Caron">
+                <img src="imagenes/Acento.bmp" class="btn-acento-croata" id="btnAcento" onmousedown="manejarClickAcento('acento', this, event)" alt="Acento">
+                <img src="imagenes/Guion.bmp" class="btn-acento-croata" id="btnGuion" onmousedown="manejarClickAcento('guion', this, event)" alt="Guion">
+            </div>
+            <div>
+                <button class="btn-audio-barra" id="btnAudioText" onclick="pronunciarCampoActivo()">🔊 Slušaj / Escuchar</button>
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-grid-full seccion-foto-destacada">
+                <img id="imgAvatarPreview" src="imagenes/default-avatar.png" class="avatar-preview" alt="Foto personal">
+                <div style="flex-grow: 1;">
+                    <label id="lblFotoPersonal">Osobna fotografija</label>
+                    <span id="subFotoPersonal" class="sub-label">Una sola foto personal (se guardará al registrar el legajo)</span>
+                    <input type="file" id="archivoFoto" accept="image/*" onchange="previsualizarFotoLocal(event)">
+                </div>
+            </div>
+
+            <div>
+                <label id="lblNombre">Ime <span class="asterisco-obligatorio">*</span></label>
+                <span id="subNombre" class="sub-label">Nombre del alumno</span>
+                <input type="text" id="nombreAlumno" class="campo-obligatorio" placeholder="Ej. Ana" oninput="validarFormularioCompleto()">
+            </div>
+            <div>
+                <label id="lblApellido">Prezime <span class="asterisco-obligatorio">*</span></label>
+                <span id="subApellido" class="sub-label">Apellido paterno</span>
+                <input type="text" id="apellidoAlumno" class="campo-obligatorio" placeholder="Ej. Plazas" oninput="validarFormularioCompleto()">
+            </div>
+
+            <div>
+                <label id="lblApellidoMaterno">Djevojačko / Majčino prezime</label>
+                <span id="subApellidoMaterno" class="sub-label">Apellido materno (Ej. Grubisich)</span>
+                <input type="text" id="apellidoMaterno" placeholder="Ej. Grubisich">
+            </div>
+
+            <div>
+                <label id="lblNacimiento">Datum rođenja</label>
+                <span id="subNacimiento" class="sub-label">F. Nacimiento</span>
+                <input type="date" id="fechaNacimiento">
+            </div>
+
+            <div class="form-grid-full">
+                <label id="lblEmail">Elektronička pošta <span class="asterisco-obligatorio">*</span></label>
+                <span id="subEmail" class="sub-label">Correo electrónico institucional (para enviar invitación)</span>
+                <input type="email" id="emailAlumno" class="campo-obligatorio" placeholder="alumno@malaskola.com" oninput="validarFormularioCompleto()">
+            </div>
+
+            <div>
+                <label id="lblNivel">Razina jezika</label>
+                <span id="subNivel" class="sub-label">Nivel de idioma</span>
+                <select id="nivelIdioma" onchange="validarFormularioCompleto()">
+                    <option value="">-- Odaberite / Seleccionar --</option>
+                    <option value="Početni 1">Početni 1 (Principiantes)</option>
+                    <option value="Početni 2">Početni 2</option>
+                    <option value="Napredni">Napredni (Avanzado)</option>
+                    <option value="Konverzacija">Konverzacija (Conversación)</option>
+                </select>
+            </div>
+
+            <div>
+                <label id="lblVinculo">Podrijetlo</label>
+                <span id="subVinculo" class="sub-label">Vínculo con la Colectividad</span>
+                <select id="vinculoCroacia" onchange="validarFormularioCompleto()">
+                    <option value="">-- Odaberite / Seleccionar --</option>
+                    <option value="Descendiente directo (Padre/Madre)">Descendiente directo (Padre/Madre)</option>
+                    <option value="Descendiente (Abuelo/Bisabuelo)">Descendiente (Abuelo/Bisabuelo)</option>
+                    <option value="Cónyuge / Familiar de descendiente">Cónyuge / Familiar de descendiente</option>
+                    <option value="Simpatizante / Amante de la cultura">Simpatizante / Amante de la cultura</option>
+                </select>
+            </div>
+
+            <div>
+                <label id="lblRegion">Zavičaj</label>
+                <span id="subRegion" class="sub-label">Región de origen en Croacia</span>
+                <input type="text" id="regionCroacia" placeholder="Ej. Dalmacija, Zagreb...">
+            </div>
+
+            <div>
+                <label id="lblApOriginal">Izvorni hrvatski prezime</label>
+                <span id="subApOriginal" class="sub-label">Apellido original croata (si difiere)</span>
+                <input type="text" id="apellidoOriginal" placeholder="Ej. Grubišiċ">
+            </div>
+
+            <div>
+                <label id="lblMotivacion">Motivacija za učenje</label>
+                <span id="subMotivacion" class="sub-label">Motivación de estudio</span>
+                <select id="motivacionEstudio" onchange="validarFormularioCompleto()">
+                    <option value="">-- Odaberite / Seleccionar --</option>
+                    <option value="Herencia y recuperación de raíces familiares">Herencia y recuperación de raíces</option>
+                    <option value="Tramite de ciudadanía croata">Trámite de ciudadanía croata</option>
+                    <option value="Viajes planeados a Croacia">Viajes planeados a Croacia</option>
+                    <option value="Interés general en la cultura y el idioma">Interés general en la cultura</option>
+                </select>
+            </div>
+
+            <div>
+                <label id="lblEstadoUsuario">Status računa</label>
+                <span id="subEstadoUsuario" class="sub-label">Estado (Activo / Suspendido)</span>
+                <select id="estadoUsuario" onchange="validarFormularioCompleto()">
+                    <option value="">-- Odaberite / Seleccionar --</option>
+                    <option value="activo">Aktivan / Activo (true)</option>
+                    <option value="suspendido">Suspendiran / Suspendido (false)</option>
+                </select>
+            </div>
+
+            <div class="form-grid-full" style="margin-top: 2px;">
+                <button class="btn-accion" id="btnAccionFormulario" onclick="ejecutarAccionFormulario()" disabled>Registriraj i pošalji pozivnicu ✉️</button>
+            </div>
+        </div>
+
+        <div id="mensajeEstado" class="msg-estado"></div>
+
+        <div class="navegacion-footer">
+            <a href="MS_Config.html" class="btn-navegacion btn-config" id="btnConfig">Postavljanje / Configuración</a>
+            <a href="MS_Index1.html" class="btn-navegacion btn-volver-inicio" id="btnVolverInicio">Glavni izbornik / Menú Principal</a>
+        </div>
+    </div>
+
+    <!-- MODAL POP-UP PARA CAMBIO / CREACIÓN DE CONTRASEÑA -->
+    <div id="modalPassword" class="modal-overlay">
+        <div class="modal-box" style="text-align: left;">
+            <h3 class="modal-titulo" style="text-align: center;" id="modalPassTitulo">🔒 Promjena lozinke</h3>
+            <p id="textoModalPass" class="modal-mensaje">Defina su nueva contraseña de acceso al sistema.</p>
+            
+            <div style="margin-bottom: 10px;">
+                <label id="lblModalPassNueva">Nova lozinka</label>
+                <input type="password" id="modalNuevaPass" placeholder="Mínimo 6 caracteres">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label id="lblModalPassConfirm">Potvrdi lozinku</label>
+                <input type="password" id="modalConfirmarPass" placeholder="Repita la clave">
+            </div>
+
+            <button class="btn-modal-ok" id="btnModalPassGuardar" onclick="guardarNuevaPassword()">Spremi lozinku 💾</button>
+            <button id="btnCerrarModalPass" class="btn-modal-cancelar" onclick="cerrarModalPassword()">Otkaži</button>
+        </div>
+    </div>
+
+    <!-- MODAL GENERAL PARA MENSAJES -->
+    <div id="modalPersonalizado" class="modal-overlay">
+        <div class="modal-box" style="text-align: center;">
+            <h3 id="modalTitulo" class="modal-titulo">❤️ Povijesna veza</h3>
+            <div id="modalFotoContainer"></div>
+            <p id="modalTexto" class="modal-mensaje">Mensaje del sistema...</p>
+            <button class="btn-modal-ok" id="btnModalOkGen" onclick="cerrarModal()">U redu</button>
+        </div>
+    </div>
+
+    <script src="tecladoCroata.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Script general de inactividad -->
+    <script src="inactivity-logout.js"></script>
+
+    <script>
+        const SUPABASE_URL = 'https://kghpywjrvvkcsrewifpc.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_Qg9VqSnGcAC6cQLfrPUArQ_NaZpRiG7';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let campoActivoActual = null;
+        let modoFormulario = 'alta'; 
+        let alumnoIdActual = null;
+        let archivoFotoSeleccionado = null;
+        let esPrimerIngresoPorToken = false;
+        let passwordModificadaConExito = false;
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            const paramsUrl = new URLSearchParams(window.location.search);
+            const modo = paramsUrl.get('modo'); 
+            const idAlumno = paramsUrl.get('id'); 
+            let idiomaActual = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+
+            if (!modo || (modo !== 'alta' && modo !== 'editar') || (modo === 'editar' && !idAlumno)) {
+                let msgAlerta = (idiomaActual === 'hr') ? 
+                    "Pristup nije dopušten. Morate odabrati opciju iz izbornika." : 
+                    "Acceso no permitido. Debe ingresar seleccionando una opción válida desde el menú anterior.";
+                
+                alert(msgAlerta);
+                window.location.href = "MS_Index1.html"; 
+                return; 
+            }
+
+            const hash = window.location.hash;
+            if (hash && (hash.includes('type=recovery') || hash.includes('type=invite') || hash.includes('access_token'))) {
+                esPrimerIngresoPorToken = true;
+            }
+
+            const { data: { session }, error } = await supabaseClient.auth.getSession();
+            
+            if (!session && !esPrimerIngresoPorToken) {
+                let msgAcceso = (idiomaActual === 'hr') ? "Pristup odbijen. Morate se prijaviti." : "Acceso denegado. Debe iniciar sesión con su contraseña.";
+                alert(msgAcceso);
+                window.location.href = "MS_Login.html"; 
+                return;
+            }
+
+            if (session) {
+                await cargarPerfilUsuarioLogueado(session.user.id);
+            }
+
+            detectarModoFormulario();
+            aplicarPreferenciaIdioma();
+            validarFormularioCompleto();
+
+            if (esPrimerIngresoPorToken) {
+                document.getElementById('btnCerrarModalPass').style.display = 'none';
+                document.getElementById('textoModalPass').innerText = (idiomaActual === 'hr') ? 
+                    "Dobrodošli! Obavezno je definirati novu lozinku za aktivaciju računa." : 
+                    "¡Bienvenido! Es obligatorio definir una contraseña nueva para activar su cuenta antes de guardar su legajo.";
+                abrirModalPassword();
+            }
+        });
+
+        async function cargarPerfilUsuarioLogueado(userId) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('perfiles')
+                    .select('nombre, apellido, foto_url')
+                    .eq('id', userId)
+                    .single();
+
+                if (data) {
+                    const nombreCompleto = `${data.nombre || ''} ${data.apellido || ''}`.trim();
+                    document.getElementById('userNameMini').innerText = nombreCompleto || "Usuario";
+                    
+                    if (data.foto_url) {
+                        document.getElementById('userAvatarMini').src = data.foto_url;
+                    }
+                } else {
+                    document.getElementById('userNameMini').innerText = "Administrador";
+                }
+            } catch (err) {
+                console.error("Error al obtener el perfil:", err);
+                document.getElementById('userNameMini').innerText = "Administrador";
+            }
+        }
+
+        function abrirModalPassword() {
+            document.getElementById('modalPassword').classList.add('activo');
+        }
+
+        function cerrarModalPassword() {
+            let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+            if (esPrimerIngresoPorToken && !passwordModificadaConExito) {
+                alert(idiomaElegido === 'hr' ? "Morate definirati lozinku za nastavak." : "Debe definir su contraseña para continuar.");
+                return;
+            }
+            document.getElementById('modalPassword').classList.remove('activo');
+        }
+
+        async function guardarNuevaPassword() {
+            let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+            const passNueva = document.getElementById('modalNuevaPass').value.trim();
+            const passConfirm = document.getElementById('modalConfirmarPass').value.trim();
+
+            if (passNueva === "" || passNueva.length < 6) {
+                alert(idiomaElegido === 'hr' ? "Lozinka mora imati najmanje 6 znakova." : "La contraseña debe tener al menos 6 caracteres.");
+                return;
+            }
+            if (passNueva !== passConfirm) {
+                alert(idiomaElegido === 'hr' ? "Lozinke se ne podudaraju." : "Las contraseñas no coinciden.");
+                return;
+            }
+
+            try {
+                const { error } = await supabaseClient.auth.updateUser({ password: passNueva });
+                if (error) throw error;
+
+                passwordModificadaConExito = true;
+                alert(idiomaElegido === 'hr' ? "Lozinka je uspješno ažurirana!" : "¡Contraseña actualizada con éxito en el sistema seguro!");
+                document.getElementById('modalPassword').classList.remove('activo');
+                
+                document.getElementById('modalNuevaPass').value = "";
+                document.getElementById('modalConfirmarPass').value = "";
+                document.getElementById('btnCerrarModalPass').style.display = 'block';
+
+            } catch (err) {
+                console.error(err);
+                alert((idiomaElegido === 'hr' ? "Greška: " : "Error: ") + err.message);
+            }
+        }
+
+        function detectarModoFormulario() {
+            const params = new URLSearchParams(window.location.search);
+            const modo = params.get('modo');
+            let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+            
+            if (modo === 'editar') {
+                modoFormulario = 'editar';
+                alumnoIdActual = params.get('id');
+                document.getElementById('btnAccionFormulario').innerText = (idiomaElegido === 'hr') ? "Spremi promjene 💾" : "Spremi promjene / Guardar Cambios 💾";
+                document.getElementById('subEspanol').innerText = "Modificación de Legajo i Perfil de Alumno";
+                
+                cargarDatosAlumnoParaEditar(alumnoIdActual);
+
+            } else {
+                modoFormulario = 'alta';
+                document.getElementById('btnAccionFormulario').innerText = (idiomaElegido === 'hr') ? "Registriraj i pošalji pozivnicu ✉️" : "Registriraj i pošalji pozivnicu / Registrar y Enviar Invitación ✉️";
+            }
+        }
+
+        async function cargarDatosAlumnoParaEditar(id) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('perfiles')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (error) throw error;
+                if (!data) return;
+
+                document.getElementById('nombreAlumno').value = data.nombre || '';
+                document.getElementById('apellidoAlumno').value = data.apellido || '';
+                document.getElementById('apellidoMaterno').value = data.apellido_materno || '';
+                document.getElementById('fechaNacimiento').value = data.fecha_nacimiento || '';
+                document.getElementById('emailAlumno').value = data.email || '';
+                document.getElementById('nivelIdioma').value = data.nivel_idioma || '';
+                document.getElementById('vinculoCroacia').value = data.vinculo_croacia || '';
+                document.getElementById('regionCroacia').value = data.region_croacia || '';
+                document.getElementById('apellidoOriginal').value = data.apellido_original || '';
+                document.getElementById('motivacionEstudio').value = data.motivacion || '';
+                document.getElementById('estadoUsuario').value = data.estado || '';
+
+                if (data.foto_url) {
+                    document.getElementById('imgAvatarPreview').src = data.foto_url;
+                }
+
+                validarFormularioCompleto();
+            } catch (err) {
+                console.error("Error al cargar los datos del alumno:", err);
+            }
+        }
+
+        function validarFormularioCompleto() {
+            const nombre = document.getElementById('nombreAlumno').value.trim();
+            const apellido = document.getElementById('apellidoAlumno').value.trim();
+            const email = document.getElementById('emailAlumno').value.trim();
+            
+            const nivel = document.getElementById('nivelIdioma').value;
+            const vinculo = document.getElementById('vinculoCroacia').value;
+            const motivacion = document.getElementById('motivacionEstudio').value;
+            const estado = document.getElementById('estadoUsuario').value;
+            
+            const btnAccion = document.getElementById('btnAccionFormulario');
+
+            let camposValidos = false;
+
+            if (modoFormulario === 'alta') {
+                camposValidos = (
+                    nombre !== "" && 
+                    apellido !== "" && 
+                    email !== "" && 
+                    nivel !== "" && 
+                    vinculo !== "" && 
+                    motivacion !== "" && 
+                    estado !== ""
+                );
+            } else {
+                camposValidos = (email !== "");
+            }
+
+            if (esPrimerIngresoPorToken && !passwordModificadaConExito) {
+                camposValidos = false;
+            }
+
+            btnAccion.disabled = !camposValidos;
+        }
+
+        function previsualizarFotoLocal(event) {
+            const archivo = event.target.files[0];
+            if (!archivo) return;
+
+            archivoFotoSeleccionado = archivo; 
+            const preview = document.getElementById('imgAvatarPreview');
+            preview.src = URL.createObjectURL(archivo);
+        }
+
+        async function subirFotoANube(archivo, identificador) {
+            let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+            const nombreArchivo = `usuario_${identificador}_${Date.now()}_${archivo.name}`;
+            const { error } = await supabaseClient.storage
+                .from('Alumnos_fotos')
+                .upload(nombreArchivo, archivo);
+
+            if (error) {
+                console.error("Error al subir imagen:", error);
+                throw new Error(idiomaElegido === 'hr' ? "Neuspješno učitavanje fotografije." : "No se pudo subir la foto a Supabase Storage.");
+            }
+
+            const { data: urlData } = supabaseClient.storage
+                .from('Alumnos_fotos')
+                .getPublicUrl(nombreArchivo);
+
+            return urlData.publicUrl;
+        }
+
+        document.addEventListener('focusin', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                campoActivoActual = e.target;
+            }
+        });
+
+        function mostrarModal(mensajeHr, mensajeEs = "", tituloHr = "⚠️ Pažnja", tituloEs = "Atención") {
+            let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+            const modal = document.getElementById('modalPersonalizado');
+            
+            if (idiomaElegido === 'hr') {
+                document.getElementById('modalTitulo').innerText = tituloHr;
+                document.getElementById('modalTexto').innerHTML = mensajeHr;
+                document.getElementById('btnModalOkGen').innerText = "U redu";
+            } else {
+                document.getElementById('modalTitulo').innerText = `${tituloHr} / ${tituloEs}`;
+                document.getElementById('modalTexto').innerHTML = mensajeEs ? `${mensajeHr}<br>${mensajeEs}` : mensajeHr;
+                document.getElementById('btnModalOkGen').innerText = "U redu / Aceptar";
+            }
+
+            document.getElementById('modalFotoContainer').innerHTML = '';
+            modal.classList.add('activo');
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalPersonalizado').classList.remove('activo');
+        }
+
+        function manejarClickAcento(tipoAcento, elementoBtn, evento) {
+            document.querySelectorAll('.btn-acento-croata').forEach(el => el.classList.remove('activo'));
+            elementoBtn.classList.add('activo');
+            if (typeof activarAcentoCroata === 'function') {
+                activarAcentoCroata(tipoAcento, elementoBtn, evento);
+            }
+        }
+
+        function pronunciarCampoActivo() {
+            let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+            if (!campoActivoActual) {
+                mostrarModal(
+                    "Molimo kliknite prvo na polje teksta.", 
+                    idiomaElegido === 'hr' ? "" : "Haz clic primero en un campo de texto."
+                );
+                return;
+            }
+            let textoALeer = campoActivoActual.value.trim() || campoActivoActual.placeholder;
+            if (!textoALeer || textoALeer.includes("Ej.")) {
+                mostrarModal(
+                    "Ovo polje nema valjan tekst.", 
+                    idiomaElegido === 'hr' ? "" : "Este campo no tiene texto válido para reproducir."
+                );
+                return;
+            }
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(textoALeer);
+                utterance.lang = 'hr-HR';
+                utterance.rate = 0.85;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function aplicarPreferenciaIdioma() {
+            let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+
+            const tituloPrincipal = document.getElementById('tituloPrincipal');
+            const subEspanol = document.getElementById('subEspanol');
+            const labelAcentos = document.getElementById('labelAcentos');
+            const btnAudioText = document.getElementById('btnAudioText');
+
+            if (idiomaElegido === 'hr') {
+                subEspanol.style.display = 'none';
+                tituloPrincipal.innerText = "Upravljanje učenicima — Mala Škola";
+                labelAcentos.innerText = "Naglasci:";
+                btnAudioText.innerText = "🔊 Slušaj";
+
+                document.getElementById('modalPassTitulo').innerText = "🔒 Promjena lozinke";
+                document.getElementById('lblModalPassNueva').innerText = "Nova lozinka";
+                document.getElementById('lblModalPassConfirm').innerText = "Potvrdi lozinku";
+                document.getElementById('btnModalPassGuardar').innerText = "Spremi lozinku 💾";
+                document.getElementById('btnCerrarModalPass').innerText = "Otkaži";
+            } else {
+                subEspanol.style.display = 'block';
+                tituloPrincipal.innerText = "Upravljanje učenicima — Mala Škola";
+                labelAcentos.innerText = "Naglasci / Acentos:";
+                btnAudioText.innerText = "🔊 Slušaj / Escuchar";
+
+                document.getElementById('modalPassTitulo').innerText = "🔒 Promjena lozinke / Seguridad";
+                document.getElementById('lblModalPassNueva').innerText = "Nova lozinka / Nueva clave";
+                document.getElementById('lblModalPassConfirm').innerText = "Potvrdi lozinku / Confirmar";
+                document.getElementById('btnModalPassGuardar').innerText = "Spremi lozinku / Guardar Clave 💾";
+                document.getElementById('btnCerrarModalPass').innerText = "Otkaži / Cancelar";
+            }
+        }
+
+        function alternarIdioma() {
+            let idiomaActual = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+            if (idiomaActual.includes("es")) {
+                localStorage.setItem('idiomaApp', 'hr');
+            } else {
+                localStorage.setItem('idiomaApp', 'hr-es');
+            }
+            location.reload();
+        }
+
+        async function ejecutarAccionFormulario() {
+            const nombre = document.getElementById('nombreAlumno').value.trim();
+            const apellido = document.getElementById('apellidoAlumno').value.trim();
+            const apellidoMaterno = document.getElementById('apellidoMaterno').value.trim();
+            const email = document.getElementById('emailAlumno').value.trim();
+            const fechaNac = document.getElementById('fechaNacimiento').value;
+            const nivel = document.getElementById('nivelIdioma').value;
+            const vinculo = document.getElementById('vinculoCroacia').value;
+            const region = document.getElementById('regionCroacia').value.trim();
+            const apOriginal = document.getElementById('apellidoOriginal').value.trim();
+            const motivacion = document.getElementById('motivacionEstudio').value;
+            const estado = document.getElementById('estadoUsuario').value;
+            const msgEstado = document.getElementById('mensajeEstado');
+
+            let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+
+            msgEstado.innerText = "";
+            msgEstado.style.color = "#1e293b";
+
+            try {
+                if (modoFormulario === 'alta') {
+                    msgEstado.innerText = (idiomaElegido === 'hr') ? "Provjera pošte..." : "Provjera pošte... / Verificando disponibilidad del correo...";
+                    
+                    const { data: usuarioExistente, error: errorCheck } = await supabaseClient
+                        .from('perfiles')
+                        .select('email')
+                        .eq('email', email)
+                        .maybeSingle();
+
+                    if (errorCheck) {
+                        console.error(errorCheck);
+                    }
+
+                    if (usuarioExistente) {
+                        msgEstado.innerText = "";
+                        mostrarModal(
+                            "Elektronička pošta već postoji u sustavu.",
+                            "El correo electrónico ya se encuentra registrado en el sistema.",
+                            "⚠️ Pažnja",
+                            "Atención"
+                        );
+                        return;
+                    }
+
+                    msgEstado.innerText = (idiomaElegido === 'hr') ? "Generiranje vjerodajnica..." : "Generiranje vjerodajnica... / Generando credenciales...";
+
+                    const tempPassword = Math.random().toString(36).slice(-8) + 'A1!';
+
+                    const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+                        email: email,
+                        password: tempPassword,
+                        options: {
+                            data: { nombre: nombre, apellido: apellido }
+                        }
+                    });
+
+                    if (authError) {
+                        throw new Error(authError.message);
+                    }
+
+                    const nuevoId = authData?.user?.id;
+                    if (!nuevoId) {
+                        throw new Error("No se pudo obtener el ID del usuario.");
+                    }
+
+                    msgEstado.innerText = (idiomaElegido === 'hr') ? "Učitavanje datoteke..." : "Učitavanje datoteke... / Subiendo archivo...";
+
+                    let urlFotoFinal = null;
+                    if (archivoFotoSeleccionado) {
+                        urlFotoFinal = await subirFotoANube(archivoFotoSeleccionado, nuevoId);
+                    }
+
+                    const { error: dbError } = await supabaseClient.from('perfiles').insert([
+                        { 
+                            id: nuevoId, 
+                            email: email, 
+                            nombre: nombre, 
+                            apellido: apellido, 
+                            apellido_materno: apellidoMaterno, 
+                            fecha_nacimiento: fechaNac || null, 
+                            nivel_idioma: nivel,
+                            vinculo_croacia: vinculo, 
+                            region_croacia: region, 
+                            apellido_original: apOriginal,
+                            motivacion: motivacion,
+                            estado: estado,
+                            foto_url: urlFotoFinal 
+                        }
+                    ]);
+
+                    if (dbError) throw dbError;
+
+                    msgEstado.innerText = (idiomaElegido === 'hr') ? "Slanje pozivnice..." : "Slanje pozivnice... / Enviando invitación...";
+
+                    const { error: resetError } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                        redirectTo: window.location.origin + '/MS_Index1.html'
+                    });
+
+                    if (resetError) {
+                        console.warn("Aviso SMTP: " + resetError.message);
+                    }
+
+                    msgEstado.style.color = "#16a34a";
+                    msgEstado.innerText = (idiomaElegido === 'hr') ? "Uspješno! Korisnik je registriran." : "Uspješno! / ¡Usuario dado de alta con éxito!";
+                    
+                    setTimeout(() => {
+                        window.location.href = "MS_Index1.html";
+                    }, 2500);
+
+                } else {
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+                    if (!session) throw new Error("Nema aktivne sesije.");
+                    
+                    msgEstado.innerText = (idiomaElegido === 'hr') ? "Ažuriranje podataka..." : "Ažuriranje podataka... / Guardando cambios...";
+
+                    let datosActualizados = {
+                        apellido_materno: apellidoMaterno,
+                        email: email,
+                        fecha_nacimiento: fechaNac || null,
+                        nivel_idioma: nivel,
+                        vinculo_croacia: vinculo,
+                        region_croacia: region,
+                        apellido_original: apOriginal,
+                        motivacion: motivacion,
+                        estado: estado
+                    };
+
+                    if (archivoFotoSeleccionado) {
+                        datosActualizados.foto_url = await subirFotoANube(archivoFotoSeleccionado, alumnoIdActual);
+                    }
+
+                    const { error } = await supabaseClient
+                        .from('perfiles')
+                        .update(datosActualizados)
+                        .eq('id', alumnoIdActual);
+
+                    if (error) throw error;
+
+                    msgEstado.style.color = "#16a34a";
+                    msgEstado.innerText = (idiomaElegido === 'hr') ? "Uspješno ažurirano!" : "Uspješno! / ¡Cambios guardados correctamente!";
+                    archivoFotoSeleccionado = null;
+                }
+
+            } catch (err) {
+                console.error(err);
+                msgEstado.style.color = "#ef4444";
+                msgEstado.innerText = (idiomaElegido === 'hr') ? "Greška: " + err.message : "Error: " + (err.message || "Operacija nije uspjela.");
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mala Škola - Konjugacija glagola</title>
+    <style>
+        :root {
+            --croatia-blue: #0051ba;
+            --croatia-red: #d90f13;
+            --white: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
+                        url('imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
+            background-size: cover;
+            background-color: #1b264f;
+            color: #222;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 950px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 4px solid var(--croatia-blue);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            position: relative;
+            z-index: 10;
+            margin-top: 40px;
+        }
+
+        /* Botón interactivo de cambio de idioma posicionado en la esquina superior izquierda del cuadro blanco */
+        .badge-idioma {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: var(--croatia-red);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255,255,255,0.6);
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 20;
+        }
+
+        .badge-idioma:hover {
+            background: #b50b0f;
+            transform: scale(1.05);
+        }
+
+        /* Botón flotante superior derecho para abrir el libro */
+        .btn-abrir-libro {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--croatia-blue);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+            z-index: 1000;
+        }
+
+        .btn-abrir-libro:hover {
+            background: #003380;
+            transform: translateY(-2px);
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--croatia-red);
+            margin-top: 10px;
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .subtitulo {
+            text-align: center;
+            font-size: 1.1rem;
+            color: var(--croatia-blue);
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        /* Barra de Teclado Croata */
+        .teclado-virtual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            background: #f8fafc;
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 2px solid #cbd5e1;
+            margin-bottom: 20px;
+        }
+
+        .btn-acento-croata {
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 2px;
+            background: #fff;
+            object-fit: contain;
+            transition: all 0.2s ease;
+        }
+
+        .btn-acento-croata:hover {
+            transform: scale(1.08);
+            border-color: var(--croatia-blue);
+        }
+
+        .btn-acento-croata.activo {
+            border-color: var(--croatia-red) !important;
+            background-color: #fee2e2 !important;
+            box-shadow: 0 0 8px rgba(217, 15, 19, 0.4);
+            transform: scale(1.05);
+        }
+
+        .btn-audio {
+            background: #e0f2fe;
+            border: 2px solid #38bdf8;
+            color: #0369a1;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+
+        .btn-audio:hover {
+            background: #bae6fd;
+        }
+
+        .panel-principal {
+            display: flex;
+            justify-content: space-between;
+            gap: 25px;
+        }
+
+        .columna-izq, .columna-der {
+            background: #f8fafc;
+            border: 2px solid #cbd5e1;
+            border-radius: 14px;
+            padding: 20px;
+            width: 48%;
+            box-sizing: border-box;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        label {
+            font-size: 0.95rem;
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            margin-bottom: 20px;
+            background: #fff;
+            color: #1e293b;
+            border: 2px solid var(--croatia-blue);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .grupo-sufijos {
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 15px;
+            background: #ffffff;
+        }
+
+        .grupo-sufijos legend {
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: var(--croatia-blue);
+            padding: 0 8px;
+        }
+
+        .grid-sufijos {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+
+        .tiempos-barra {
+            display: flex;
+            gap: 20px;
+            background: #ffffff;
+            padding: 12px 15px;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            align-items: center;
+            font-weight: 700;
+            color: var(--croatia-blue);
+        }
+
+        .genero-barra {
+            display: none;
+            justify-content: center;
+            gap: 20px;
+            background: #ffffff;
+            padding: 10px;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--croatia-blue);
+        }
+
+        .conjugacion-tabla {
+            width: 100%;
+            margin-top: 5px;
+            border-collapse: collapse;
+            background: #fff;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .conjugacion-tabla th, .conjugacion-tabla td {
+            padding: 8px 10px;
+            border: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+            color: #1e293b;
+        }
+
+        .conjugacion-tabla td.pronombre {
+            font-weight: bold;
+            background: #e2e8f0;
+            color: var(--croatia-blue);
+            width: 30%;
+        }
+
+        .conjugacion-tabla input[type="text"] {
+            width: 100%;
+            padding: 5px;
+            box-sizing: border-box;
+            background: #fff;
+            color: #1e293b;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .btn-salir {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            text-align: center;
+            background: var(--croatia-blue);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 25px;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 12px rgba(0,81,186,0.3);
+            transition: all 0.2s;
+        }
+
+        .btn-salir:hover {
+            background: #003380;
+            transform: translateY(-2px);
+        }
+
+        .btn-evaluar {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            text-align: center;
+            background: #047857;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 12px rgba(4,120,87,0.3);
+            transition: all 0.2s;
+        }
+
+        .btn-evaluar:hover:not(:disabled) {
+            background: #065f46;
+            transform: translateY(-2px);
+        }
+
+        .btn-evaluar:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .traduccion {
+            font-style: italic;
+            color: var(--croatia-red);
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        /* MODAL PERSONALIZADO ESTILO CROACIA */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(5px);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999;
+            display: none;
+        }
+
+        .modal-card-croatia {
+            background: #ffffff; 
+            padding: 30px 25px; 
+            border-radius: 16px;
+            text-align: center; 
+            border: 3px solid var(--croatia-blue);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            max-width: 440px;
+            width: 90%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .modal-card-croatia h3 {
+            margin: 0;
+            color: var(--croatia-red);
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+
+        .mensaje-modal-estado {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .numero-modal-grande {
+            font-size: 3.2rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin: 5px 0;
+        }
+
+        .nota-dorada { color: #ca8a04; text-shadow: 0 2px 4px rgba(202, 138, 4, 0.3); }
+        .nota-verde { color: #16a34a; }
+        .nota-roja { color: #dc2626; }
+        .nota-cero { color: #ffffff !important; background-color: #ef4444; display: inline-block; padding: 2px 20px; border-radius: 12px; }
+
+        .btn-modal-aceptar {
+            background: var(--croatia-blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        .btn-modal-aceptar:hover { background: #003d91; }
+    </style>
+</head>
+<body>
+
+    <!-- Botón flotante superior derecho para abrir el libro -->
+    <button onclick="abrirLibro()" class="btn-abrir-libro">
+        📖 Otvori knjigu / Abrir libro
+    </button>
+
+    <!-- Modal de Alerta de Puntaje Estilo Familia -->
+    <div id="modalPuntaje" class="modal-overlay">
+        <div class="modal-card-croatia">
+            <h3>Rezultat / Resultado</h3>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                <p id="textoEstadoPuntaje" class="mensaje-modal-estado">Odlično!</p>
+                <div id="contenedorNumeroGrande" class="numero-modal-grande">10.0</div>
+            </div>
+            <button class="btn-modal-aceptar" onclick="cerrarModalPuntaje()">U redu / Entendido</button>
+        </div>
+    </div>
+
+<div class="container">
+    <!-- Botón interactivo de cambio de idioma arriba a la izquierda DENTRO del cuadro blanco -->
+    <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()" title="Hacer clic para cambiar idioma">HR</span>
+
+    <h2 id="lblTitulo">Odaberite glagol — Seleccionar Verbos</h2>
+    <div class="subtitulo" id="lblSubtitulo">Konjugacija glagola / Seleccionar Verbos - Razina 1</div>
+    
+    <!-- Barra de Teclado Croata y Botón de Audio -->
+    <div class="teclado-virtual">
+        <span id="labelAcentos" style="font-size: 0.85rem; font-weight: bold; color: #475569;">Naglasci / Acentos:</span>
+        <img src="imagenes/Caron.bmp" class="btn-acento-croata" id="btnCaron" onmousedown="manejarClickAcento('caron', this, event)" alt="Caron">
+        <img src="imagenes/Acento.bmp" class="btn-acento-croata" id="btnAcento" onmousedown="manejarClickAcento('acento', this, event)" alt="Acento">
+        <img src="imagenes/Guion.bmp" class="btn-acento-croata" id="btnGuion" onmousedown="manejarClickAcento('guion', this, event)" alt="Guion">
+        <button id="btnAudioText" class="btn-audio" onclick="pronunciarCampoActivo()">🔊 Slušaj / Escuchar</button>
+    </div>
+
+    <div class="panel-principal">
+        <!-- COLUMNA IZQUIERDA -->
+        <div class="columna-izq">
+            <label for="selectVerbo"><strong id="lblPopis">Popis glagola — Listado:</strong></label>
+            <select id="selectVerbo" onchange="cargarVerbo()">
+                <option value="">-- Odaberite glagol / Seleccione un verbo --</option>
+            </select>
+
+            <fieldset class="grupo-sufijos">
+                <legend id="lblFiltroLeg">Filtar sufiksa — Filtro de Sufijos</legend>
+                <div class="grid-sufijos">
+                    <label><input type="radio" name="filtroSufijo" value="SVE" checked onclick="filtrarVerbos()"> SVE</label>
+                    <label><input type="radio" name="filtroSufijo" value="ATI" onclick="filtrarVerbos()"> ATI</label>
+                    <label><input type="radio" name="filtroSufijo" value="ETI" onclick="filtrarVerbos()"> ETI</label>
+                    <label><input type="radio" name="filtroSufijo" value="ITI" onclick="filtrarVerbos()"> ITI</label>
+                    <label><input type="radio" name="filtroSufijo" value="IRATI" onclick="filtrarVerbos()"> IRATI</label>
+                    <label><input type="radio" name="filtroSufijo" value="IVATI" onclick="filtrarVerbos()"> IVATI</label>
+                    <label><input type="radio" name="filtroSufijo" value="OVATI" onclick="filtrarVerbos()"> OVATI</label>
+                </div>
+            </fieldset>
+
+            <div style="margin-top: 20px;">
+                <label><input type="radio" name="modo" value="aprendizaje" checked onclick="actualizarConjugacion()"> <strong id="lblModoAp">Način učenja (Pregled) / Modo Aprendizaje (Ver)</strong></label><br>
+                <label style="margin-top: 8px; display:inline-block;"><input type="radio" name="modo" value="evaluacion" onclick="actualizarConjugacion()"> <strong id="lblModoEv">Način provjere (Pisanje) / Modo Evaluación (Escribir)</strong></label>
+            </div>
+
+            <button class="btn-salir" onclick="volverAlMenu()"><span id="lblBtnSalir">Povratak na glavni izbornik / Salir</span></button>
+        </div>
+
+        <!-- COLUMNA DERECHA -->
+        <div class="columna-der">
+            <div class="tiempos-barra">
+                <label><input type="radio" name="tiempo" value="presente" checked onclick="actualizarConjugacion()"> <span id="lblTiempoPres">Prezent / Presente</span></label>
+                <label><input type="radio" name="tiempo" value="pasado" onclick="actualizarConjugacion()"> <span id="lblTiempoPas">Prošlost / Pasado</span></label>
+            </div>
+
+            <!-- BARRA DE GÉNERO PARA EL PASADO (MR por defecto) -->
+            <div id="barraGenero" class="genero-barra">
+                <label><input type="radio" name="genero" value="MR" checked onclick="actualizarConjugacion()"> MR</label>
+                <label><input type="radio" name="genero" value="ZR" onclick="actualizarConjugacion()"> ŽR</label>
+                <label><input type="radio" name="genero" value="SR" onclick="actualizarConjugacion()"> SR</label>
+            </div>
+
+            <div id="traduccionVerbo" class="traduccion"></div>
+
+            <table class="conjugacion-tabla">
+                <tbody id="tablaConjugacionBody">
+                    <tr><td colspan="2" style="text-align:center; color:#64748b; padding:25px;" id="lblPlaceholder">Odaberite glagol za početak / Seleccione un verbo para comenzar</td></tr>
+                </tbody>
+            </table>
+
+            <!-- Botón de evaluación visible solo en modo evaluación -->
+            <div id="contenedorBotonEvaluar" style="display: none;">
+                <button id="btnEvaluarAccion" class="btn-evaluar" onclick="evaluarConjugacion()">Provjeri / Evaluar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Librería de Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- Scripts externos modulares -->
+<script src="auth-check.js"></script>
+<script src="user-profile.js"></script>
+<script src="inactivity-logout.js"></script>
+
+<!-- Enlaces a los scripts externos originales -->
+<script src="tecladoCroata.js"></script>
+<script src="verbos/verbos-data.js"></script>
+<script src="verbos/reglas-presente.js"></script>
+<script src="verbos/verbos-pres-irr.js"></script>
+<script src="verbos/verbos-pp-sufijos-regulares.js"></script>
+<script src="verbos/verbos-pp-sufijos-irregulares.js"></script>
+<script src="verbos/verbos-iti-jeti.js"></script>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    let idiomaActual = urlParams.get('lang') || localStorage.getItem('idiomaApp') || 'hr-es';
+    idiomaActual = idiomaActual.toLowerCase();
+
+    let verboYaEvaluado = false;
+    let campoActivoActual = null;
+
+    window.onload = function() {
+        aplicarIdiomaInterfaz();
+        if (typeof baseVerbos !== 'undefined') {
+            poblarSelectVerbos(baseVerbos);
+        }
+    };
+
+    function abrirLibro() {
+        sessionStorage.setItem('paginaOrigenLibro', window.location.href);
+        window.location.href = 'MS_Kniga12.html';
+    }
+
+    function alternarIdioma() {
+        let idiomaActualizado = (localStorage.getItem('idiomaApp') || 'hr').trim().toLowerCase();
+        if (idiomaActualizado === "hr-es" || idiomaActualizado.includes("es")) {
+            localStorage.setItem('idiomaApp', 'hr');
+        } else {
+            localStorage.setItem('idiomaApp', 'hr-es');
+        }
+        location.reload();
+    }
+
+    document.addEventListener('focusin', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+            campoActivoActual = e.target;
+        }
+    });
+
+    function manejarClickAcento(tipoAcento, elementoBtn, evento) {
+        document.querySelectorAll('.btn-acento-croata').forEach(el => el.classList.remove('activo'));
+        elementoBtn.classList.add('activo');
+        if (typeof activarAcentoCroata === 'function') {
+            activarAcentoCroata(tipoAcento, elementoBtn, evento);
+        }
+    }
+
+    function pronunciarCampoActivo() {
+        if (!campoActivoActual) {
+            alert(idiomaActual === 'hr' ? "Molimo kliknite prvo na polje teksta." : "Molimo kliknite prvo na polje teksta / Haz clic primero en un campo de texto para escuchar su pronunciación.");
+            return;
+        }
+        let textoALeer = campoActivoActual.value.trim() || campoActivoActual.placeholder;
+        if (!textoALeer || textoALeer.includes("...") || textoALeer.includes("Upišite")) {
+            alert(idiomaActual === 'hr' ? "Ovo polje nema teksta za reprodukciju." : "Ovo polje nema teksta za reprodukciju / Este campo no tiene texto para reproducir.");
+            return;
+        }
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(textoALeer);
+            utterance.lang = 'hr-HR';
+            utterance.rate = 0.85;
+            window.speechSynthesis.speak(utterance);
+        } else {
+            alert("Tu navegador no soporta la síntesis de voz.");
+        }
+    }
+
+    function aplicarIdiomaInterfaz() {
+        const badge = document.getElementById("badgeIdioma");
+        if (idiomaActual === "hr") {
+            badge.innerText = "HR";
+            document.getElementById("lblTitulo").textContent = "Odaberite glagol";
+            document.getElementById("lblSubtitulo").textContent = "Konjugacija glagola - Razina 1";
+            document.getElementById("lblPopis").textContent = "Popis glagola:";
+            document.getElementById("lblFiltroLeg").textContent = "Filtar sufiksa";
+            document.getElementById("lblModoAp").textContent = "Način učenja (Pregled)";
+            document.getElementById("lblModoEv").textContent = "Način provjere (Pisanje)";
+            document.getElementById("lblBtnSalir").textContent = "Povratak na glavni izbornik";
+            document.getElementById("lblPlaceholder").textContent = "Odaberite glagol za početak";
+            document.getElementById("btnAudioText").textContent = "🔊 Slušaj";
+            document.getElementById("btnEvaluarAccion").textContent = "Provjeri";
+            document.getElementById("lblTiempoPres").textContent = "Prezent";
+            document.getElementById("lblTiempoPas").textContent = "Prošlost";
+        } else {
+            badge.innerText = "HR-ES";
+            document.getElementById("lblTitulo").textContent = "Odaberite glagol — Seleccionar Verbos";
+            document.getElementById("lblSubtitulo").textContent = "Konjugacija glagola / Seleccionar Verbos - Razina 1";
+            document.getElementById("lblPopis").textContent = "Popis glagola — Listado:";
+            document.getElementById("lblFiltroLeg").textContent = "Filtar sufiksa — Filtro de Sufijos";
+            document.getElementById("lblModoAp").textContent = "Način učenja (Pregled) / Modo Aprendizaje (Ver)";
+            document.getElementById("lblModoEv").textContent = "Način provjere (Pisanje) / Modo Evaluación (Escribir)";
+            document.getElementById("lblBtnSalir").textContent = "Povratak na glavni izbornik / Salir";
+            document.getElementById("lblPlaceholder").textContent = "Odaberite glagol za početak / Seleccione un verbo para comenzar";
+            document.getElementById("btnAudioText").textContent = "🔊 Slušaj / Escuchar";
+            document.getElementById("btnEvaluarAccion").textContent = "Provjeri / Evaluar";
+            document.getElementById("lblTiempoPres").textContent = "Prezent / Presente";
+            document.getElementById("lblTiempoPas").textContent = "Prošlost / Pasado";
+        }
+    }
+
+    function poblarSelectVerbos(listaVerbos) {
+        const select = document.getElementById("selectVerbo");
+        const placeholderText = idiomaActual === "hr" ? "-- Odaberite glagol --" : "-- Odaberite glagol / Seleccione un verbo --";
+        select.innerHTML = `<option value="">${placeholderText}</option>`;
+        
+        if (typeof baseVerbos !== 'undefined') {
+            const fuente = listaVerbos || baseVerbos;
+            const listaOrdenada = [...fuente].sort((a, b) => a.infinitivo.localeCompare(b.infinitivo));
+
+            listaOrdenada.forEach(verbo => {
+                let option = document.createElement("option");
+                option.value = verbo.infinitivo;
+                if (idiomaActual === "hr") {
+                    option.textContent = verbo.infinitivo;
+                } else {
+                    option.textContent = verbo.infinitivo + (verbo.espanol1 ? " (" + verbo.espanol1 + ")" : "");
+                }
+                select.appendChild(option);
+            });
+        }
+    }
+
+    function filtrarVerbos() {
+        const filtroSeleccionado = document.querySelector('input[name="filtroSufijo"]:checked').value;
+        
+        if (typeof baseVerbos !== 'undefined') {
+            if (filtroSeleccionado === "SVE") {
+                poblarSelectVerbos(baseVerbos);
+            } else {
+                const filtrados = baseVerbos.filter(v => {
+                    const suf = (v.sufijo || "").toUpperCase();
+                    const cls = (v.classId || "").toUpperCase();
+                    return suf === filtroSeleccionado || cls.includes(filtroSeleccionado);
+                });
+                poblarSelectVerbos(filtrados);
+            }
+        }
+    }
+
+    function cargarVerbo() {
+        verboYaEvaluado = false;
+        campoActivoActual = null;
+        const btnEvaluar = document.getElementById("btnEvaluarAccion");
+        if(btnEvaluar) {
+            btnEvaluar.disabled = false;
+        }
+        actualizarConjugacion();
+    }
+
+    function calcularPresente(verboObj) {
+        const infinitivo = (verboObj.infinitivo || "").toLowerCase().trim();
+
+        if (typeof verbosPresenteIrregulares !== 'undefined' && verbosPresenteIrregulares[infinitivo]) {
+            const irr = verbosPresenteIrregulares[infinitivo];
+            return [irr.SG1, irr.SG2, irr.SG3, irr.PL1, irr.PL2, irr.PL3];
+        }
+
+        let classIdBuscado = (verboObj.classId || "").trim();
+
+        if (!classIdBuscado) {
+            const sufijoObj = (verboObj.sufijo || "").toUpperCase().trim();
+            if (sufijoObj) {
+                classIdBuscado = sufijoObj.includes("_") ? sufijoObj : sufijoObj + "_01";
+            } else if (infinitivo.endsWith("irati")) {
+                classIdBuscado = "IRATI_01";
+            } else if (infinitivo.endsWith("ivati")) {
+                classIdBuscado = "IVATI_01";
+            } else if (infinitivo.endsWith("ovati")) {
+                classIdBuscado = "OVATI_01";
+            } else if (infinitivo.endsWith("iti")) {
+                classIdBuscado = "ITI_01";
+            } else if (infinitivo.endsWith("eti")) {
+                classIdBuscado = "ETI_01";
+            } else {
+                classIdBuscado = "ATI_01";
+            }
+        }
+
+        let grupoReglas = null;
+        if (typeof reglasPresente !== 'undefined') {
+            if (reglasPresente[classIdBuscado]) {
+                grupoReglas = reglasPresente[classIdBuscado];
+            } else {
+                const claveEncontrada = Object.keys(reglasPresente).find(k => k.trim().toUpperCase() === classIdBuscado.trim().toUpperCase());
+                if (claveEncontrada) {
+                    grupoReglas = reglasPresente[claveEncontrada];
+                }
+            }
+        }
+
+        const raiz = verboObj.raiz;
+        const pKeys = ["1SG", "2SG", "3SG", "1PL", "2PL", "3PL"];
+        let resultado = [];
+
+        pKeys.forEach(p => {
+            let terminacion = "";
+            if (grupoReglas && grupoReglas[p]) {
+                terminacion = grupoReglas[p];
+            }
+            resultado.push(raiz + terminacion);
+        });
+
+        return resultado;
+    }
+
+    function calcularPasado(verboObj) {
+        const infinitivo = (verboObj.infinitivo || "").toLowerCase().trim();
+        const generoSel = document.querySelector('input[name="genero"]:checked') ? document.querySelector('input[name="genero"]:checked').value : "MR";
+        
+        let claveTabla = "Mas";
+        if (generoSel === "ZR") claveTabla = "Fem";
+        if (generoSel === "SR") claveTabla = "Neu";
+
+        if (infinitivo === "biti") {
+            let partSing = "bio";
+            let partPlur = "bili";
+            
+            if (generoSel === "ZR") {
+                partSing = "bila";
+                partPlur = "bile";
+            } else if (generoSel === "SR") {
+                partSing = "bilo";
+                partPlur = "bila";
+            }
+
+            return [
+                `${partSing} sam`,
+                `${partSing} si`,
+                `${partSing} je`,
+                `${partPlur} smo`,
+                `${partPlur} ste`,
+                `${partPlur} su`
+            ];
+        }
+
+        let arraySufijos = [];
+
+        if (typeof pasadoIrregularesSufijos !== 'undefined' && typeof verbosPasadoIrregulares !== 'undefined' && verbosPasadoIrregulares[infinitivo]) {
+            let claveIrr = generoSel === "ZR" ? "fem" : (generoSel === "SR" ? "neu" : "mas");
+            if (pasadoIrregularesSufijos[claveIrr]) {
+                arraySufijos = pasadoIrregularesSufijos[claveIrr];
+            }
+        }
+
+        if ((!arraySufijos || arraySufijos.length === 0) && typeof pasadoRegularesSufijos !== 'undefined') {
+            if (pasadoRegularesSufijos[claveTabla]) {
+                arraySufijos = pasadoRegularesSufijos[claveTabla];
+            }
+        }
+
+        if (!arraySufijos || arraySufijos.length === 0) {
+            arraySufijos = ["o", "o", "o", "li", "li", "li"];
+        }
+
+        let raizSingular = infinitivo.length > 2 ? infinitivo.slice(0, -2) : infinitivo;
+        let raizPlural = raizSingular; 
+        let sufijoGeneroPlural = arraySufijos[3];
+
+        if (typeof verbosExcepcionItiJeti !== 'undefined' && verbosExcepcionItiJeti[infinitivo]) {
+            let datosExcepcion = verbosExcepcionItiJeti[infinitivo];
+            if (datosExcepcion.raizPlural) {
+                raizPlural = datosExcepcion.raizPlural;
+            }
+            let sufijoDeseado = datosExcepcion[generoSel];
+            if (sufijoDeseado) {
+                sufijoGeneroPlural = sufijoDeseado; 
+            }
+        }
+        
+        const auxiliares = ["sam", "si", "je", "smo", "ste", "su"];
+        let resultado = [];
+
+        for (let i = 0; i < 6; i++) {
+            let raizActual = (i < 3) ? raizSingular : raizPlural;
+            let suf = (i < 3) ? arraySufijos[i] : sufijoGeneroPlural;
+
+            if (suf === "") {
+                resultado.push(`${auxiliares[i]}`);
+            } else {
+                resultado.push(`${raizActual}${suf} ${auxiliares[i]}`);
+            }
+        }
+
+        return resultado;
+    }
+
+    function actualizarConjugacion() {
+        const verboSeleccionado = document.getElementById("selectVerbo").value;
+        const tbody = document.getElementById("tablaConjugacionBody");
+        const contenedorBoton = document.getElementById("contenedorBotonEvaluar");
+        const barraGenero = document.getElementById("barraGenero");
+        
+        tbody.innerHTML = "";
+        campoActivoActual = null;
+
+        const tiempo = document.querySelector('input[name="tiempo"]:checked').value;
+        
+        if (tiempo === "pasado") {
+            barraGenero.style.display = "flex";
+        } else {
+            barraGenero.style.display = "none";
+        }
+
+        if (!verboSeleccionado) {
+            document.getElementById("traduccionVerbo").textContent = "";
+            contenedorBoton.style.display = "none";
+            const msg = idiomaActual === "hr" ? "Odaberite glagol za početak" : "Odaberite glagol za početak / Seleccione un verbo para comenzar";
+            tbody.innerHTML = `<tr><td colspan="2" style="text-align:center; color:#64748b; padding:25px;">${msg}</td></tr>`;
+            return;
+        }
+
+        const datosVerbo = baseVerbos.find(v => v.infinitivo === verboSeleccionado);
+        
+        if (datosVerbo && idiomaActual !== "hr") {
+            document.getElementById("traduccionVerbo").textContent = "Hrvatski / Español: " + (datosVerbo.espanol1 || "") + (datosVerbo.espanol2 ? " / " + datosVerbo.espanol2 : "");
+        } else {
+            document.getElementById("traduccionVerbo").textContent = "";
+        }
+
+        const modoEvaluacion = document.querySelector('input[name="modo"]:checked').value === "evaluacion";
+        const pronombres = ["Ja", "Ti", "On / ona / one", "Mi", "Vi", "Oni / one / ona"];
+        
+        contenedorBoton.style.display = modoEvaluacion ? "block" : "none";
+
+        if (modoEvaluacion) {
+            const btnEvaluar = document.getElementById("btnEvaluarAccion");
+            btnEvaluar.disabled = verboYaEvaluado;
+        }
+
+        let conjugadas = [];
+        if (tiempo === "presente") {
+            conjugadas = calcularPresente(datosVerbo);
+        } else {
+            conjugadas = calcularPasado(datosVerbo);
+        }
+
+        pronombres.forEach((pron, index) => {
+            let row = tbody.insertRow();
+            let cellPron = row.insertCell(0);
+            cellPron.className = "pronombre";
+            cellPron.textContent = pron;
+            cellPron.style.width = "35%";
+
+            if (modoEvaluacion) {
+                let cellEval = row.insertCell(1);
+                cellEval.style.width = "65%";
+                let input = document.createElement("input");
+                input.type = "text";
+                input.className = "input-eval";
+                input.dataset.p = index;
+                input.dataset.correcta = conjugadas[index];
+                input.placeholder = idiomaActual === "hr" ? "Upišite..." : "Upišite... / Escribe...";
+                if (verboYaEvaluado) {
+                    input.disabled = true;
+                }
+                cellEval.appendChild(input);
+            } else {
+                let cellApren = row.insertCell(1);
+                cellApren.style.width = "65%";
+                let inputApren = document.createElement("input");
+                inputApren.type = "text";
+                inputApren.value = conjugadas[index];
+                inputApren.disabled = true;
+                inputApren.style.background = "#e2e8f0";
+                inputApren.style.fontWeight = "bold";
+                cellApren.appendChild(inputApren);
+            }
+        });
+    }
+
+    function evaluarConjugacion() {
+        if (verboYaEvaluado) return;
+
+        const inputsEval = document.querySelectorAll('#tablaConjugacionBody .input-eval');
+        let totalCampos = 0;
+        let correctos = 0;
+
+        const tbody = document.getElementById("tablaConjugacionBody");
+        const pronombres = ["Ja", "Ti", "On / ona / one", "Mi", "Vi", "Oni / one / ona"];
+        tbody.innerHTML = "";
+
+        const verboSeleccionado = document.getElementById("selectVerbo").value;
+        const datosVerbo = baseVerbos.find(v => v.infinitivo === verboSeleccionado);
+        const tiempo = document.querySelector('input[name="tiempo"]:checked').value;
+        
+        let respuestasOficiales = tiempo === "presente" ? calcularPresente(datosVerbo) : calcularPasado(datosVerbo);
+
+        inputsEval.forEach((inputViejo, index) => {
+            totalCampos++;
+            const valorUsuario = inputViejo.value.trim().toLowerCase();
+            const valorCorrecto = (respuestasOficiales[index] || "").trim().toLowerCase();
+
+            let row = tbody.insertRow();
+            let cellPron = row.insertCell(0);
+            let cellApren = row.insertCell(1);
+            let cellEval = row.insertCell(2);
+
+            cellPron.className = "pronombre";
+            cellPron.textContent = pronombres[index];
+            cellPron.style.width = "30%";
+
+            cellApren.style.width = "35%";
+            let inputApren = document.createElement("input");
+            inputApren.type = "text";
+            inputApren.value = respuestasOficiales[index];
+            inputApren.disabled = true;
+            inputApren.style.background = "#e2e8f0";
+            inputApren.style.fontWeight = "bold";
+            cellApren.appendChild(inputApren);
+
+            cellEval.style.width = "35%";
+            let inputNuevo = document.createElement("input");
+            inputNuevo.type = "text";
+            inputNuevo.value = inputViejo.value;
+            inputNuevo.disabled = true;
+
+            if (valorUsuario === valorCorrecto) {
+                inputNuevo.style.borderColor = "#22c55e"; 
+                inputNuevo.style.backgroundColor = "#f0fdf4";
+                inputNuevo.style.color = "#15803d";
+                correctos++;
+            } else {
+                inputNuevo.style.borderColor = "#ef4444"; 
+                inputNuevo.style.backgroundColor = "#fef2f2";
+                inputNuevo.style.color = "#b91c1c";
+            }
+            cellEval.appendChild(inputNuevo);
+        });
+
+        verboYaEvaluado = true;
+        document.getElementById("btnEvaluarAccion").disabled = true;
+
+        let nota = totalCampos > 0 ? ((correctos / totalCampos) * 10).toFixed(1) : 0;
+
+        let mensajeEstado = "";
+        let archivoAudio = "";
+        let numeroNota = parseFloat(nota);
+        let claseColorNumero = "";
+
+        if (correctos === 0) {
+            mensajeEstado = "Katastrofa!";
+            archivoAudio = "sonidos/katastrofa.wav";
+            claseColorNumero = "nota-cero";
+        } else if (numeroNota === 10) {
+            mensajeEstado = "Odlično!";
+            archivoAudio = "sonidos/odlicno.wav";
+            claseColorNumero = "nota-dorada";
+        } else if (numeroNota >= 8 && numeroNota <= 9.99) {
+            mensajeEstado = "Vrlo dobro!";
+            archivoAudio = "sonidos/vrlodobro.wav";
+            claseColorNumero = "nota-verde";
+        } else if (numeroNota >= 5 && numeroNota <= 7.99) {
+            mensajeEstado = "Dobro!";
+            archivoAudio = "sonidos/dobro.wav";
+            claseColorNumero = "nota-verde";
+        } else if (numeroNota >= 3 && numeroNota <= 4.99) {
+            mensajeEstado = "Tako tako!";
+            archivoAudio = "sonidos/takotako.wav";
+            claseColorNumero = "nota-verde"; 
+        } else if (numeroNota >= 0.01 && numeroNota <= 2.99) {
+            mensajeEstado = "Nije dobro!";
+            archivoAudio = "sonidos/nijedobro.wav";
+            claseColorNumero = "nota-roja";
+        }
+
+        document.getElementById('textoEstadoPuntaje').innerText = mensajeEstado;
+        
+        const contenedorNum = document.getElementById('contenedorNumeroGrande');
+        contenedorNum.innerText = nota;
+        contenedorNum.className = "numero-modal-grande " + claseColorNumero;
+
+        document.getElementById('modalPuntaje').style.display = 'flex';
+
+        if (archivoAudio) {
+            let audio = new Audio(archivoAudio);
+            audio.play().catch(e => console.log("Audio play bloqueado o archivo no encontrado:", e));
+        }
+    }
+
+    function cerrarModalPuntaje() {
+        document.getElementById('modalPuntaje').style.display = 'none';
+    }
+
+    function volverAlMenu() {
+        window.location.href = `MSN1.html?lang=${idiomaActual}`;
+    }
+</script>
+
+</body>
+</html>

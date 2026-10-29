@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hrvatski padeži - 1. Nominativ</title>
+    <style>
+        :root {
+            --red: #ff1c1c;
+            --white: #ffffff;
+            --blue: #1b264f;
+            --croatia-blue: #0051ba;
+            --croatia-red: #d90f13;
+        }
+
+        body {
+            margin: 0;
+            padding: 10px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), 
+                        url('imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
+            background-size: cover;
+            background-color: #1b264f;
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            z-index: 10;
+            margin-top: 40px;
+        }
+
+        .card-panel {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 20px 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border: 3px solid var(--croatia-blue);
+            width: 100%;
+            box-sizing: border-box;
+            position: relative;
+            max-height: 95vh;
+            overflow-y: auto;
+        }
+
+        .card-panel::-webkit-scrollbar {
+            width: 8px;
+        }
+        .card-panel::-webkit-scrollbar-thumb {
+            background: var(--croatia-blue);
+            border-radius: 4px;
+        }
+
+        .card-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #ff0000 0%, #ffffff 50%, #0047ab 100%);
+        }
+
+        /* Botón flotante superior derecho para abrir el libro */
+        .btn-abrir-libro {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--croatia-blue);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+            z-index: 1000;
+        }
+
+        .btn-abrir-libro:hover {
+            background: #003380;
+            transform: translateY(-2px);
+        }
+
+        /* Cabecera unificada: Idioma a la izquierda y Título centrado */
+        .header-caso-superior {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+            margin-top: 5px;
+            gap: 10px;
+        }
+
+        .header-titulos-centro {
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .header-caso-superior h1 {
+            margin: 0 0 2px 0;
+            font-size: 1.6rem;
+            color: var(--blue);
+            font-weight: 800;
+        }
+
+        .header-caso-superior .sub-titulo {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        /* Botón interactivo de cambio de idioma */
+        .badge-idioma {
+            background: var(--croatia-red);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255,255,255,0.6);
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            flex-shrink: 0;
+        }
+
+        .badge-idioma:hover {
+            background: #b50b0f;
+            transform: scale(1.05);
+        }
+
+        .caja-pregunta {
+            background: linear-gradient(135deg, #f0fdf4, #e0f2fe);
+            border: 2px solid #bae6fd;
+            border-radius: 12px;
+            padding: 10px 18px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .pregunta-croata {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--croatia-blue);
+        }
+
+        .pregunta-espanol {
+            font-size: 0.85rem;
+            color: #475569;
+            font-weight: 600;
+        }
+
+        .seccion-titulo {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--blue);
+            margin-bottom: 6px;
+            margin-top: 12px;
+        }
+
+        .uso-caja {
+            background: #f8fafc;
+            border-left: 5px solid var(--croatia-blue);
+            padding: 8px 12px;
+            border-radius: 0 10px 10px 0;
+            margin-bottom: 12px;
+            font-size: 0.92rem;
+            line-height: 1.3;
+        }
+
+        .uso-espanol {
+            display: block;
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 2px;
+            font-style: italic;
+        }
+
+        .generos-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .generos-grid {
+                grid-template-columns: 1fr;
+            }
+            .header-caso-superior {
+                flex-direction: column;
+                gap: 8px;
+            }
+            .header-titulos-centro {
+                order: 1;
+            }
+            .badge-idioma {
+                order: 0;
+                align-self: flex-start;
+            }
+        }
+
+        .columna-genero {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .titulo-genero {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: var(--blue);
+            text-align: center;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #cbd5e1;
+            margin: 0;
+        }
+
+        .ejemplo-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+        }
+
+        .ejemplo-card:hover {
+            border-color: var(--croatia-blue);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(0,81,186,0.1);
+        }
+
+        .ejemplo-texto h4 {
+            margin: 0;
+            font-size: 0.92rem;
+            color: var(--blue);
+            font-weight: 700;
+        }
+
+        .ejemplo-texto p {
+            margin: 0;
+            font-size: 0.78rem;
+            color: #64748b;
+        }
+
+        .regla-especial-box {
+            background: #fffbeb;
+            border: 2px solid #fde68a;
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+        }
+
+        .regla-titulo {
+            font-weight: 800;
+            color: #b45309;
+            font-size: 0.92rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .regla-contenido {
+            font-size: 0.85rem;
+            color: #78350f;
+            line-height: 1.4;
+        }
+
+        .regla-contenido ul {
+            margin: 4px 0 0 18px;
+            padding: 0;
+        }
+
+        .regla-contenido li {
+            margin-bottom: 4px;
+        }
+
+        .botones-navegacion-container {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            margin-top: 10px;
+            border-top: 2px solid #e2e8f0;
+            padding-top: 12px;
+        }
+
+        .btn-navegacion {
+            flex: 1;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.88rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-volver-declinaciones {
+            background: var(--croatia-blue);
+        }
+        .btn-volver-declinaciones:hover {
+            background: #003380;
+            transform: translateY(-2px);
+        }
+
+        .btn-pagina-inicial {
+            background: #475569;
+        }
+        .btn-pagina-inicial:hover {
+            background: #334155;
+            transform: translateY(-2px);
+        }
+
+        .acciones-flotantes {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .btn-flotante-guia {
+            background: linear-gradient(135deg, var(--croatia-blue), #003380);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            border: 2px solid white;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-flotante-guia:hover {
+            transform: scale(1.05);
+            background: #003380;
+        }
+
+        /* --- ESTILOS OFICIALES PARA LOS MODALES / POP-UPS --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-card-croatia {
+            background: #ffffff; 
+            padding: 35px 30px; 
+            border-radius: 20px;
+            text-align: center; 
+            border: 4px solid var(--croatia-blue);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            max-width: 420px;
+            width: 90%;
+            position: relative;
+            animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes scaleUp {
+            from { transform: scale(0.7); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .croatian-avatar-container {
+            width: 95px;
+            height: 95px;
+            border-radius: 50%;
+            border: 3px solid var(--croatia-red);
+            overflow: hidden;
+            background: #f1f5f9;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin: 0 auto;
+        }
+
+        .croatian-avatar-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .modal-btn-croatia {
+            background: linear-gradient(135deg, var(--croatia-blue), #003380);
+            color: white; 
+            border: none;
+            font-size: 1rem; 
+            font-weight: bold; 
+            padding: 12px 25px;
+            border-radius: 12px; 
+            cursor: pointer; 
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(0,81,186,0.3);
+        }
+
+        .modal-btn-croatia:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,81,186,0.4);
+        }
+
+        .texto-espanol { display: none; }
+        body.modo-bilingue .texto-espanol { display: inline; }
+        body.modo-bilingue .bloque-espanol { display: block !important; }
+        .bloque-espanol { display: none; }
+    </style>
+</head>
+<body id="appBody">
+
+    <!-- Botón flotante superior derecho para abrir el libro -->
+    <button onclick="abrirLibro()" class="btn-abrir-libro">
+        📖 Otvori knjigu / Abrir libro
+    </button>
+
+    <div class="app-container">
+        
+        <div class="card-panel">
+            
+            <!-- CABECERA UNIFICADA -->
+            <div class="header-caso-superior">
+                <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()" title="Hacer clic para cambiar idioma">HR</span>
+                
+                <div class="header-titulos-centro">
+                    <h1>1. Nominativ</h1>
+                    <div class="sub-titulo">
+                        <span lang="hr">Osnovni ili izravni padež</span>
+                        <span class="texto-espanol"> (El caso principal o directo)</span>
+                    </div>
+                </div>
+
+                <div style="width: 50px; visibility: hidden;"></div>
+            </div>
+
+            <div class="caja-pregunta">
+                <span class="pregunta-croata">Tko? Što?</span>
+                <span class="pregunta-espanol bloque-espanol">¿Quién? ¿Qué?</span>
+            </div>
+
+            <div class="seccion-titulo">Upotreba / Uso principal</div>
+            <div class="uso-caja">
+                <span>Označava subjekt u rečenici. To je osnovni oblik riječi (u rječniku).</span>
+                <span class="uso-espanol bloque-espanol">Indica el sujeto en la oración. Es la forma básica o de diccionario de la palabra.</span>
+            </div>
+
+            <div class="seccion-titulo">Primjeri / Ejemplos</div>
+            
+            <div class="generos-grid">
+                <!-- COLUMNA 1 -->
+                <div class="columna-genero">
+                    <h3 class="titulo-genero">Muški rod (Masculino)</h3>
+                    <div class="ejemplo-card"><div class="ejemplo-texto"><h4>Pas laje.</h4><p class="bloque-espanol">El perro ladra.</p></div></div>
+                    <div class="ejemplo-card"><div class="ejemplo-texto"><h4>Student uči.</h4><p class="bloque-espanol">El estudiante estudia.</p></div></div>
+                    <div class="ejemplo-card"><div class="ejemplo-texto"><h4>Grad je velik.</h4><p class="bloque-espanol">La ciudad es grande.</p></div></div>
+                </div>
+
+                <!-- COLUMNA 2 -->
+                <div class="columna-genero">
+                    <h3 class="titulo-genero">Ženski rod (Femenino)</h3>
+                    <div class="ejemplo-card"><div class="ejemplo-texto"><h4>Knjiga je nova.</h4><p class="bloque-espanol">El libro es nuevo.</p></div></div>
+                    <div class="ejemplo-card"><div class="ejemplo-texto"><h4>Ana pjeva.</h4><p class="bloque-espanol">Ana canta.</p></div></div>
+                    <div class="ejemplo-card"><div class="ejemplo-texto"><h4>Voda je hladna.</h4><p class="bloque-espanol">El agua está fría.</p></div></div>
+                </div>
+
+                <!-- COLUMNA 3 -->
+                <div class="columna-genero">
+                    <h3 class="titulo-genero">Srednji rod (Neutro)</h3>
+                    <div class="ejemplo-card"><div class="ejemplo-texto"><h4>Selo je malo.</h4><p class="bloque-espanol">El pueblo es pequeño.</p></div></div>
+                    <div class="ejemplo-card"><div class="ejemplo-texto"><h4>More je plavo.</h4><p class="bloque-espanol">El mar es azul.</p></div></div>
+                    <div class="ejemplo-card"><div class="ejemplo-texto"><h4>Sunce sja.</h4><p class="bloque-espanol">El sol brilla.</p></div></div>
+                </div>
+            </div>
+
+            <!-- REGLA DE PLURALES -->
+            <div class="regla-especial-box">
+                <div class="regla-titulo"><span>💡 Napomena: Plural de sustantivos masculinos monosilábicos</span></div>
+                <div class="regla-contenido">
+                    <span>En croata, los sustantivos masculinos de una sola sílaba siguen estas pautas principales:</span>
+                    <ul>
+                        <li><strong>Regla general extendida (-ovi / -ove):</strong> 
+                            <ul>
+                                <li>La gran mayoría usa <strong>-ovi</strong> (ej. <i>grad &rarr; gradovi</i>).</li>
+                                <li>Si terminan en consonantes palatales o sibilantes, usan <strong>-ove</strong> (ej. <i>nož &rarr; noževi</i>, <i>kralj &rarr; kraljevi</i>).</li>
+                            </ul>
+                        </li>
+                        <li><strong>Excepciones con plurales cortos directos:</strong> 
+                            <ul>
+                                <li><i>Pas</i> &rarr; <strong>psi</strong> | <i>Dan</i> &rarr; <strong>dani</strong> | <i>Zub</i> &rarr; <strong>zubi</strong> | <i>Gost</i> &rarr; <strong>gosti</strong></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- BOTONES DE RETORNO -->
+            <div class="botones-navegacion-container">
+                <a href="MSN1Declinaciones.html" class="btn-navegacion btn-volver-declinaciones">← Padeži / Declinaciones</a>
+                <a href="MS_Index1.html" class="btn-navegacion btn-pagina-inicial">🏠 Početna / Página Inicial</a>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Botones Flotantes Inferiores Derecha -->
+    <div class="acciones-flotantes">
+        <button onclick="elegirTipoQuiz()" class="btn-flotante-guia" style="border: 2px solid white; cursor: pointer;">
+            <span>📝</span> Quiz
+        </button>
+        <a href="MSN1declinacionesnominativpopup.html?origen=MSN1declinacionesnominativ.html" class="btn-flotante-guia">
+            <span>📖</span> Gramatika
+        </a>
+    </div>
+
+    <!-- MODAL POP-UP INSTITUCIONAL DE SELECCIÓN DE QUIZ -->
+    <div id="modalTipoQuiz" class="modal-overlay" style="display: none;">
+        <div class="modal-card-croatia" style="max-width: 520px;">
+            <div class="modal-header-visual">
+                <div class="croatian-avatar-container">
+                    <img src="imagenes/Escudo-Croacia.jpg" alt="Escudo Croacia">
+                </div>
+            </div>
+
+            <!-- Título principal -->
+            <h2 style="font-size: 1.6rem; color: var(--croatia-blue); margin: 0 0 4px 0;">Izaberi kviz</h2>
+            
+            <!-- Subtítulo condicional según el idioma (HR / HR-ES) -->
+            <div style="margin: 0 0 20px 0;">
+                <span style="color: var(--croatia-red); font-size: 0.95rem; font-weight: 700; display: block;">
+                    Višestruki izbor ili Otvorena pitanja
+                </span>
+                <span class="texto-espanol-modal" style="color: #64748b; font-size: 0.8rem; font-weight: 600; margin-top: 2px; display: none;">
+                    Opción múltiple o preguntas abiertas
+                </span>
+            </div>
+        
+            <!-- Contenedor de botones a la par -->
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <!-- Botón izquierdo de Višestruki izbor -->
+                <button class="modal-btn-croatia" onclick="ejecutarSeleccionQuiz('multiple')" style="flex: 1; padding: 10px 8px; font-size: 0.9rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;">
+                    <span>📝 Višestruki izbor</span>
+                    <span class="texto-espanol-modal" style="display: none; font-size: 0.72rem; font-weight: normal; opacity: 0.9;">Opción múltiple</span>
+                </button>
+            
+                <!-- Botón derecho de Otvorena pitanja -->
+                <button class="modal-btn-croatia" onclick="ejecutarSeleccionQuiz('abierto')" style="flex: 1; padding: 10px 8px; font-size: 0.9rem; background: linear-gradient(135deg, var(--croatia-red), #b50b0f); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;">
+                    <span>✍️ Otvorena pitanja</span>
+                    <span class="texto-espanol-modal" style="display: none; font-size: 0.72rem; font-weight: normal; opacity: 0.9;">Preguntas abiertas</span>
+                </button>
+            </div>
+
+            <!-- Botón de cancelar debajo de los dos -->
+            <div>
+                <button onclick="cerrarModalQuiz()" style="width: 100%; background: #475569; color: white; border: none; font-size: 0.85rem; font-weight: bold; padding: 10px; border-radius: 12px; cursor: pointer; transition: background 0.2s;">
+                    <span lang="hr">Zatvori</span><span class="texto-espanol-modal" style="display: none;"> / Cancelar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Librería de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Scripts externos modulares -->
+    <script src="auth-check.js"></script>
+    <script src="user-profile.js"></script>
+    <script src="inactivity-logout.js"></script>
+
+    <script>
+        window.addEventListener("DOMContentLoaded", () => {
+            actualizarEstadoIdioma();
+        });
+
+        function actualizarEstadoIdioma() {
+            let idiomaGuardado = localStorage.getItem('idiomaApp');
+            if (!idiomaGuardado) {
+                idiomaGuardado = 'hr-es';
+                localStorage.setItem('idiomaApp', 'hr-es');
+            }
+            idiomaGuardado = idiomaGuardado.trim().toLowerCase();
+
+            const body = document.getElementById('appBody');
+            const badge = document.getElementById('badgeIdioma');
+
+            if (idiomaGuardado === "hr") {
+                badge.innerText = "HR";
+                body.classList.remove('modo-bilingue');
+            } else {
+                badge.innerText = "HR-ES";
+                body.classList.add('modo-bilingue');
+            }
+        }
+
+        function alternarIdioma() {
+            let idiomaActual = (localStorage.getItem('idiomaApp') || 'hr').trim().toLowerCase();
+            if (idiomaActual === "hr-es" || idiomaActual.includes("es")) {
+                localStorage.setItem('idiomaApp', 'hr');
+            } else {
+                localStorage.setItem('idiomaApp', 'hr-es');
+            }
+            location.reload();
+        }
+
+        function abrirLibro() {
+            sessionStorage.setItem('paginaOrigenLibro', window.location.href);
+            window.location.href = 'MS_Kniga12.html';
+        }
+
+        function elegirTipoQuiz() {
+            const modal = document.getElementById('modalTipoQuiz');
+            modal.style.display = 'flex';
+
+            let idiomaActual = localStorage.getItem('idiomaApp') || 'hr-es';
+            const spansEspanol = modal.querySelectorAll('.texto-espanol-modal');
+
+            if (idiomaActual === 'hr') {
+                spansEspanol.forEach(el => el.style.display = 'none');
+            } else {
+                spansEspanol.forEach(el => el.style.display = 'inline');
+            }
+        }
+
+        function cerrarModalQuiz() {
+            document.getElementById('modalTipoQuiz').style.display = 'none';
+        }
+
+        function ejecutarSeleccionQuiz(tipo) {
+            if (tipo === "abierto") {
+                window.location.href = "MSN1declinacionesnominativquizA.html";
+            } else {
+                window.location.href = "MSN1declinacionesnominativquiz.html";
+            }
+        }
+    </script>
+</body>
+</html>

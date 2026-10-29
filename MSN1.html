@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mala Škola - Nivel 1</title>
+    <style>
+        :root {
+            --croatia-blue: #0051ba;
+            --croatia-red: #d90f13;
+            --bg-color: #1b264f;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* Fondo con la bandera de Croacia y velo oscuro unificado */
+            background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), 
+                        url('imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
+            background-size: cover;
+            background-color: var(--bg-color);
+            color: #222;
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(12px);
+            width: 100%;
+            max-width: 680px;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border: 3px solid var(--croatia-blue);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-sizing: border-box;
+            position: relative; /* Necesario para ubicar el badge de idioma de forma absoluta */
+            z-index: 10;
+            margin-top: 40px;
+        }
+
+        /* Botón interactivo de cambio de idioma arriba a la izquierda del contenedor */
+        .badge-idioma {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: var(--croatia-red);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255,255,255,0.6);
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 20;
+        }
+
+        .badge-idioma:hover {
+            background: #b50b0f;
+            transform: scale(1.05);
+        }
+
+        /* Títulos normalizados */
+        .header-titulos {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 10px; /* Espacio para que no choque con el botón de idioma */
+        }
+
+        h1 {
+            color: var(--croatia-red);
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .sub-espanol {
+            color: var(--croatia-blue);
+            font-weight: bold;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        /* Grilla de 2x2 para las opciones */
+        .menu-grilla {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .btn-opcion {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border: 2px solid #cbd5e1;
+            padding: 22px 18px;
+            border-radius: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #1e293b;
+            font-size: 1.15rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+            box-sizing: border-box;
+        }
+
+        /* Iconos más grandes */
+        .btn-opcion .icono {
+            font-size: 2.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        /* Textos internos adaptados a dos líneas */
+        .btn-opcion .texto-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            line-height: 1.2;
+        }
+
+        .btn-opcion .texto-es {
+            font-size: 0.85rem;
+            font-weight: normal;
+            color: #64748b;
+        }
+
+        /* Efecto de impacto al posicionar el mouse */
+        .btn-opcion:hover {
+            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+            border-color: var(--croatia-blue);
+            color: var(--croatia-blue);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 81, 186, 0.25);
+        }
+
+        .btn-opcion:hover .icono {
+            transform: scale(1.15);
+        }
+
+        .btn-volver {
+            background: #64748b;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            margin-top: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .btn-volver:hover {
+            background: #475569;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        /* Estilo para el botón flotante de abrir el libro arriba a la derecha */
+        .btn-abrir-libro {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--croatia-blue);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+            z-index: 1000;
+        }
+
+        .btn-abrir-libro:hover {
+            background: #003380;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Botón interactivo de cambio de idioma arriba a la izquierda -->
+        <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()" title="Hacer clic para cambiar idioma">HR</span>
+
+        <!-- Títulos normalizados dinámicos -->
+        <div class="header-titulos">
+            <h1>Početni Nivo 1</h1>
+            <p class="sub-espanol" id="subEspanol">Početni Nivo 1 / Nivel Inicial 1</p>
+        </div>
+
+        <!-- Opciones de estudio en Grilla 2x2 -->
+        <div class="menu-grilla">
+            <a href="MSN1Nacionalidades.html" class="btn-opcion">
+                <span class="icono">🌍</span>
+                <span class="texto-btn">
+                    <span id="textNacHr">Nacionalnosti</span>
+                    <span class="texto-es" id="textNacEs">(Nacionalidades)</span>
+                </span>
+            </a>
+            <a href="MSN1Verbos.html" class="btn-opcion">
+                <span class="icono">📖</span>
+                <span class="texto-btn">
+                    <span id="textVerbHr">Glagoli</span>
+                    <span class="texto-es" id="textVerbEs">(Verbos)</span>
+                </span>
+            </a>
+            <a href="MSN1Familia.html" class="btn-opcion">
+                <span class="icono">👨‍👩‍👧‍👦</span>
+                <span class="texto-btn">
+                    <span id="textFamHr">Obitelj</span>
+                    <span class="texto-es" id="textFamEs">(Familia)</span>
+                </span>
+            </a>
+            <a href="MSN1Declinaciones.html" class="btn-opcion">
+                <span class="icono">✍️</span>
+                <span class="texto-btn">
+                    <span id="textDecHr">Deklinacije</span>
+                    <span class="texto-es" id="textDecEs">(Declinaciones)</span>
+                </span>
+            </a>
+        </div>
+
+        <!-- Botón para volver al índice principal dinámico -->
+        <a href="MS_Index1.html" class="btn-volver" id="textVolver">Povratak na glavni izbornik / Volver al Menú Principal</a>
+    </div>
+
+    <!-- Botón flotante superior derecho para abrir el libro -->
+    <button onclick="abrirLibro()" id="btnLibro" class="btn-abrir-libro">
+        📖 Otvori knjigu / Abrir libro
+    </button>
+
+    <!-- Librería de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Scripts externos modulares -->
+    <script src="auth-check.js"></script>
+    <script src="user-profile.js"></script>
+    <script src="inactivity-logout.js"></script>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            let idiomaElegido = localStorage.getItem('idiomaApp');
+            if (!idiomaElegido) {
+                idiomaElegido = 'hr-es';
+                localStorage.setItem('idiomaApp', 'hr-es');
+            }
+            idiomaElegido = idiomaElegido.trim().toLowerCase();
+
+            const subEspanol = document.getElementById('subEspanol');
+            const textNacEs = document.getElementById('textNacEs');
+            const textVerbEs = document.getElementById('textVerbEs');
+            const textFamEs = document.getElementById('textFamEs');
+            const textDecEs = document.getElementById('textDecEs');
+            const textVolver = document.getElementById('textVolver');
+            const btnLibro = document.getElementById('btnLibro');
+            const badge = document.getElementById('badgeIdioma');
+
+            if (idiomaElegido === 'hr') {
+                // Solo Croata
+                badge.innerText = "HR";
+                subEspanol.style.display = 'none';
+                textNacEs.style.display = 'none';
+                textVerbEs.style.display = 'none';
+                textFamEs.style.display = 'none';
+                textDecEs.style.display = 'none';
+                textVolver.innerText = "Povratak na glavni izbornik";
+                btnLibro.innerHTML = "📖 Otvori knjigu";
+            } else {
+                // Croata / Español
+                badge.innerText = "HR-ES";
+                subEspanol.style.display = 'block';
+                subEspanol.innerText = "Početni Nivo 1 / Nivel Inicial 1";
+                textNacEs.style.display = 'block';
+                textVerbEs.style.display = 'block';
+                textFamEs.style.display = 'block';
+                textDecEs.style.display = 'block';
+                textVolver.innerText = "Povratak na glavni izbornik / Volver al Menú Principal";
+                btnLibro.innerHTML = "📖 Otvori knjigu / Abrir libro";
+            }
+        });
+
+        // Función para alternar el idioma al hacer clic en el botón HR / HR-ES
+        function alternarIdioma() {
+            let idiomaActual = (localStorage.getItem('idiomaApp') || 'hr').trim().toLowerCase();
+            
+            if (idiomaActual === "hr-es" || idiomaActual.includes("es")) {
+                localStorage.setItem('idiomaApp', 'hr');
+            } else {
+                localStorage.setItem('idiomaApp', 'hr-es');
+            }
+            
+            location.reload();
+        }
+
+        function abrirLibro() {
+            // Guarda la página actual antes de ir al libro
+            sessionStorage.setItem('paginaOrigenLibro', window.location.href);
+            // Redirige al libro
+            window.location.href = 'MS_Kniga12.html';
+        }
+    </script>
+</body>
+</html>

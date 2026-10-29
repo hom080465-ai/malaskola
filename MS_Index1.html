@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Učenici hrvatskog jezika - Estudiantes de Croata</title>
+    <style>
+        :root {
+            --red: #ff1c1c;
+            --white: #ffffff;
+            --blue: #1b264f;
+            --croatia-blue: #0051ba;
+            --croatia-red: #d90f13;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), 
+                        url('imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
+            background-size: cover;
+            background-color: #1b264f;
+            color: #222;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 1450px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            z-index: 10;
+        }
+
+        .main-title-box {
+            position: relative;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(0, 81, 186, 0.95), rgba(27, 38, 79, 0.95));
+            backdrop-filter: blur(8px);
+            border-radius: 16px;
+            padding: 18px 30px;
+            width: 100%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            border: 3px solid rgba(255, 255, 255, 0.9);
+        }
+
+        .main-title-box h1 {
+            margin: 0;
+            font-size: 2.1rem;
+            color: var(--white);
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.6);
+        }
+
+        .btn-global-audio {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid var(--croatia-blue);
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .btn-global-audio:hover {
+            background: #fff;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .panels-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1350px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .panels-row {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+        }
+
+        .card-panel {
+            background: #ffffff;
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+            border: 3px solid var(--croatia-blue);
+            width: 420px;
+            flex-shrink: 0;
+        }
+
+        .card-panel h3 {
+            margin-top: 0;
+            font-size: 1.25rem;
+            color: var(--croatia-blue);
+            text-align: center;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .options-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .radio-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .radio-label input {
+            accent-color: var(--croatia-red);
+            transform: scale(1.3);
+            cursor: pointer;
+        }
+
+        .btn-audio {
+            background: #f1f5f9;
+            border: 2px solid var(--croatia-blue);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+
+        .btn-audio:hover {
+            background: #e2e8f0;
+            transform: scale(1.1);
+        }
+
+        .lang-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .flag-icon {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1px;
+            border: 1px solid #cbd5e1;
+        }
+
+        .flag-rect {
+            width: 24px;
+            height: 24px;
+            object-fit: cover;
+            border-radius: 3px;
+            border: 1px solid #cbd5e1;
+        }
+
+        .level-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .level-icon {
+            width: 26px;
+            height: 26px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #cbd5e1;
+            padding: 2px;
+        }
+
+        .levels-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .level-column h4 {
+            margin: 0 0 10px 0;
+            font-size: 0.95rem;
+            color: var(--croatia-red);
+            text-align: center;
+            border-bottom: 1px solid #cbd5e1;
+            padding-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .bottom-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            width: 100%;
+            max-width: 1350px;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .bottom-row {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+        }
+
+        .actions-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+
+        .btn-start {
+            background-color: var(--croatia-red);
+            color: white;
+            border: 2px solid #fff;
+            padding: 14px 35px;
+            font-size: 1.15rem;
+            font-weight: bold;
+            border-radius: 14px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+        }
+
+        .btn-start:hover {
+            background-color: #b50b0f;
+            transform: translateY(-2px);
+        }
+
+        .btn-close {
+            background: #ffffff;
+            border: 2px solid var(--croatia-blue);
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+            min-height: 48px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--croatia-blue);
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-close:hover {
+            background: #f1f5f9;
+            transform: scale(1.05);
+        }
+
+        .central-buttons-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin: 5px 0;
+        }
+
+        .btn-libro {
+            background: linear-gradient(135deg, var(--croatia-blue), #003380);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            padding: 12px 28px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-libro:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #00429c, #002255);
+            box-shadow: 0 8px 22px rgba(0,0,0,0.4);
+        }
+
+        .btn-config {
+            background: var(--croatia-red);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            padding: 12px 28px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 290px;
+            justify-content: center;
+        }
+
+        .btn-config:hover {
+            transform: translateY(-2px);
+            background: #b50b0f;
+            box-shadow: 0 8px 22px rgba(0,0,0,0.4);
+        }
+
+        .professors-card {
+            background: #ffffff;
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 15px 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+            width: 420px;
+            border: 3px solid var(--croatia-blue);
+            flex-shrink: 0;
+            margin-top: 40px;
+            transform: translateX(120px);
+        }
+
+        .professors-title {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--croatia-blue);
+            text-align: center;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 6px;
+        }
+
+        .professors-items {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .professor-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .professor-img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--croatia-red);
+            background: #cbd5e1;
+        }
+
+        .professor-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-card-croatia {
+            background: #ffffff; 
+            padding: 35px 30px; 
+            border-radius: 20px;
+            text-align: center; 
+            border: 4px solid var(--croatia-blue);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            max-width: 420px;
+            width: 90%;
+            position: relative;
+            animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes scaleUp {
+            from { transform: scale(0.7); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            position: relative;
+            padding-left: 110px;
+        }
+
+        .mano-gif {
+            position: absolute;
+            left: 15px;
+            width: 110px;
+            height: 110px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .croatian-avatar-container {
+            width: 105px;
+            height: 105px;
+            border-radius: 50%;
+            border: 3px solid var(--croatia-red);
+            overflow: hidden;
+            background: #f1f5f9;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .croatian-avatar-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .modal-card-croatia h2 {
+            margin: 0 0 5px 0; 
+            color: var(--croatia-blue); 
+            font-size: 2.2rem;
+            font-weight: 800;
+        }
+
+        .modal-card-croatia p {
+            margin: 0 0 25px 0; 
+            color: #d90f13; 
+            font-size: 1.15rem; 
+            font-weight: 700;
+        }
+
+        .modal-btn-croatia {
+            background: linear-gradient(135deg, var(--croatia-blue), #003380);
+            color: white; 
+            border: none;
+            font-size: 1.1rem; 
+            font-weight: bold; 
+            padding: 14px 30px;
+            border-radius: 12px; 
+            cursor: pointer; 
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(0,81,186,0.3);
+        }
+
+        .modal-btn-croatia:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,81,186,0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Elementos de audio -->
+    <audio id="sound-hr" preload="auto"></audio>
+    <audio id="sound-es" preload="auto"></audio>
+    <audio id="sound-saludo" preload="auto"></audio>
+    <audio id="sound-despedida" preload="auto"></audio>
+    <audio id="sound-despedida-2" preload="auto"></audio>
+
+    <!-- Modal de Bienvenida -->
+    <div id="modalBienvenida" class="modal-overlay" style="display: none;">
+        <div class="modal-card-croatia">
+            <div class="modal-header-visual">
+                <img src="imagenes/ManoSaludo.gif" alt="Mano saludando" class="mano-gif">
+                <div class="croatian-avatar-container">
+                    <img src="imagenes/Escudo-Croacia.jpg" alt="Escudo Croacia">
+                </div>
+            </div>
+            <h2 id="tituloSaludoModal">Dobar dan!</h2>
+            <p>¡Croatio, iz duše te ljubim!</p>
+            <button class="modal-btn-croatia" onclick="iniciarAplicacionConAudio()">Započni / Entrar ➔</button>
+        </div>
+    </div>
+
+    <!-- Modal de Despedida -->
+    <div id="modalDespedida" class="modal-overlay" style="display: none;">
+        <div class="modal-card-croatia">
+            <div class="modal-header-visual">
+                <img src="imagenes/ManoSaludo.gif" alt="Mano despidiendo" class="mano-gif">
+                <div class="croatian-avatar-container">
+                    <img src="imagenes/Escudo-Croacia.jpg" alt="Escudo Croacia">
+                </div>
+            </div>
+            <h2>Doviđenja!</h2>
+            <p>Vidimo se...</p>
+        </div>
+    </div>
+
+    <div class="app-container">
+        
+        <div class="main-title-box">
+            <h1 id="mainTitleText">Učenici hrvatskog jezika - Estudiantes de Croata</h1>
+            <button id="btnGlobalAudio" class="btn-global-audio" onclick="toggleSonidoGlobal()" title="Activar/Silenciar sonido">🔊</button>
+        </div>
+
+        <div class="panels-row">
+            <div class="card-panel">
+                <h3 id="panelLangTitle">Jezik - Lenguaje</h3>
+                <div class="options-group">
+                    <label class="radio-label">
+                        <div class="radio-left">
+                            <input type="radio" name="lang" value="hr" checked onchange="actualizarTextosInterfaz(); reproducirAlCambiar();">
+                            <div class="lang-content">
+                                <img src="imagenes/Escudo-Croacia.jpg" alt="Croacia" class="flag-icon">
+                                <span>Hrvatski</span>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-audio" onclick="forzarReproduccionCroata(event)" title="Escuchar">🔊</button>
+                    </label>
+
+                    <label class="radio-label">
+                        <div class="radio-left">
+                            <input type="radio" name="lang" value="hr-es" onchange="actualizarTextosInterfaz(); reproducirAlCambiar();">
+                            <div class="lang-content">
+                                <img src="imagenes/Escudo-Croacia.jpg" alt="Croacia" class="flag-icon">
+                                <img src="imagenes/Escudo-Espana.jpg" alt="España" class="flag-rect">
+                                <span>Hrvatski - Español</span>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-audio" onclick="forzarReproduccionBilingue(event)" title="Escuchar">🔊</button>
+                    </label>
+                </div>
+            </div>
+
+            <div class="card-panel">
+                <h3 id="panelLevelsTitle">Nivoi - Niveles</h3>
+                <div class="levels-grid">
+                    <div class="level-column">
+                        <h4 id="colMalaSkola">Mala Škola</h4>
+                        <div class="options-group" style="margin-top: 10px; gap: 10px;">
+                            <label class="radio-label" style="font-size: 0.95rem;">
+                                <div class="radio-left">
+                                    <input type="radio" name="nivel" value="3-6">
+                                    <div class="level-content">
+                                        <img src="imagenes/Icono-Nina.avif" alt="3-6" class="level-icon">
+                                        <span>3 - 6</span>
+                                    </div>
+                                </div>
+                            </label>
+                            <label class="radio-label" style="font-size: 0.95rem;">
+                                <div class="radio-left">
+                                    <input type="radio" name="nivel" value="6-12">
+                                    <div class="level-content">
+                                        <img src="imagenes/Icono-Nino.avif" alt="6-12" class="level-icon">
+                                        <span>6 - 12</span>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="level-column">
+                        <h4 id="colAdultos">Adultos - Odrasli</h4>
+                        <div class="options-group" style="margin-top: 10px; gap: 10px;">
+                            <label class="radio-label" style="font-size: 0.95rem;">
+                                <div class="radio-left">
+                                    <input type="radio" name="nivel" value="nivel-1">
+                                    <div class="level-content">
+                                        <img src="imagenes/icono-nivel1.jpg" alt="Nivel 1" class="level-icon">
+                                        <span>Nivel 1</span>
+                                    </div>
+                                </div>
+                            </label>
+                            <label class="radio-label" style="font-size: 0.95rem;">
+                                <div class="radio-left">
+                                    <input type="radio" name="nivel" value="nivel-2">
+                                    <div class="level-content">
+                                        <img src="imagenes/icono-nivel2.jpg" alt="Nivel 2" class="level-icon">
+                                        <span>Nivel 2</span>
+                                    </div>
+                                </div>
+                            </label>
+                            <label class="radio-label" style="font-size: 0.95rem;">
+                                <div class="radio-left">
+                                    <input type="radio" name="nivel" value="nivel-3">
+                                    <div class="level-content">
+                                        <img src="imagenes/icono-nivel3.jpg" alt="Nivel 3" class="level-icon">
+                                        <span>Nivel 3</span>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="central-buttons-wrapper">
+            <button class="btn-libro" onclick="abrirLibro()">📖 Razgovarajte s Nama A1-A2</button>
+            <button class="btn-config" id="btnConfigText" onclick="abrirConfiguracion()">⚙️ Postaviti</button>
+        </div>
+
+        <div class="bottom-row">
+            <div class="actions-left">
+                <button class="btn-start" id="btnStartText" onclick="iniciarLeccion()">Započni / Iniciar</button>
+                <button class="btn-close" onclick="cerrarPagina(event)" title="Salir">✕</button>
+            </div>
+
+            <div class="professors-card">
+                <div class="professors-title" id="profTitle">Profesorice - Profesoras</div>
+                <div class="professors-items">
+                    <div class="professor-row">
+                        <img src="imagenes/Foto-MP.bmp" alt="Martina Prpic" class="professor-img">
+                        <span class="professor-name">Martina Prpic</span>
+                    </div>
+                    <div class="professor-row">
+                        <img src="imagenes/Foto-VCP.bmp" alt="Veronica Plazas Grubisich" class="professor-img">
+                        <span class="professor-name">Veronica Plazas Grubisich</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Librería de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Script general de inactividad -->
+    <script src="inactivity-logout.js"></script>
+    <!-- Scripts separados y reutilizables para control de sesión y perfil visible -->
+    <script src="auth-check.js"></script>
+    <script src="user-profile.js"></script>
+
+    <script>
+        const RUTA_SONIDOS = "sonidos/";
+
+        window.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("sound-hr").src = RUTA_SONIDOS + "Hrvastki.wav";
+            document.getElementById("sound-es").src = RUTA_SONIDOS + "Espanol.wav";
+            
+            let savedLang = localStorage.getItem('idiomaApp');
+            if (savedLang) {
+                const radioTarget = document.querySelector(`input[name="lang"][value="${savedLang}"]`);
+                if (radioTarget) radioTarget.checked = true;
+            }
+            actualizarTextosInterfaz();
+
+            if (!sessionStorage.getItem("saludoMostrado")) {
+                prepararSaludoAutomatico();
+                document.getElementById("modalBienvenida").style.display = "flex";
+                sessionStorage.setItem("saludoMostrado", "true");
+            }
+        });
+
+        function actualizarTextosInterfaz() {
+            const idiomaSeleccionado = document.querySelector('input[name="lang"]:checked').value;
+            
+            const mainTitleText = document.getElementById('mainTitleText');
+            const panelLangTitle = document.getElementById('panelLangTitle');
+            const panelLevelsTitle = document.getElementById('panelLevelsTitle');
+            const colMalaSkola = document.getElementById('colMalaSkola');
+            const colAdultos = document.getElementById('colAdultos');
+            const btnConfigText = document.getElementById('btnConfigText');
+            const btnStartText = document.getElementById('btnStartText');
+            const profTitle = document.getElementById('profTitle');
+
+            if (idiomaSeleccionado === 'hr') {
+                mainTitleText.innerText = "Učenici hrvatskog jezika";
+                panelLangTitle.innerText = "Jezik";
+                panelLevelsTitle.innerText = "Nivoi";
+                colMalaSkola.innerText = "Mala Škola";
+                colAdultos.innerText = "Odrasli";
+                btnConfigText.innerText = "⚙️ Postaviti";
+                btnStartText.innerText = "Započni";
+                profTitle.innerText = "Profesorice";
+            } else {
+                mainTitleText.innerText = "Učenici hrvatskog jezika - Estudiantes de Croata";
+                panelLangTitle.innerText = "Jezik - Lenguaje";
+                panelLevelsTitle.innerText = "Nivoi - Niveles";
+                colMalaSkola.innerText = "Mala Škola";
+                colAdultos.innerText = "Adultos - Odrasli";
+                btnConfigText.innerText = "⚙️ Postaviti - Configuración";
+                btnStartText.innerText = "Započni / Iniciar";
+                profTitle.innerText = "Profesorice - Profesoras";
+            }
+        }
+
+        let sonidoHabilitado = true;
+        let archivoAudioSaludo = "";
+
+        function toggleSonidoGlobal() {
+            sonidoHabilitado = !sonidoHabilitado;
+            const btn = document.getElementById('btnGlobalAudio');
+            
+            if (sonidoHabilitado) {
+                btn.innerHTML = "🔊";
+                btn.title = "Sonido activado";
+            } else {
+                btn.innerHTML = "🔇";
+                btn.title = "Sonido silenciado";
+                document.getElementById('sound-hr').pause();
+                document.getElementById('sound-es').pause();
+                document.getElementById('sound-saludo').pause();
+                document.getElementById('sound-despedida').pause();
+                document.getElementById('sound-despedida-2').pause();
+            }
+        }
+
+        function prepararSaludoAutomatico() {
+            const ahora = new Date();
+            const hora = ahora.getHours();
+            const mes = ahora.getMonth(); 
+
+            if (hora >= 5 && hora < 9) {
+                archivoAudioSaludo = "DobroJutro.wav";
+                document.getElementById("tituloSaludoModal").innerText = "Dobro jutro!";
+            } else {
+                const horaInicioNochePorMes = [20, 20, 19, 18, 18, 18, 18, 18, 19, 19, 20, 20];
+                const horaNoche = horaInicioNochePorMes[mes];
+
+                if (hora >= 9 && hora < horaNoche) {
+                    archivoAudioSaludo = "dobardan.wav";
+                    document.getElementById("tituloSaludoModal").innerText = "Dobar dan!";
+                } else {
+                    archivoAudioSaludo = "Dobravecer.wav";
+                    document.getElementById("tituloSaludoModal").innerText = "Dobra večer!";
+                }
+            }
+
+            const soundSaludo = document.getElementById('sound-saludo');
+            soundSaludo.src = RUTA_SONIDOS + archivoAudioSaludo;
+            soundSaludo.load();
+        }
+
+        function iniciarAplicacionConAudio() {
+            const modal = document.getElementById('modalBienvenida');
+            modal.style.display = 'none';
+
+            if (!sonidoHabilitado) return;
+
+            const soundSaludo = document.getElementById('sound-saludo');
+            soundSaludo.currentTime = 0;
+            soundSaludo.play().catch(err => console.log("Audio de bienvenida bloqueado:", err));
+        }
+
+        async function cerrarPagina(e) {
+            e.preventDefault();
+            
+            try {
+                if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+                    await supabaseClient.auth.signOut();
+                }
+            } catch (err) {
+                console.error("Error al cerrar sesión:", err);
+            }
+
+            sessionStorage.removeItem("saludoMostrado");
+
+            const modal = document.getElementById('modalDespedida');
+            modal.style.display = 'flex';
+
+            if (!sonidoHabilitado) {
+                setTimeout(() => { window.location.href = "MS_Login.html"; }, 2000);
+                return;
+            }
+
+            const soundDespedida = document.getElementById('sound-despedida');
+            const soundVidimoSe = document.getElementById('sound-despedida-2');
+
+            soundDespedida.src = RUTA_SONIDOS + "doviđenja.wav";
+            soundVidimoSe.src = RUTA_SONIDOS + "VidimoSe.wav";
+            soundDespedida.load();
+            soundVidimoSe.load();
+            
+            soundDespedida.play().then(() => {
+                soundDespedida.onended = () => {
+                    if (sonidoHabilitado) {
+                        soundVidimoSe.play().catch(err => console.log("Audio secundario bloqueado:", err));
+                    }
+                };
+            }).catch(err => {
+                console.log("Error al reproducir despedida:", err);
+            });
+
+            setTimeout(() => {
+                window.location.href = "MS_Login.html";
+            }, 4000);
+        }
+
+        function reproducirAlCambiar() {
+            if (!sonidoHabilitado) return;
+            const idiomaSeleccionado = document.querySelector('input[name="lang"]:checked').value;
+            if (idiomaSeleccionado === "hr") {
+                forzarReproduccionCroata(null);
+            } else if (idiomaSeleccionado === "hr-es") {
+                forzarReproduccionBilingue(null);
+            }
+        }
+
+        function forzarReproduccionCroata(e) {
+            if (e) {
+                e.stopPropagation();
+                const radio = e.currentTarget.parentElement.querySelector('input[type="radio"]');
+                radio.checked = true;
+                actualizarTextosInterfaz();
+            }
+            if (!sonidoHabilitado) return;
+            const soundHr = document.getElementById('sound-hr');
+            const soundEs = document.getElementById('sound-es');
+            soundEs.pause();
+            soundEs.currentTime = 0;
+            soundHr.pause();
+            soundHr.currentTime = 0;
+            soundHr.onended = null;
+            soundHr.play().catch(err => console.log(err));
+        }
+
+        function forzarReproduccionBilingue(e) {
+            if (e) {
+                e.stopPropagation();
+                const radio = e.currentTarget.parentElement.querySelector('input[type="radio"]');
+                radio.checked = true;
+                actualizarTextosInterfaz();
+            }
+            if (!sonidoHabilitado) return;
+            const soundHr = document.getElementById('sound-hr');
+            const soundEs = document.getElementById('sound-es');
+            soundEs.pause();
+            soundEs.currentTime = 0;
+            soundHr.pause();
+            soundHr.currentTime = 0;
+            soundHr.onended = function() {
+                if (sonidoHabilitado) {
+                    soundEs.play().catch(err => console.log(err));
+                }
+            };
+            soundHr.play().catch(err => console.log(err));
+        }
+
+        function abrirLibro() {
+            window.location.href = "MS_Kniga12.html";
+        }
+
+        function abrirConfiguracion() {
+            const idioma = document.querySelector('input[name="lang"]:checked').value;
+            localStorage.setItem('idiomaApp', idioma);
+            window.location.href = "MS_Config.html";
+        }
+
+        function iniciarLeccion() {
+            const idioma = document.querySelector('input[name="lang"]:checked').value;
+            const nivel = document.querySelector('input[name="nivel"]:checked');
+
+            if (!nivel) {
+                alert("Molim vas, izaberite nivo / Por favor, seleccione un nivel.");
+                return;
+            }
+
+            localStorage.setItem('idiomaApp', idioma);
+
+            if (nivel.value === "3-6") {
+                window.location.href = "MS1.html";
+            } 
+            else if (nivel.value === "6-12") {
+                window.location.href = "MS2.html";
+            } 
+            else if (nivel.value === "nivel-1") {
+                window.location.href = "MSN1.html";
+            }
+            else {
+                alert(`¡Cargando lección para Adultos - ${nivel.value}!\nIdioma: ${idioma}`);
+            }
+        }
+        
+    </script>
+</body>
+</html>

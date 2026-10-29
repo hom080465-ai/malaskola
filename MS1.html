@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mala Škola (3 - 6) - Učenici hrvatskog jezika</title>
+    <style>
+        :root {
+            --croatia-blue: #0051ba;
+            --croatia-red: #d90f13;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), 
+                        url('imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
+            background-size: cover;
+            background-color: #1b264f;
+            color: #222;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .malaskola-container {
+            background: #ffffff;
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 35px 40px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            border: 3px solid var(--croatia-blue);
+            width: 90%;
+            max-width: 680px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 40px;
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 2.3rem;
+            color: var(--croatia-blue);
+            text-align: center;
+            border-bottom: 3px solid #e2e8f0;
+            padding-bottom: 12px;
+            width: 100%;
+            font-weight: 800;
+        }
+
+        .menu-list {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+            width: 100%;
+            margin-top: 25px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px dotted #cbd5e1;
+            padding-bottom: 15px;
+        }
+
+        .menu-label {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #1e293b;
+            cursor: pointer;
+            min-width: 160px;
+        }
+
+        .menu-label input {
+            accent-color: var(--croatia-red);
+            transform: scale(1.3);
+            cursor: pointer;
+        }
+
+        .items-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .option-img {
+            width: 42px;
+            height: 42px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 2px solid var(--croatia-blue);
+            background: #f1f5f9;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .option-img:hover {
+            transform: scale(1.15);
+            box-shadow: 0 4px 10px rgba(0,81,186,0.3);
+        }
+
+        .animal-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .audio-bar {
+            width: 38px;
+            height: 7px;
+            background-color: var(--croatia-blue);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .audio-bar:hover {
+            transform: scale(1.15);
+            background-color: #003380;
+        }
+
+        .color-box {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: 2px solid #1e293b;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .color-box:hover {
+            transform: scale(1.15);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .number-text {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #1e293b;
+            cursor: pointer;
+            padding: 3px 8px;
+            border-radius: 6px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .number-text:hover {
+            background: #e2e8f0;
+            color: var(--croatia-red);
+        }
+
+        .bottom-action {
+            margin-top: 35px;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .btn-back {
+            background: #ffffff;
+            border: 3px solid var(--croatia-red);
+            width: 55px;
+            height: 55px;
+            min-width: 55px;
+            min-height: 55px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--croatia-red);
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .btn-back:hover {
+            background: #fef2f2;
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .user-floating-badge {
+                top: 10px;
+                left: 10px;
+                padding: 3px 8px 3px 3px;
+            }
+            .user-avatar-mini {
+                width: 30px;
+                height: 30px;
+            }
+            .user-name-mini {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Elemento de audio general -->
+    <audio id="sound-item" preload="auto"></audio>
+
+    <div class="malaskola-container">
+        <h1>Mala Škola</h1>
+
+        <div class="menu-list">
+            
+            <!-- 1. BOJE -->
+                <div class="menu-item">
+                    <label class="menu-label" onclick="reproducirAudioGeneral('boje'); setTimeout(function() { window.location.href = 'MalaSkola1boje.html'; }, 1000);">
+                        <input type="radio" name="malaskola-opt" value="boje">
+                        <span>BOJE</span>
+                    </label>
+                <div class="items-display">
+                    <div class="color-box" style="background-color: #ff1c1c;" onclick="reproducirItem('colores', 'crvena')" title="Crvena"></div>
+                    <div class="color-box" style="background-color: #ff7f00;" onclick="reproducirItem('colores', 'Narancasta')" title="Narančasta"></div>
+                    <div class="color-box" style="background-color: #ffcc00;" onclick="reproducirItem('colores', 'Zuta')" title="Žuta"></div>
+                    <div class="color-box" style="background-color: #ccff00;" onclick="reproducirItem('colores', 'Svijetlozelena')" title="Svijetlo zelena"></div>
+                    <div class="color-box" style="background-color: #00cc00;" onclick="reproducirItem('colores', 'Zelena')" title="Zelena"></div>
+                    <div class="color-box" style="background-color: #00cccc;" onclick="reproducirItem('colores', 'Plava')" title="Plava"></div>
+                    <div class="color-box" style="background-color: #0066cc;" onclick="reproducirItem('colores', 'TamnoPlava')" title="Tamno Plava"></div>
+                    <div class="color-box" style="background-color: #8B4513;" onclick="reproducirItem('colores', 'Smeda')" title="Smeđa"></div>
+                    <div class="color-box" style="background-color: #8A2BE2;" onclick="reproducirItem('colores', 'Ljubicasta')" title="Ljubičasta"></div>
+                </div>
+            </div>
+
+            <!-- 2. ŽIVOTINJE -->
+            <div class="menu-item">
+                <label class="menu-label" onclick="reproducirAudioGeneral('zivotinje'); setTimeout(function() { window.location.href = 'MalaSkola1Životinje.html'; }, 1000);">
+                    <input type="radio" name="malaskola-opt" value="zivotinje">
+                    <span>ŽIVOTINJE</span>
+                </label>
+                <div class="items-display">
+                    
+                    <div class="animal-card">
+                        <img src="animales/imagenes/tigar.bmp" alt="Tigar" class="option-img" onclick="reproducirItem('Animales', 'tigar', 'grito')" title="Sonido del animal">
+                        <div class="audio-bar" onclick="reproducirItem('Animales', 'tigar', 'pronunciacion')" title="Pronunciación: Tigar"></div>
+                    </div>
+
+                    <div class="animal-card">
+                        <img src="animales/imagenes/lav.bmp" alt="Lav" class="option-img" onclick="reproducirItem('Animales', 'Lav', 'grito')" title="Sonido del animal">
+                        <div class="audio-bar" onclick="reproducirItem('Animales', 'Lav', 'pronunciacion')" title="Pronunciación: Lav"></div>
+                    </div>
+
+                    <div class="animal-card">
+                        <img src="animales/imagenes/kokoš.bmp" alt="Kokoš" class="option-img" onclick="reproducirItem('Animales', 'Kokoš', 'grito')" title="Sonido del animal">
+                        <div class="audio-bar" onclick="reproducirItem('Animales', 'Kokoš', 'pronunciacion')" title="Pronunciación: Kokoš"></div>
+                    </div>
+
+                    <div class="animal-card">
+                        <img src="animales/imagenes/konj.bmp" alt="Konj" class="option-img" onclick="reproducirItem('Animales', 'Konj', 'grito')" title="Sonido del animal">
+                        <div class="audio-bar" onclick="reproducirItem('Animales', 'Konj', 'pronunciacion')" title="Pronunciación: Konj"></div>
+                    </div>
+
+                    <div class="animal-card">
+                        <img src="animales/imagenes/krava.bmp" alt="Krava" class="option-img" onclick="reproducirItem('Animales', 'Krava', 'grito')" title="Sonido del animal">
+                        <div class="audio-bar" onclick="reproducirItem('Animales', 'Krava', 'pronunciacion')" title="Pronunciación: Krava"></div>
+                    </div>
+
+                    <div class="animal-card">
+                        <img src="animales/imagenes/mačka.bmp" alt="Mačka" class="option-img" onclick="reproducirItem('Animales', 'Mačka', 'grito')" title="Sonido del animal">
+                        <div class="audio-bar" onclick="reproducirItem('Animales', 'Mačka', 'pronunciacion')" title="Pronunciación: Mačka"></div>
+                    </div>
+
+                    <div class="animal-card">
+                        <img src="animales/imagenes/pas.bmp" alt="Pas" class="option-img" onclick="reproducirItem('Animales', 'Pas', 'grito')" title="Sonido del animal">
+                        <div class="audio-bar" onclick="reproducirItem('Animales', 'Pas', 'pronunciacion')" title="Pronunciación: Pas"></div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 3. ODJECA -->
+            <div class="menu-item">
+                <label class="menu-label" onclick="reproducirAudioGeneral('odjeca')">
+                    <input type="radio" name="malaskola-opt" value="odjeca">
+                    <span>ODJECA</span>
+                </label>
+                <div class="items-display">
+                    <img src="ropa/imagenes/Hlače.jpg" class="option-img" onclick="reproducirItem('Ropa', 'Hlače')" title="Hlače">
+                    <img src="ropa/imagenes/košulja.jpg" class="option-img" onclick="reproducirItem('Ropa', 'Košulja')" title="Košulja">
+                    <img src="ropa/imagenes/majica.jpg" class="option-img" onclick="reproducirItem('Ropa', 'Majica')" title="Majica">
+                    <img src="ropa/imagenes/pulover.jpg" class="option-img" onclick="reproducirItem('Ropa', 'Pulover')" title="Pulover">
+                    <img src="ropa/imagenes/cipele.jpg" class="option-img" onclick="reproducirItem('Ropa', 'Cipele')" title="Cipele">
+                    <img src="ropa/imagenes/rukavica.jpg" class="option-img" onclick="reproducirItem('Ropa', 'Rukavica')" title="Rukavica">
+                    <img src="ropa/imagenes/Čizme.jpg" class="option-img" onclick="reproducirItem('Ropa', 'Čizme')" title="Čizme">
+                </div>
+            </div>
+
+            <!-- 4. VOCE -->
+            <div class="menu-item">
+                <label class="menu-label" onclick="reproducirAudioGeneral('voce'); setTimeout(function() { window.location.href = 'MalaSkola1Voće.html'; }, 1000);">
+                    <input type="radio" name="malaskola-opt" value="voce">
+                    <span>VOĆE</span>
+                </label>
+                <div class="items-display">
+                    <img src="frutas/imagenes/banana.bmp" alt="Banana" class="option-img" onclick="reproducirItem('frutas', 'banana')" title="Banana">
+                    <img src="frutas/imagenes/jabuka.bmp" alt="Jabuka" class="option-img" onclick="reproducirItem('frutas', 'jabuka')" title="Jabuka">
+                    <img src="frutas/imagenes/dinja.bmp" alt="Dinja" class="option-img" onclick="reproducirItem('frutas', 'dinja')" title="Dinja">
+                    <img src="frutas/imagenes/Breskva.bmp" alt="Breskva" class="option-img" onclick="reproducirItem('frutas', 'Breskva')" title="Breskva">
+                    <img src="frutas/imagenes/jagoda.bmp" alt="Jagoda" class="option-img" onclick="reproducirItem('frutas', 'jagoda')" title="Jagoda">
+                    <img src="frutas/imagenes/lubenica.bmp" alt="Lubenica" class="option-img" onclick="reproducirItem('frutas', 'lubenica')" title="Lubenica">
+                    <img src="frutas/imagenes/limun.bmp" alt="Limun" class="option-img" onclick="reproducirItem('frutas', 'limun')" title="Limun">
+                </div>
+            </div>
+
+            <!-- 5. BROJEVI -->
+            <div class="menu-item">
+                <label class="menu-label" onclick="reproducirAudioGeneral('brojevi'); setTimeout(function() { window.location.href = 'MalaSkola1Brojevi.html'; }, 1000);">
+                    <input type="radio" name="malaskola-opt" value="brojevi">
+                    <span>BROJEVI</span>
+                </label>
+                <div class="items-display">
+                    <span class="number-text" onclick="reproducirItem('Numeros', 'jedan')">1</span> -
+                    <span class="number-text" onclick="reproducirItem('Numeros', 'dva')">2</span> -
+                    <span class="number-text" onclick="reproducirItem('Numeros', 'tri')">3</span> -
+                    <span class="number-text" onclick="reproducirItem('Numeros', 'četiri')">4</span> -
+                    <span class="number-text" onclick="reproducirItem('Numeros', 'pet')">5</span> -
+                    <span class="number-text" onclick="reproducirItem('Numeros', 'šest')">6</span> -
+                    <span class="number-text" onclick="reproducirItem('Numeros', 'sedam')">7</span> -
+                    <span class="number-text" onclick="reproducirItem('Numeros', 'osam')">8</span> -
+                    <span class="number-text" onclick="reproducirItem('Numeros', 'devet')">9</span> - 
+                    <span class="number-text" onclick="reproducirItem('Numeros', 'deset')">10</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="bottom-action">
+            <button class="btn-back" onclick="volverAlInicio()" title="Volver">✕</button>
+        </div>
+    </div>
+
+    <!-- Librería de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Scripts externos modulares para sesión, perfil flotante e inactividad -->
+    <script src="auth-check.js"></script>
+    <script src="user-profile.js"></script>
+    <script src="inactivity-logout.js"></script>
+
+    <script>
+        function reproducirItem(categoria, archivo, tipo = "normal") {
+            const audio = document.getElementById('sound-item');
+            let rutaFinal = "";
+
+            if (categoria === "Animales") {
+                if (tipo === "grito") {
+                    rutaFinal = "Animales/Sonidos/" + archivo + ".wav";
+                } else {
+                    rutaFinal = "Animales/Pronunc/" + archivo + ".wav";
+                }
+            } 
+            else {
+                rutaFinal = categoria + "/Sonidos/" + archivo + ".wav";
+            }
+
+            audio.src = rutaFinal;
+            audio.play().catch(err => {
+                console.log("No se pudo reproducir el archivo: " + rutaFinal);
+            });
+        }
+
+        function reproducirAudioGeneral(nombreCategoria) {
+            const audio = document.getElementById('sound-item');
+            audio.src = "Sonidos/" + nombreCategoria + ".wav";
+            audio.play().catch(err => {
+                console.log("No se pudo reproducir el audio general de la categoría");
+            });
+        }
+
+        function volverAlInicio() {
+            window.location.href = "MS_Index1.html";
+        }
+    </script>
+</body>
+</html>

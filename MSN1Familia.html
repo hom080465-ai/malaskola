@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obitelj - Árbol Genealógico</title>
+    <style>
+        :root {
+            --croatia-blue: #0051ba;
+            --croatia-red: #d90f13;
+            --bg-color: #1b264f;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), 
+                        url('imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
+            background-size: cover;
+            background-color: var(--bg-color);
+            color: #222;
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(12px);
+            width: 100%;
+            max-width: 1100px;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border: 3px solid var(--croatia-blue);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 96vh;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 10;
+            margin-top: 40px;
+        }
+
+        /* Botón interactivo de cambio de idioma arriba a la izquierda */
+        .badge-idioma {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: var(--croatia-red);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255,255,255,0.6);
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 20;
+        }
+
+        .badge-idioma:hover {
+            background: #b50b0f;
+            transform: scale(1.05);
+        }
+
+        /* Botón flotante superior derecho para abrir el libro */
+        .btn-abrir-libro {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--croatia-blue);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+            z-index: 1000;
+        }
+
+        .btn-abrir-libro:hover {
+            background: #003380;
+            transform: translateY(-2px);
+        }
+
+        /* Títulos normalizados */
+        .header-titulos {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-top: 10px;
+        }
+
+        h1 {
+            color: var(--croatia-red);
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        .sub-espanol {
+            color: var(--croatia-blue);
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin: 0;
+        }
+
+        /* Botones de selección de Nivel y Evaluación */
+        .niveles-container {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .btn-nivel {
+            background: #f1f5f9;
+            border: 2px solid #cbd5e1;
+            padding: 4px 8px;
+            border-radius: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #334155;
+            font-size: 0.78rem;
+        }
+
+        .btn-nivel:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-nivel.activo {
+            background: var(--croatia-blue);
+            color: white;
+            border-color: var(--croatia-blue);
+        }
+
+        .btn-evaluacion {
+            background: #fef08a;
+            border: 2px solid #eab308;
+            color: #854d0e;
+        }
+
+        .btn-evaluacion:hover {
+            background: #fde047;
+        }
+
+        .btn-evaluacion.activo {
+            background: #ca8a04;
+            color: white;
+            border-color: #a16207;
+        }
+
+        .btn-audio {
+            background: #e0f2fe;
+            border: 2px solid #38bdf8;
+            color: #0369a1;
+        }
+
+        .btn-audio:hover {
+            background: #bae6fd;
+        }
+
+        /* Barra de Teclado Croata */
+        .teclado-virtual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            background: #f8fafc;
+            padding: 4px 8px;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-acento-croata {
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 2px;
+            background: #fff;
+            object-fit: contain;
+            transition: all 0.2s ease;
+        }
+
+        .btn-acento-croata:hover {
+            transform: scale(1.08);
+            border-color: var(--croatia-blue);
+        }
+
+        .btn-acento-croata.activo {
+            border-color: var(--croatia-red) !important;
+            background-color: #fee2e2 !important;
+            box-shadow: 0 0 8px rgba(217, 15, 19, 0.4);
+            transform: scale(1.05);
+        }
+
+        /* Contenedor Gráfico con Fondo de Árbol Genealógico adaptado al ancho */
+        .lista-ejercicios {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 10px 15px;
+            flex-grow: 1;
+            box-sizing: border-box;
+            background: linear-gradient(rgba(245, 235, 220, 0.88), rgba(235, 220, 200, 0.88)), 
+                        url('https://images.unsplash.com/photo-1502082553048-f009c37129b9?q=80&w=1200&auto=format&fit=crop') center/cover no-repeat;
+            border-radius: 12px;
+            border: 3px solid #8c5830;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.25);
+        }
+
+        .nivel-arbol {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap; 
+            align-items: center;
+            width: 100%;
+        }
+
+        .etiqueta-rama {
+            width: 100%;
+            text-align: center;
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: #5c3a21;
+            background: rgba(255, 255, 255, 0.88);
+            padding: 2px 6px;
+            border-radius: 5px;
+            border: 1px dashed #8c5830;
+            margin-top: 2px;
+            margin-bottom: -2px;
+        }
+
+        /* Tarjetas ajustadas para que entren perfecto sin desbordar */
+        .tarjeta-familiar-estilo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            width: 135px;
+            flex-shrink: 0;
+        }
+
+        .titulo-espanol-arriba {
+            font-size: 0.62rem;
+            font-weight: bold;
+            color: #475569;
+            height: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 135px;
+        }
+
+        .bloque-tarjeta {
+            display: flex;
+            width: 135px;
+            height: 33px;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            border: 2px solid rgba(0,0,0,0.1);
+        }
+
+        .bloque-tarjeta.masculino {
+            background-color: #dbeafe;
+            border-color: #93c5fd;
+        }
+
+        .bloque-tarjeta.masculino .caja-genero {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .bloque-tarjeta.masculino .caja-texto {
+            color: #1e3a8a;
+        }
+
+        .bloque-tarjeta.femenino {
+            background-color: #fee2e2;
+            border-color: #fca5a5;
+        }
+
+        .bloque-tarjeta.femenino .caja-genero {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .bloque-tarjeta.femenino .caja-texto {
+            color: #7f1d1d;
+        }
+
+        .caja-genero {
+            width: 28px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 800;
+            font-size: 0.65rem;
+            border-right: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .caja-texto {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .caja-texto input {
+            width: 90%;
+            height: 24px;
+            background: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 0.72rem;
+            font-weight: bold;
+            color: #1e293b;
+            outline: none;
+        }
+
+        .caja-texto input:focus {
+            border-color: var(--croatia-blue);
+            box-shadow: 0 0 5px rgba(0, 81, 186, 0.3);
+        }
+
+        input.correcto {
+            border-color: #22c55e !important;
+            background-color: #f0fdf4 !important;
+            color: #15803d !important;
+        }
+
+        input.incorrecto {
+            border-color: #ef4444 !important;
+            background-color: #fef2f2 !important;
+            color: #b91c1c !important;
+        }
+
+        input.incompleto {
+            border-color: #f43f5e !important;
+            background-color: #fce7f3 !important;
+        }
+
+        /* Panel de Resultados */
+        .panel-resultado {
+            background: linear-gradient(135deg, #f8fafc, #edf2f7);
+            border: 3px solid var(--croatia-blue);
+            padding: 10px 12px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 6px 20px rgba(0, 81, 186, 0.15);
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .panel-resultado h3 {
+            margin: 0 0 2px 0;
+            color: var(--croatia-red);
+            font-size: 1rem;
+            font-weight: 800;
+        }
+
+        .panel-resultado p {
+            margin: 0;
+            color: var(--croatia-blue);
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* MODAL PERSONALIZADO ESTILO CROACIA */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(5px);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999;
+            display: none;
+        }
+
+        .modal-card-croatia {
+            background: #ffffff; 
+            padding: 25px 20px; 
+            border-radius: 16px;
+            text-align: center; 
+            border: 3px solid var(--croatia-blue);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            max-width: 420px;
+            width: 90%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .modal-card-croatia h3 {
+            margin: 0;
+            color: var(--croatia-red);
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .mensaje-modal-estado {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .numero-modal-grande {
+            font-size: 3.2rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin: 5px 0;
+        }
+
+        .nota-dorada {
+            color: #ca8a04;
+            text-shadow: 0 2px 4px rgba(202, 138, 4, 0.3);
+        }
+
+        .nota-verde {
+            color: #16a34a;
+        }
+
+        .nota-roja {
+            color: #dc2626;
+        }
+
+        .nota-cero {
+            color: #ffffff !important;
+            background-color: #ef4444;
+            display: inline-block;
+            padding: 2px 20px;
+            border-radius: 12px;
+        }
+
+        .modal-botones {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .btn-modal-aceptar {
+            background: var(--croatia-blue);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            flex: 1;
+            transition: background 0.2s;
+        }
+
+        .btn-modal-aceptar:hover {
+            background: #003d91;
+        }
+
+        .btn-modal-cancelar {
+            background: #64748b;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            flex: 1;
+            transition: background 0.2s;
+        }
+
+        .btn-modal-cancelar:hover {
+            background: #475569;
+        }
+
+        /* Botón Calificar fijo abajo */
+        .btn-evaluar-accion {
+            background: #22c55e;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .btn-evaluar-accion:hover {
+            background: #16a34a;
+        }
+
+        .btn-volver {
+            background: #64748b;
+            color: white;
+            border: none;
+            padding: 6px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: background 0.2s;
+            font-size: 0.85rem;
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .btn-volver:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Modal de Advertencia Genérica -->
+    <div id="modalAdvertencia" class="modal-overlay">
+        <div class="modal-card-croatia">
+            <h3 id="modalTitulo">Pažnja!</h3>
+            <p id="modalTexto" style="font-size: 0.9rem; font-weight: 600; color: #1e293b; margin: 0;">Mensaje...</p>
+            <div class="modal-botones">
+                <button class="btn-modal-aceptar" id="btnModalAceptar" onclick="ejecutarAccionModal(true)">Prihvati</button>
+                <button class="btn-modal-cancelar" id="btnModalCancelar" onclick="ejecutarAccionModal(false)">Odustani</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Alerta de Puntaje -->
+    <div id="modalPuntaje" class="modal-overlay">
+        <div class="modal-card-croatia">
+            <h3 id="tituloPuntajeModal">Rezultat / Resultado</h3>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                <p id="textoEstadoPuntaje" class="mensaje-modal-estado">Odlično!</p>
+                <div id="contenedorNumeroGrande" class="numero-modal-grande">10.0</div>
+            </div>
+            <div class="modal-botones">
+                <button class="btn-modal-aceptar" onclick="cerrarModalPuntaje()">U redu / Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="mainContainer">
+        <!-- Botón interactivo de cambio de idioma arriba a la izquierda -->
+        <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()" title="Hacer clic para cambiar idioma">HR</span>
+
+        <!-- Títulos -->
+        <div class="header-titulos">
+            <h1>Obiteljsko Stablo</h1>
+            <p class="sub-espanol" id="subEspanol">Obiteljsko Stablo / Árbol Genealógico</p>
+        </div>
+
+        <!-- Teclado Croata -->
+        <div class="teclado-virtual">
+            <span id="labelAcentos" style="font-size: 0.75rem; font-weight: bold; color: #475569;">Naglasci:</span>
+            <img src="imagenes/Caron.bmp" class="btn-acento-croata" id="btnCaron" onmousedown="manejarClickAcento('caron', this, event)" alt="Caron">
+            <img src="imagenes/Acento.bmp" class="btn-acento-croata" id="btnAcento" onmousedown="manejarClickAcento('acento', this, event)" alt="Acento">
+            <img src="imagenes/Guion.bmp" class="btn-acento-croata" id="btnGuion" onmousedown="manejarClickAcento('guion', this, event)" alt="Guion">
+        </div>
+
+        <!-- Selector de Niveles -->
+        <div class="niveles-container" id="selectorNiveles">
+            <button class="btn-nivel activo" id="btnN1" onclick="cambiarNivel('nivel1', this)">Razina 1</button>
+            <button class="btn-nivel" id="btnN2" onclick="cambiarNivel('nivel2', this)">Razina 2</button>
+            <button class="btn-nivel" id="btnN3" onclick="cambiarNivel('nivel3', this)">Razina 3 (Sveukupno)</button>
+            <button class="btn-nivel btn-evaluacion" id="btnEval" onclick="intentarIniciarEvaluacion(this)">Procjena</button>
+            <button class="btn-nivel btn-audio" id="btnAudioText" onclick="pronunciarCampoActivo()" title="Slušaj">🔊 Slušaj</button>
+        </div>
+
+        <!-- Resultados -->
+        <div class="panel-resultado" id="panelResultado"></div>
+
+        <!-- Contenedor Árbol Gráfico -->
+        <div class="lista-ejercicios" id="contenedorEjercicios"></div>
+
+        <!-- Botones Fijos -->
+        <button class="btn-evaluar-accion" id="btnCalificarFijo" onclick="intentarCalificarEvaluacion()">Ocijeni procjenu</button>
+        <a href="MSN1.html" class="btn-volver" id="btnVolverTexto" onclick="intentarVolverMenu(event)">Povratak na glavni izbornik</a>
+    </div>
+
+    <!-- Botón flotante superior derecho para abrir el libro -->
+    <button onclick="abrirLibro()" class="btn-abrir-libro">
+        📖 Otvori knjigu / Abrir libro
+    </button>
+
+    <!-- Librería de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Scripts externos modulares -->
+    <script src="auth-check.js"></script>
+    <script src="user-profile.js"></script>
+    <script src="inactivity-logout.js"></script>
+
+    <script src="tecladoCroata.js"></script>
+    <script>
+        const baseArbolFamilia = {
+            nivel1: [
+                { rama: "👴👵 Djedovi i bake (Abuelos)", items: [
+                    { croata: "djed", espanol: "Abuelo", genero: "M.R.", clase: "masculino", respuestasValidas: ["djed"] },
+                    { croata: "baka", espanol: "Abuela", genero: "Ž.R.", clase: "femenino", respuestasValidas: ["baka"] }
+                ]},
+                { rama: "👨‍👩‍👧 Roditelji i bračni drugovi (Padres y Pareja)", items: [
+                    { croata: "otac / tata", espanol: "Padre", genero: "M.R.", clase: "masculino", respuestasValidas: ["otac", "tata"] },
+                    { croata: "majka / mama", espanol: "Madre", genero: "Ž.R.", clase: "femenino", respuestasValidas: ["majka", "mama"] },
+                    { croata: "muž / suprug", espanol: "Esposo", genero: "M.R.", clase: "masculino", respuestasValidas: ["muž", "suprug"] },
+                    { croata: "žena", espanol: "Esposa", genero: "Ž.R.", clase: "femenino", respuestasValidas: ["žena"] }
+                ]},
+                { rama: "👧👦 Djeca, braća i sestre (Hijos y Hermanos)", items: [
+                    { croata: "sin", espanol: "Hijo", genero: "M.R.", clase: "masculino", respuestasValidas: ["sin"] },
+                    { croata: "kći", espanol: "Hija", genero: "Ž.R.", clase: "femenino", respuestasValidas: ["kći"] },
+                    { croata: "brat", espanol: "Hermano", genero: "M.R.", clase: "masculino", respuestasValidas: ["brat"] },
+                    { croata: "sestra", espanol: "Hermana", genero: "Ž.R.", clase: "femenino", respuestasValidas: ["sestra"] }
+                ]}
+            ],
+            nivel2: [
+                { rama: "🧑‍🤝‍🧑 Stričevi, ujaci i tete (Tíos)", items: [
+                    { croata: "stric", espanol: "Tío (paterno)", genero: "M.R.", clase: "masculino", respuestasValidas: ["stric"] },
+                    { croata: "strina", espanol: "Tía (paterna)", genero: "Ž.R.", clase: "femenino", respuestasValidas: ["strina"] },
+                    { croata: "ujak", espanol: "Tío (materno)", genero: "M.R.", clase: "masculino", respuestasValidas: ["ujak"] },
+                    { croata: "ujna", espanol: "Tía (materna)", genero: "Ž.R.", clase: "femenino", respuestasValidas: ["ujna"] },
+                    { croata: "teta", espanol: "Tía (directa)", genero: "Ž.R.", clase: "femenino", respuestasValidas: ["teta"] },
+                    { croata: "tetak", espanol: "Tío (político)", genero: "M.R.", clase: "masculino", respuestasValidas: ["tetak"] }
+                ]},
+                { rama: "🧒👧 Bratići, sestrične i rođaci (Primos y Parientes)", items: [
+                    { croata: "bratić", espanol: "Primo", genero: "M.R.", clase: "masculino", respuestasValidas: ["bratić"] },
+                    { croata: "sestrična", espanol: "Prima", genero: "Ž.R.", clase: "femenino", respuestasValidas: ["sestrična"] },
+                    { croata: "rođak", espanol: "Pariente / Primo", genero: "M.R.", clase: "masculino", respuestasValidas: ["rođak"] },
+                    { croata: "rođakinja", espanol: "Parienta / Prima", genero: "Ž.R.", clase: "femenino", respuestasValidas: ["rođakinja"] }
+                ]},
+                { rama: "👶 Nećaci i nećakinje (Sobrinos)", items: [
+                    { croata: "nećak", espanol: "Sobrino", genero: "M.R.", clase: "masculino", respuestasValidas: ["nećak"] },
+                    { croata: "nećakinja", espanol: "Sobrina", genero: "Ž.R.", clase: "femenino", respuestasValidas: ["nećakinja"] }
+                ]}
+            ]
+        };
+
+        baseArbolFamilia.nivel3 = [...baseArbolFamilia.nivel1, ...baseArbolFamilia.nivel2];
+
+        let nivelActualGlobal = 'nivel1';
+        let modoEvaluacionActivo = false;
+        let evaluacionCalificada = false;
+        let campoActivoActual = null;
+        let tipoModalPendiente = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            aplicarPreferenciaIdioma();
+            cambiarNivel('nivel1', document.getElementById('btnN1'));
+        });
+
+        function aplicarPreferenciaIdioma() {
+            let idiomaElegido = localStorage.getItem('idiomaApp');
+            if (!idiomaElegido) {
+                idiomaElegido = 'hr-es';
+                localStorage.setItem('idiomaApp', 'hr-es');
+            }
+            idiomaElegido = idiomaElegido.trim().toLowerCase();
+
+            const subEspanol = document.getElementById('subEspanol');
+            const btnN1 = document.getElementById('btnN1');
+            const btnN2 = document.getElementById('btnN2');
+            const btnN3 = document.getElementById('btnN3');
+            const btnEval = document.getElementById('btnEval');
+            const btnAudioText = document.getElementById('btnAudioText');
+            const labelAcentos = document.getElementById('labelAcentos');
+            const btnVolverTexto = document.getElementById('btnVolverTexto');
+            const btnCalificarFijo = document.getElementById('btnCalificarFijo');
+            const badge = document.getElementById('badgeIdioma');
+
+            if (idiomaElegido === 'hr') {
+                badge.innerText = "HR";
+                subEspanol.style.display = 'none';
+                labelAcentos.innerText = "Naglasci:";
+                btnN1.innerText = "Razina 1";
+                btnN2.innerText = "Razina 2";
+                btnN3.innerText = "Razina 3 (Sveukupno)";
+                btnEval.innerText = "Procjena";
+                btnAudioText.innerText = "🔊 Slušaj";
+                btnVolverTexto.innerText = "Povratak na glavni izbornik";
+                btnCalificarFijo.innerText = "Ocijeni procjenu";
+            } else {
+                badge.innerText = "HR-ES";
+                subEspanol.style.display = 'block';
+                subEspanol.innerText = "Obiteljsko Stablo / Árbol Genealógico";
+                labelAcentos.innerText = "Naglasci / Acentos:";
+                btnN1.innerText = "Razina 1 / Nivel 1";
+                btnN2.innerText = "Razina 2 / Nivel 2";
+                btnN3.innerText = "Razina 3 / Nivel 3 (Completo)";
+                btnEval.innerText = "Procjena / Evaluación";
+                btnAudioText.innerText = "🔊 Slušaj / Escuchar";
+                btnVolverTexto.innerText = "Povratak na glavni izbornik / Volver al Menú Principal";
+                btnCalificarFijo.innerText = "Ocijeni procjenu / Calificar Evaluación";
+            }
+        }
+
+        // Función para alternar el idioma al hacer clic en el botón HR / HR-ES
+        function alternarIdioma() {
+            let idiomaActual = (localStorage.getItem('idiomaApp') || 'hr').trim().toLowerCase();
+            
+            if (idiomaActual === "hr-es" || idiomaActual.includes("es")) {
+                localStorage.setItem('idiomaApp', 'hr');
+            } else {
+                localStorage.setItem('idiomaApp', 'hr-es');
+            }
+            
+            location.reload();
+        }
+
+        // Función para abrir el libro guardando la página de origen
+        function abrirLibro() {
+            sessionStorage.setItem('paginaOrigenLibro', window.location.href);
+            window.location.href = 'MS_Kniga12.html';
+        }
+
+        document.addEventListener('focusin', (e) => {
+            if (e.target.tagName === 'INPUT') {
+                campoActivoActual = e.target;
+                if (e.target.classList.contains('incompleto') && e.target.value.trim() !== '') {
+                    e.target.classList.remove('incompleto');
+                }
+            }
+        });
+
+        document.addEventListener('input', (e) => {
+            if (e.target.tagName === 'INPUT') {
+                if (e.target.classList.contains('incompleto') && e.target.value.trim() !== '') {
+                    e.target.classList.remove('incompleto');
+                }
+            }
+        });
+
+        function manejarClickAcento(tipoAcento, elementoBtn, evento) {
+            document.querySelectorAll('.btn-acento-croata').forEach(el => el.classList.remove('activo'));
+            elementoBtn.classList.add('activo');
+            if (typeof activarAcentoCroata === 'function') {
+                activarAcentoCroata(tipoAcento, elementoBtn, evento);
+            }
+        }
+
+        function pronunciarCampoActivo() {
+            const idiomaElegido = localStorage.getItem('idiomaApp') || 'hr-es';
+            if (!campoActivoActual) {
+                alert(idiomaElegido === 'hr' ? "Molimo kliknite prvo na polje teksta." : "Haz clic primero en un campo de texto para escuchar su pronunciación.");
+                return;
+            }
+            let textoALeer = campoActivoActual.value.trim() || campoActivoActual.placeholder;
+            if (!textoALeer || textoALeer.includes("...")) {
+                alert(idiomaElegido === 'hr' ? "Ovo polje nema teksta za reprodukciju." : "Este campo no tiene texto para reproducir.");
+                return;
+            }
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(textoALeer);
+                utterance.lang = 'hr-HR';
+                utterance.rate = 0.85;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function cambiarNivel(nivelKey, botonPresionado) {
+            nivelActualGlobal = nivelKey;
+            modoEvaluacionActivo = false;
+            evaluacionCalificada = false;
+            document.getElementById('panelResultado').style.display = 'none';
+            document.getElementById('btnCalificarFijo').style.display = 'none';
+
+            document.querySelectorAll('.btn-nivel').forEach(btn => btn.classList.remove('activo'));
+            if(botonPresionado) botonPresionado.classList.add('activo');
+
+            const contenedor = document.getElementById('contenedorEjercicios');
+            contenedor.innerHTML = '';
+
+            let ramas = baseArbolFamilia[nivelKey] || [];
+            let idiomaElegido = localStorage.getItem('idiomaApp') || 'hr-es';
+            idiomaElegido = idiomaElegido.trim().toLowerCase();
+
+            ramas.forEach(ramaObj => {
+                const etiqueta = document.createElement('div');
+                etiqueta.className = 'etiqueta-rama';
+                etiqueta.innerText = ramaObj.rama;
+                contenedor.appendChild(etiqueta);
+
+                const nivelDiv = document.createElement('div');
+                nivelDiv.className = 'nivel-arbol';
+
+                ramaObj.items.forEach(item => {
+                    const wrap = document.createElement('div');
+                    wrap.className = 'tarjeta-familiar-estilo';
+
+                    let textoEspanolArriba = idiomaElegido === 'hr' ? '' : item.espanol;
+
+                    wrap.innerHTML = `
+                        <div class="titulo-espanol-arriba">${textoEspanolArriba}</div>
+                        <div class="bloque-tarjeta ${item.clase}">
+                            <div class="caja-genero">${item.genero}</div>
+                            <div class="caja-texto">${item.croata}</div>
+                        </div>
+                    `;
+                    nivelDiv.appendChild(wrap);
+                });
+                contenedor.appendChild(nivelDiv);
+            });
+        }
+
+        function iniciarEvaluacion(botonPresionado) {
+            modoEvaluacionActivo = true;
+            evaluacionCalificada = false;
+            document.querySelectorAll('.btn-nivel').forEach(btn => btn.classList.remove('activo'));
+            if(botonPresionado) botonPresionado.classList.add('activo');
+
+            document.getElementById('panelResultado').style.display = 'none';
+            document.getElementById('btnCalificarFijo').style.display = 'block';
+
+            const contenedor = document.getElementById('contenedorEjercicios');
+            contenedor.innerHTML = '';
+
+            let idiomaElegido = localStorage.getItem('idiomaApp') || 'hr-es';
+            idiomaElegido = idiomaElegido.trim().toLowerCase();
+
+            let ramasAEvaluar = baseArbolFamilia[nivelActualGlobal] || baseArbolFamilia.nivel1;
+
+            ramasAEvaluar.forEach(ramaObj => {
+                const etiqueta = document.createElement('div');
+                etiqueta.className = 'etiqueta-rama';
+                etiqueta.innerText = ramaObj.rama;
+                contenedor.appendChild(etiqueta);
+
+                const nivelDiv = document.createElement('div');
+                nivelDiv.className = 'nivel-arbol';
+
+                ramaObj.items.forEach(item => {
+                    const wrap = document.createElement('div');
+                    wrap.className = 'tarjeta-familiar-estilo';
+
+                    let textoEspanolArriba = idiomaElegido === 'hr' ? '' : item.espanol;
+                    const placeholder = idiomaElegido === 'hr' ? 'Upišite...' : 'Upišite...';
+                    
+                    const respuestasJSON = JSON.stringify(item.respuestasValidas);
+
+                    wrap.innerHTML = `
+                        <div class="titulo-espanol-arriba">${textoEspanolArriba}</div>
+                        <div class="bloque-tarjeta ${item.clase}">
+                            <div class="caja-genero">${item.genero}</div>
+                            <div class="caja-texto">
+                                <input type="text" data-resp-array='${respuestasJSON}' placeholder="${placeholder}">
+                            </div>
+                        </div>
+                    `;
+                    nivelDiv.appendChild(wrap);
+                });
+                contenedor.appendChild(nivelDiv);
+            });
+        }
+
+        function hayRespuestasCargadas() {
+            if (!modoEvaluacionActivo) return false;
+            for (let input of document.querySelectorAll('.tarjeta-familiar-estilo input')) {
+                if (input.value.trim() !== '') return true;
+            }
+            return false;
+        }
+
+        function intentarCalificarEvaluacion() {
+            if (evaluacionCalificada) return;
+
+            let idiomaElegido = localStorage.getItem('idiomaApp') || 'hr-es';
+            idiomaElegido = idiomaElegido.trim().toLowerCase();
+
+            const inputs = document.querySelectorAll('.tarjeta-familiar-estilo input');
+            
+            inputs.forEach(c => c.classList.remove('incompleto'));
+
+            let incompletos = [];
+            inputs.forEach(c => {
+                if (c.getAttribute('data-resp-array') && c.value.trim() === '') {
+                    incompletos.push(c);
+                }
+            });
+
+            if (incompletos.length > 0) {
+                incompletos.forEach(c => c.classList.add('incompleto'));
+                tipoModalPendiente = 'calificarIncompleto';
+
+                document.getElementById('modalTitulo').innerText = idiomaElegido === 'hr' ? "Pažnja!" : "Pažnja! / ¡Atención!";
+                document.getElementById('modalTexto').innerText = idiomaElegido === 'hr' ? 
+                    "Imate prazna polja u procjeni. Želite li ipak nastaviti s ocjenjivanjem?" : 
+                    "Imate prazna polja u procjeni. Želite li ipak nastaviti s ocjenjivanjem? / Tienes campos sin responder. ¿Deseas calificar de todas formas?";
+                document.getElementById('btnModalAceptar').innerText = idiomaElegido === 'hr' ? "Nastavi" : "Nastavi / Continuar";
+                document.getElementById('btnModalCancelar').innerText = idiomaElegido === 'hr' ? "Ispuni" : "Ispuni / Completar";
+
+                document.getElementById('modalAdvertencia').style.display = 'flex';
+                return;
+            }
+            corregirEvaluacion();
+        }
+
+        function intentarIniciarEvaluacion(btn) {
+            let idiomaElegido = localStorage.getItem('idiomaApp') || 'hr-es';
+            idiomaElegido = idiomaElegido.trim().toLowerCase();
+
+            if (modoEvaluacionActivo && hayRespuestasCargadas() && !evaluacionCalificada) {
+                tipoModalPendiente = 'reiniciarEvaluacion';
+                window.botonEvaluacionPendiente = btn;
+
+                document.getElementById('modalTitulo').innerText = "Pažnja!";
+                document.getElementById('modalTexto').innerText = idiomaElegido === 'hr' ? 
+                    "Izgubit ćete trenutni napredak. Želite li nastaviti?" : 
+                    "Imate unesene podatke. Ako ponovno pokrenete procjenu, izgubit ćete napredak. / Perderás tu progreso actual. ¿Deseas continuar?";
+                document.getElementById('btnModalAceptar').innerText = "Prihvati / Aceptar";
+                document.getElementById('btnModalCancelar').innerText = "Odustani / Cancelar";
+
+                document.getElementById('modalAdvertencia').style.display = 'flex';
+                return;
+            }
+            iniciarEvaluacion(btn);
+        }
+
+        function intentarVolverMenu(e) {
+            e.preventDefault();
+            let idiomaElegido = localStorage.getItem('idiomaApp') || 'hr-es';
+            idiomaElegido = idiomaElegido.trim().toLowerCase();
+
+            if (modoEvaluacionActivo && hayRespuestasCargadas() && !evaluacionCalificada) {
+                tipoModalPendiente = 'volverMenu';
+
+                document.getElementById('modalTitulo').innerText = "Pažnja!";
+                document.getElementById('modalTexto').innerText = idiomaElegido === 'hr' ? 
+                    "Napustit ćete stranicu. Želite li nastaviti?" : 
+                    "Ako napustite stranicu, izgubit ćete napredak. / Si sales, perderás tu progreso. ¿Deseas continuar?";
+                document.getElementById('btnModalAceptar').innerText = "Prihvati / Aceptar";
+                document.getElementById('btnModalCancelar').innerText = "Odustani / Cancelar";
+
+                document.getElementById('modalAdvertencia').style.display = 'flex';
+                return;
+            }
+            window.location.href = "MSN1.html";
+        }
+
+        function ejecutarAccionModal(aceptado) {
+            document.getElementById('modalAdvertencia').style.display = 'none';
+            if (tipoModalPendiente === 'reiniciarEvaluacion' && aceptado && window.botonEvaluacionPendiente) {
+                iniciarEvaluacion(window.botonEvaluacionPendiente);
+                window.botonEvaluacionPendiente = null;
+            } else if (tipoModalPendiente === 'calificarIncompleto' && aceptado) {
+                corregirEvaluacion();
+            } else if (tipoModalPendiente === 'volverMenu' && aceptado) {
+                window.location.href = "MSN1.html";
+            }
+            tipoModalPendiente = null;
+        }
+
+        function cerrarModalPuntaje() {
+            document.getElementById('modalPuntaje').style.display = 'none';
+        }
+
+        function corregirEvaluacion() {
+            evaluacionCalificada = true;
+            document.getElementById('btnCalificarFijo').style.display = 'none';
+
+            let idiomaElegido = localStorage.getItem('idiomaApp') || 'hr-es';
+            idiomaElegido = idiomaElegido.trim().toLowerCase();
+
+            let total = 0, correctos = 0;
+
+            document.querySelectorAll('.tarjeta-familiar-estilo input').forEach(c => {
+                const respArrayStr = c.getAttribute('data-resp-array');
+                if (respArrayStr) {
+                    total++;
+                    c.classList.remove('correcto', 'incorrecto', 'incompleto');
+                    const respuestasValidas = JSON.parse(respArrayStr);
+                    const valorIngresado = c.value.trim().toLowerCase();
+
+                    if (respuestasValidas.includes(valorIngresado)) {
+                        c.classList.add('correcto');
+                        correctos++;
+                    } else {
+                        c.classList.add('incorrecto');
+                    }
+                }
+            });
+
+            let nota = total > 0 ? ((correctos / total) * 10).toFixed(1) : 0;
+            const panelRes = document.getElementById('panelResultado');
+            panelRes.style.display = 'block';
+            
+            panelRes.innerHTML = idiomaElegido === 'hr' ? `
+                <h3>Rezultat procjene</h3>
+                <p>Točno ${correctos} od ${total}! Ocjena: ${nota}</p>
+            ` : `
+                <h3>Rezultat procjene / Resultado de la Evaluación</h3>
+                <p>Točno ${correctos} od ${total}! Ocjena: ${nota} — ¡Has acertado ${correctos} od ${total}! Nota: ${nota}</p>
+            `;
+            panelRes.scrollIntoView({ behavior: 'smooth' });
+
+            let mensajeEstado = "";
+            let archivoAudio = "";
+            let numeroNota = parseFloat(nota);
+            let claseColorNumero = "";
+
+            if (correctos === 0) {
+                mensajeEstado = "Katastrofa!";
+                archivoAudio = "sonidos/katastrofa.wav";
+                claseColorNumero = "nota-cero";
+            } else if (numeroNota === 10) {
+                mensajeEstado = "Odlično!";
+                archivoAudio = "sonidos/odlicno.wav";
+                claseColorNumero = "nota-dorada";
+            } else if (numeroNota >= 8 && numeroNota <= 9.99) {
+                mensajeEstado = "Vrlo dobro!";
+                archivoAudio = "sonidos/vrlodobro.wav";
+                claseColorNumero = "nota-verde";
+            } else if (numeroNota >= 5 && numeroNota <= 7.99) {
+                mensajeEstado = "Dobro!";
+                archivoAudio = "sonidos/dobro.wav";
+                claseColorNumero = "nota-verde";
+            } else if (numeroNota >= 3 && numeroNota <= 4.99) {
+                mensajeEstado = "Tako tako!";
+                archivoAudio = "sonidos/takotako.wav";
+                claseColorNumero = "nota-verde"; 
+            } else if (numeroNota >= 0.01 && numeroNota <= 2.99) {
+                mensajeEstado = "Nije dobro!";
+                archivoAudio = "sonidos/nijedobro.wav";
+                claseColorNumero = "nota-roja";
+            }
+
+            document.getElementById('textoEstadoPuntaje').innerText = mensajeEstado;
+            
+            const contenedorNum = document.getElementById('contenedorNumeroGrande');
+            contenedorNum.innerText = nota;
+            contenedorNum.className = "numero-modal-grande " + claseColorNumero;
+
+            document.getElementById('modalPuntaje').style.display = 'flex';
+
+            if (archivoAudio) {
+                let audio = new Audio(archivoAudio);
+                audio.play().catch(e => console.log("Audio play bloqueado o archivo no encontrado:", e));
+            }
+        }
+    </script>
+</body>
+</html>

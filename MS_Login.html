@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prijava — Mala Škola</title>
+    <style>
+        :root {
+            --croatia-blue: #0051ba;
+            --croatia-red: #d90f13;
+            --bg-color: #1b264f;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
+                        url('imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
+            background-size: cover;
+            background-color: var(--bg-color);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-card {
+            background: rgba(255, 255, 255, 0.98);
+            padding: 25px 30px;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border: 3px solid var(--croatia-blue);
+            width: 100%;
+            max-width: 380px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        h2 { color: var(--croatia-red); margin-top: 0; font-size: 1.3rem; }
+        .sub { color: var(--croatia-blue); font-weight: bold; font-size: 0.8rem; margin-bottom: 20px; }
+        .input-group { text-align: left; margin-bottom: 12px; }
+        label { display: block; font-weight: bold; font-size: 0.78rem; color: #475569; margin-bottom: 3px; }
+        input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+            outline: none;
+        }
+        input:focus { border-color: var(--croatia-blue); }
+        .btn-login {
+            width: 100%;
+            padding: 10px;
+            font-weight: bold;
+            color: white;
+            background: var(--croatia-blue);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        .btn-login:hover { background: #003380; }
+        .msg { font-size: 0.82rem; margin-top: 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <h2>Prijava — Mala Škola</h2>
+        <p class="sub">Acceso Seguro de Administrador</p>
+        
+        <div class="input-group">
+            <label>Elektronička pošta (Correo)</label>
+            <input type="email" id="emailLogin" placeholder="tu-correo@hotmail.com">
+        </div>
+
+        <div class="input-group">
+            <label>Lozinka (Contraseña)</label>
+            <input type="password" id="passwordLogin" placeholder="Tu contraseña de Supabase">
+        </div>
+
+        <button class="btn-login" onclick="iniciarSesion()">Uđi / Iniciar Sesión 🔑</button>
+        <div id="msgLogin" class="msg"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://kghpywjrvvkcsrewifpc.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_Qg9VqSnGcAC6cQLfrPUArQ_NaZpRiG7';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function iniciarSesion() {
+            const email = document.getElementById('emailLogin').value.trim();
+            const password = document.getElementById('passwordLogin').value.trim();
+            const msg = document.getElementById('msgLogin');
+
+            msg.style.color = "#1e293b";
+            msg.innerText = "Iniciando sesión...";
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+
+            if (error) {
+                msg.style.color = "#ef4444";
+                msg.innerText = "Error: Credenciales incorrectas.";
+                return;
+            }
+
+            msg.style.color = "#16a34a";
+            msg.innerText = "¡Acceso concedido! Redirigiendo...";
+            
+            // Redirige correctamente al Menú Principal (MS_Index1.html)
+            setTimeout(() => {
+                window.location.href = "MS_Index1.html";
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

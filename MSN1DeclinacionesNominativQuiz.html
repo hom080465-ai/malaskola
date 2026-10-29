@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kviz — 1. Nominativ</title>
+    <style>
+        :root {
+            --red: #ff1c1c;
+            --white: #ffffff;
+            --blue: #1b264f;
+            --croatia-blue: #0051ba;
+            --croatia-red: #d90f13;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), 
+                        url('imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
+            background-size: cover;
+            background-color: #1b264f;
+            color: #1e293b;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .app-container {
+            width: 95vw;
+            max-width: 950px;
+            height: 94vh;
+            max-height: 950px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            box-sizing: border-box;
+        }
+
+        .card-panel {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            border-radius: 18px;
+            padding: 18px 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border: 3px solid var(--croatia-blue);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #ff0000 0%, #ffffff 50%, #0047ab 100%);
+        }
+
+        .header-quiz {
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .header-quiz h1 {
+            margin: 0;
+            font-size: 1.4rem;
+            color: var(--blue);
+            font-weight: 800;
+        }
+
+        .marcador {
+            background: #e0f2fe;
+            color: var(--croatia-blue);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            border: 2px solid #bae6fd;
+        }
+
+        #quizContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex-grow: 1;
+            justify-content: space-evenly;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .pregunta-card {
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 10px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex-shrink: 1;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        .enunciado {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--blue);
+            margin: 0;
+        }
+
+        .frase-completa {
+            font-size: 0.85rem;
+            color: #0f766e;
+            font-weight: 700;
+            margin-top: 2px;
+            display: none;
+        }
+
+        .opciones-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 8px;
+        }
+
+        .btn-opcion {
+            background: #ffffff;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-weight: 700;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .btn-opcion:hover:not(:disabled) {
+            border-color: var(--croatia-blue);
+            background: #f0fdf4;
+            transform: translateY(-1px);
+        }
+
+        .btn-opcion.correcto {
+            background: var(--success) !important;
+            color: white !important;
+            border-color: var(--success) !important;
+        }
+
+        .btn-opcion.incorrecto {
+            background: var(--error) !important;
+            color: white !important;
+            border-color: var(--error) !important;
+        }
+
+        .columnas-armar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 8px 12px;
+            gap: 12px;
+        }
+
+        .columna-opciones {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .verbo-central {
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: var(--croatia-blue);
+            padding: 0 8px;
+        }
+
+        .btn-armar {
+            background: #ffffff;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 7px;
+            padding: 6px 8px;
+            font-weight: 700;
+            color: #334155;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .btn-armar:hover {
+            border-color: var(--croatia-blue);
+            background: #f8fafc;
+        }
+
+        .btn-armar.seleccionado-izq {
+            background: var(--croatia-blue) !important;
+            color: white !important;
+            border-color: var(--croatia-blue) !important;
+        }
+
+        .btn-armar.seleccionado-der {
+            background: #0f766e !important;
+            color: white !important;
+            border-color: #0f766e !important;
+        }
+
+        .panel-resultado-armado {
+            margin-top: 4px;
+            padding: 5px 10px;
+            border-radius: 7px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.82rem;
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .feedback {
+            font-size: 0.78rem;
+            font-weight: 700;
+            margin: 0;
+            min-height: 12px;
+        }
+
+        #resultadoFinal {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            flex-grow: 1;
+            gap: 12px;
+        }
+
+        #resultadoFinal h2 {
+            color: var(--blue);
+            font-size: 2.2rem;
+            margin: 0;
+        }
+
+        #mensajeFinalTexto {
+            font-size: 1.15rem;
+            color: #475569;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .numero-nota-cuadrado {
+            font-size: 5rem;
+            font-weight: 900;
+            line-height: 1;
+            padding: 8px 25px;
+            border-radius: 16px;
+            margin: 2px 0;
+            display: inline-block;
+        }
+
+        .nota-dorada { color: #ca8a04; background: transparent; text-shadow: 0 4px 10px rgba(202, 138, 4, 0.3); }
+        .nota-cero { background-color: #ef4444; color: #ffffff; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3); }
+        .nota-roja { color: #dc2626; background: transparent; }
+        .nota-verde { color: #16a34a; background: transparent; }
+
+        .botones-finales-container {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-accion-final {
+            background: var(--croatia-blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(0,81,186,0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.2;
+        }
+        .btn-accion-final:hover { background: #003380; transform: translateY(-2px); }
+
+        .btn-hr {
+            font-size: 0.95rem;
+            font-weight: 800;
+        }
+        .btn-es {
+            font-size: 0.75rem;
+            opacity: 0.85;
+            font-weight: 600;
+            display: none;
+        }
+        body.modo-bilingue .btn-es {
+            display: block;
+        }
+
+        .btn-reiniciar {
+            background: #475569;
+        }
+        .btn-reiniciar:hover { background: #334155; }
+
+        #modalRevision {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            z-index: 100;
+            flex-direction: column;
+            padding: 15px 25px;
+            box-sizing: border-box;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+
+        .modal-body {
+            flex-grow: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-right: 5px;
+        }
+
+        .btn-cerrar-modal {
+            background: var(--croatia-red);
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .btn-cerrar-modal:hover { background: #b91c1c; }
+
+        .botones-navegacion-container {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+            margin-top: 10px;
+            border-top: 2px solid #e2e8f0;
+            padding-top: 10px;
+            flex-shrink: 0;
+        }
+
+        .btn-navegacion {
+            flex: 1;
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-volver-declinaciones { background: var(--croatia-blue); }
+        .btn-volver-declinaciones:hover { background: #003380; transform: translateY(-2px); }
+        .btn-pagina-inicial { background: #475569; }
+        .btn-pagina-inicial:hover { background: #334155; transform: translateY(-2px); }
+    </style>
+</head>
+<body id="appBody">
+
+    <!-- CARGA DE ARCHIVOS EXTERNOS Y MOTOR DE PLURALES -->
+    <script src="sustantivos_db.js"></script>
+    <script src="adjetivos_db.js"></script>
+    <script src="plurales_motor.js"></script>
+
+    <div class="app-container">
+        <div class="card-panel">
+            <div class="header-quiz">
+                <h1>📝 Kviz: Nominativ</h1>
+                <div class="marcador">Calificación: <span id="puntos">0</span> / 10</div>
+            </div>
+
+            <div id="quizContainer"></div>
+
+            <div id="resultadoFinal">
+                <h2>🎉 ¡Quiz Completado!</h2>
+                <p id="mensajeFinalTexto">Has respondido las preguntas.</p>
+                <div id="contenedorNumeroGrande" class="numero-nota-cuadrado nota-dorada">10</div>
+                
+                <div class="botones-finales-container">
+                    <button class="btn-accion-final" onclick="abrirModalRevision()">
+                        <span class="btn-hr">Pogledaj odgovore</span>
+                        <span class="btn-es">ver respuestas</span>
+                    </button>
+                    <button class="btn-accion-final btn-reiniciar" onclick="generarQuizAleatorio()">
+                        <span class="btn-hr">Novi kviz</span>
+                        <span class="btn-es">nuevo quiz</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="modalRevision">
+                <div class="modal-header">
+                    <h3 style="margin:0; color:var(--blue);">🔍 Pregled odgovora / Revisión de respuestas</h3>
+                    <button class="btn-cerrar-modal" onclick="cerrarModalRevision()">✕ Zatvori / Cerrar</button>
+                </div>
+                <div class="modal-body" id="modalBodyContent"></div>
+            </div>
+
+            <div class="botones-navegacion-container">
+                <a href="MSN1Declinaciones.html" class="btn-navegacion btn-volver-declinaciones">← Padeži / Declinaciones</a>
+                <a href="MS_Index1.html" class="btn-navegacion btn-pagina-inicial">🏠 Početna / Página Inicial</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Respaldo de seguridad en caso de que falle la carga externa
+        const respaldoSustantivosDB = {
+            masculinos: [
+                { palabra: "Pas", traduccion: "Perro", genero: "Muški rod (Masculino)", esAnimado: true },
+                { palabra: "Student", traduccion: "Estudiante", genero: "Muški rod (Masculino)", esAnimado: true }
+            ],
+            femeninos: [
+                { palabra: "Knjiga", traduccion: "Libro", genero: "Ženski rod (Femenino)", esAnimado: false }
+            ],
+            neutros: [
+                { palabra: "Selo", traduccion: "Pueblo", genero: "Srednji rod (Neutro)", esAnimado: false }
+            ]
+        };
+
+        const respaldoAdjetivosDB = {
+            adjetivos: [
+                { masc: "dobar", fem: "dobra", neutro: "dobro", traduccion: "bueno" },
+                { masc: "nov", fem: "nova", neutro: "novo", traduccion: "nuevo" },
+                { masc: "velik", fem: "velika", neutro: "veliko", traduccion: "grande" }
+            ]
+        };
+
+        let puntajeTotal = 0;
+        let respondidasCount = 0;
+
+        function generarQuizAleatorio() {
+            puntajeTotal = 0;
+            respondidasCount = 0;
+            document.getElementById('puntos').textContent = 0;
+            document.getElementById('resultadoFinal').style.display = 'none';
+            document.getElementById('modalRevision').style.display = 'none';
+            
+            const contenedor = document.getElementById('quizContainer');
+            contenedor.style.display = 'flex';
+            contenedor.innerHTML = '';
+
+            let dbSustantivos = (typeof baseSustantivosDB !== 'undefined') ? baseSustantivosDB : respaldoSustantivosDB;
+            let dbAdjetivos = (typeof baseAdjetivosDB !== 'undefined') ? baseAdjetivosDB : respaldoAdjetivosDB;
+
+            let todasLasPalabras = [
+                ...(dbSustantivos.masculinos || []),
+                ...(dbSustantivos.femeninos || []),
+                ...(dbSustantivos.neutros || [])
+            ];
+
+            let seleccionadas = [...todasLasPalabras].sort(() => Math.random() - 0.5).slice(0, 5);
+
+            seleccionadas.forEach((item, index) => {
+                let cardHtml = "";
+
+                if (index < 4) {
+                    let tipoPregunta = Math.floor(Math.random() * 4);
+                    let enunciadoHTML = "";
+                    let opcionesArray = [];
+                    let fraseCompletaTexto = "";
+
+                    if (tipoPregunta === 0) {
+                        enunciadoHTML = `¿A qué género pertenece el sustantivo <strong>"${item.palabra}"</strong> (${item.traduccion})?`;
+                        let opcionesGeneros = ["Muški rod (Masculino)", "Ženski rod (Femenino)", "Srednji rod (Neutro)"];
+                        opcionesArray = opcionesGeneros.map(g => ({ texto: g, correcto: (g === item.genero) }));
+                        fraseCompletaTexto = `Palabra: ${item.palabra} — Género: ${item.genero}`;
+                    } 
+                    else if (tipoPregunta === 1) {
+                        let preguntaCorrecta = item.esAnimado ? "Tko? (¿Quién?)" : "Što? (¿Qué?)";
+                        enunciadoHTML = `¿Qué pregunta interrogativa le corresponde al sustantivo <strong>"${item.palabra}"</strong> (${item.traduccion})?`;
+                        opcionesArray = [
+                            { texto: preguntaCorrecta, correcto: true },
+                            { texto: item.esAnimado ? "Što? (¿Qué?)" : "Tko? (¿Quién?)", correcto: false }
+                        ];
+                        fraseCompletaTexto = `Sustantivo: ${item.palabra} (${item.traduccion})`;
+                    }
+                    else if (tipoPregunta === 2) {
+                        let listaAdjetivos = dbAdjetivos.adjetivos || respaldoAdjetivosDB.adjetivos;
+                        let adjObj = listaAdjetivos[Math.floor(Math.random() * listaAdjetivos.length)];
+
+                        let formMasc = adjObj.masc;
+                        let formFem = adjObj.fem;
+                        let formNeutro = adjObj.neutro;
+
+                        let adjetivoCorrectoForma = "";
+                        if (item.genero.includes("Femenino")) adjetivoCorrectoForma = formFem;
+                        else if (item.genero.includes("Neutro")) adjetivoCorrectoForma = formNeutro;
+                        else adjetivoCorrectoForma = formMasc;
+
+                        enunciadoHTML = `Completa con la terminación correcta del adjetivo <strong>"${adjObj.traduccion || 'adjetivo'}"</strong> para el sustantivo <strong>"${item.palabra}"</strong> (${item.traduccion}):`;
+                        
+                        opcionesArray = [
+                            { texto: formMasc, correcto: (formMasc === adjetivoCorrectoForma) },
+                            { texto: formFem, correcto: (formFem === adjetivoCorrectoForma) },
+                            { texto: formNeutro, correcto: (formNeutro === adjetivoCorrectoForma) }
+                        ];
+
+                        fraseCompletaTexto = `Frase completa: "${item.palabra} je ${adjetivoCorrectoForma}" (${item.traduccion})`;
+                    }
+                    else {
+                    let pluralCorrecto = obtenerPluralCroata(item.palabra, item.genero);
+                        
+                        // Lista amplia de terminaciones incorrectas típicas en croata para generar variedad
+                        let posiblesFalsas = [
+                            item.palabra + "e",
+                            item.palabra + "a",
+                            item.palabra + "i",
+                            item.palabra + "ovi",
+                            item.palabra + "evima",
+                            item.palabra + "u"
+                        ];
+
+                        // Filtramos estrictamente para que NINGUNA opción falsa sea igual al plural correcto (ni por mayúsculas/minúsculas)
+                        let distractoresFiltrados = posiblesFalsas.filter(p => 
+                            p.toLowerCase() !== pluralCorrecto.toLowerCase()
+                        );
+
+                        // Tomamos 2 distractores únicos y aseguramos que no se repitan entre ellos
+                        let distractoresUnicos = [...new Set(distractoresFiltrados)].sort(() => Math.random() - 0.5).slice(0, 2);
+
+                        // Respaldo por si acaso faltaran opciones
+                        if (distractoresUnicos.length < 2) {
+                            distractoresUnicos = [item.palabra + "ima", item.palabra + "om"];
+                        }
+
+                        enunciadoHTML = `¿Cuál es la forma correcta en <strong>Plural (Nominativ)</strong> del sustantivo <strong>"${item.palabra}"</strong> (${item.traduccion})?`;
+                        
+                        opcionesArray = [
+                            { texto: pluralCorrecto, correcto: true },
+                            { texto: distractoresUnicos[0], correcto: false },
+                            { texto: distractoresUnicos[1], correcto: false }
+                        ];
+
+                        fraseCompletaTexto = `Singular: "${item.palabra}" ➔ Plural: "${pluralCorrecto}" (${item.traduccion})`;
+                    }
+
+                    let opcionesMezcladas = [...opcionesArray].sort(() => Math.random() - 0.5);
+                    let htmlOpciones = '';
+                    opcionesMezcladas.forEach(op => {
+                        htmlOpciones += `<button class="btn-opcion" onclick="verificarRespuesta(${index}, ${op.correcto}, this)">${op.texto}</button>`;
+                    });
+
+                    cardHtml = `
+                        <div class="pregunta-card" id="card-preg-${index}">
+                            <p class="enunciado">${index + 1}. ${enunciadoHTML}</p>
+                            <div class="opciones-grid">${htmlOpciones}</div>
+                            <div class="feedback" id="feedback-preg-${index}"></div>
+                            <div class="frase-completa" id="frase-preg-${index}">✓ ${fraseCompletaTexto}</div>
+                        </div>
+                    `;
+                } 
+                else {
+                    let esPlural = false;
+                    let listaAdjetivos = dbAdjetivos.adjetivos || respaldoAdjetivosDB.adjetivos;
+                    let adjObj = listaAdjetivos[Math.floor(Math.random() * listaAdjetivos.length)];
+
+                    let sustSingular = item.palabra;
+                    let sustPlural = obtenerPluralCroata(item.palabra, item.genero);
+                    let verboElegido = "je";
+
+                    let sustIzquierda = [
+                        { texto: sustSingular, correcto: true },
+                        { texto: sustPlural, correcto: false }
+                    ];
+                    let sustIzquierdaMezclado = [...sustIzquierda].sort(() => Math.random() - 0.5);
+
+                    let adjBaseMasc = adjObj.masc;
+                    let adjBaseFem = adjObj.fem;
+                    let adjBaseNeutro = adjObj.neutro;
+
+                    let adjCorrecto = "";
+                    if (item.genero.includes("Femenino")) adjCorrecto = adjBaseFem;
+                    else if (item.genero.includes("Neutro")) adjCorrecto = adjBaseNeutro;
+                    else adjCorrecto = adjBaseMasc;
+
+                    let adjDerecha = [
+                        { texto: adjBaseMasc, correcto: (adjBaseMasc === adjCorrecto) },
+                        { texto: adjBaseFem, correcto: (adjBaseFem === adjCorrecto) },
+                        { texto: adjBaseNeutro, correcto: (adjBaseNeutro === adjCorrecto) }
+                    ].sort(() => Math.random() - 0.5);
+
+                    let enunciadoHTML = `5. Arma la frase correcta (${item.traduccion} / ${adjObj.traduccion}):`;
+                    let fraseIdeal = `${sustSingular} ${verboElegido} ${adjCorrecto}`;
+
+                    let htmlIzq = '';
+                    sustIzquierdaMezclado.forEach((s) => {
+                        htmlIzq += `<button class="btn-armar" onclick="seleccionarArmado(${index}, 'izq', '${s.texto}', ${s.correcto}, this)">${s.texto}</button>`;
+                    });
+
+                    let htmlDer = '';
+                    adjDerecha.forEach((a) => {
+                        htmlDer += `<button class="btn-armar" onclick="seleccionarArmado(${index}, 'der', '${a.texto}', ${a.correcto}, this)">${a.texto}</button>`;
+                    });
+
+                    cardHtml = `
+                        <div class="pregunta-card" id="card-preg-${index}" data-estado-izq="" data-estado-der="" data-val-izq="" data-val-der="">
+                            <p class="enunciado">${enunciadoHTML}</p>
+                            <div class="columnas-armar-container">
+                                <div class="columna-opciones">${htmlIzq}</div>
+                                <div class="verbo-central">${verboElegido}</div>
+                                <div class="columna-opciones">${htmlDer}</div>
+                            </div>
+                            <div class="panel-resultado-armado" id="panel-res-${index}">Selecciona sustantivo y adjetivo</div>
+                            <div class="feedback" id="feedback-preg-${index}"></div>
+                            <div class="frase-completa" id="frase-preg-${index}">✓ Frase: "${fraseIdeal}"</div>
+                        </div>
+                    `;
+                }
+
+                contenedor.innerHTML += cardHtml;
+            });
+        }
+
+        function seleccionarArmado(indexPregunta, columna, valor, esCorrecto, botonPresionado) {
+            const card = document.getElementById(`card-preg-${indexPregunta}`);
+            if (card.classList.contains('respondida')) return;
+
+            if (columna === 'izq') {
+                card.querySelectorAll('.columna-opciones')[0].querySelectorAll('.btn-armar').forEach(b => b.classList.remove('seleccionado-izq'));
+                botonPresionado.classList.add('seleccionado-izq');
+                card.setAttribute('data-val-izq', valor);
+                card.setAttribute('data-estado-izq', esCorrecto);
+            } else {
+                card.querySelectorAll('.columna-opciones')[1].querySelectorAll('.btn-armar').forEach(b => b.classList.remove('seleccionado-der'));
+                botonPresionado.classList.add('seleccionado-der');
+                card.setAttribute('data-val-der', valor);
+                card.setAttribute('data-estado-der', esCorrecto);
+            }
+
+            let valIzq = card.getAttribute('data-val-izq');
+            let valDer = card.getAttribute('data-val-der');
+            let verbo = card.querySelector('.verbo-central').textContent;
+            let panelRes = document.getElementById(`panel-res-${indexPregunta}`);
+
+            if (valIzq && valDer) {
+                panelRes.textContent = `${valIzq} ${verbo} ${valDer}`;
+                let okIzq = card.getAttribute('data-estado-izq') === 'true';
+                let okDer = card.getAttribute('data-estado-der') === 'true';
+
+                card.classList.add('respondida');
+                card.querySelectorAll('.btn-armar').forEach(b => b.disabled = true);
+                document.getElementById(`frase-preg-${indexPregunta}`).style.display = 'block';
+
+                const feedback = document.getElementById(`feedback-preg-${indexPregunta}`);
+                if (okIzq && okDer) {
+                    panelRes.style.background = 'var(--success)';
+                    panelRes.style.color = 'white';
+                    feedback.style.color = 'var(--success)';
+                    feedback.textContent = '¡Correcto! (+2 puntos)';
+                    puntajeTotal += 2;
+                    document.getElementById('puntos').textContent = puntajeTotal;
+                } else {
+                    panelRes.style.background = 'var(--error)';
+                    panelRes.style.color = 'white';
+                    feedback.style.color = 'var(--error)';
+                    feedback.textContent = 'Incorrecto.';
+                }
+
+                respondidasCount++;
+                verificarFinQuiz();
+            } else {
+                panelRes.textContent = `${valIzq || '[ ? ? ? ]'} ${verbo} ${valDer || '[ ? ? ? ]'}`;
+            }
+        }
+
+        function verificarRespuesta(indexPregunta, esCorrecto, botonPresionado) {
+            const card = document.getElementById(`card-preg-${indexPregunta}`);
+            const botones = card.querySelectorAll('.btn-opcion');
+            const feedback = document.getElementById(`feedback-preg-${indexPregunta}`);
+            const fraseDiv = document.getElementById(`frase-preg-${indexPregunta}`);
+
+            botones.forEach(btn => btn.disabled = true);
+            fraseDiv.style.display = 'block';
+
+            if (esCorrecto) {
+                botonPresionado.classList.add('correcto');
+                feedback.style.color = 'var(--success)';
+                feedback.textContent = '¡Correcto! (+2 puntos)';
+                puntajeTotal += 2;
+                document.getElementById('puntos').textContent = puntajeTotal;
+            } else {
+                botonPresionado.classList.add('incorrecto');
+                feedback.style.color = 'var(--error)';
+                feedback.textContent = 'Incorrecto.';
+                
+                botones.forEach(btn => {
+                    if (btn.getAttribute('onclick').includes('true')) {
+                        btn.classList.add('correcto');
+                    }
+                });
+            }
+
+            respondidasCount++;
+            verificarFinQuiz();
+        }
+
+        function verificarFinQuiz() {
+            if (respondidasCount === 5) {
+                setTimeout(() => {
+                    document.getElementById('quizContainer').style.display = 'none';
+                    const resultadoDiv = document.getElementById('resultadoFinal');
+                    resultadoDiv.style.display = 'flex';
+
+                    let notaFinal = puntajeTotal; 
+                    let claseColor = "";
+
+                    if (notaFinal === 10) claseColor = "nota-dorada"; 
+                    else if (notaFinal === 0) claseColor = "nota-cero";   
+                    else if (notaFinal < 4) claseColor = "nota-roja";   
+                    else claseColor = "nota-verde";  
+
+                    const contenedorNum = document.getElementById('contenedorNumeroGrande');
+                    contenedorNum.textContent = notaFinal;
+                    contenedorNum.className = "numero-nota-cuadrado " + claseColor;
+
+                    document.getElementById('mensajeFinalTexto').textContent = `Obtuviste ${puntajeTotal} de 10 puntos posibles.`;
+                }, 1200);
+            }
+        }
+
+        function abrirModalRevision() {
+            const modalBody = document.getElementById('modalBodyContent');
+            modalBody.innerHTML = '';
+            
+            for (let i = 0; i < 5; i++) {
+                const cardOriginal = document.getElementById(`card-preg-${i}`);
+                if (cardOriginal) {
+                    const clone = cardOriginal.cloneNode(true);
+                    modalBody.appendChild(clone);
+                }
+            }
+
+            document.getElementById('modalRevision').style.display = 'flex';
+        }
+
+        function cerrarModalRevision() {
+            document.getElementById('modalRevision').style.display = 'none';
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const idiomaGuardado = localStorage.getItem('idiomaApp');
+            const body = document.getElementById('appBody');
+
+            if (idiomaGuardado === "hr-es") {
+                body.classList.add('modo-bilingue');
+            } else {
+                body.classList.remove('modo-bilingue');
+            }
+
+            generarQuizAleatorio();
+        });
+    </script>
+</body>
+</html>

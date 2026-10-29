@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upravljanje i Morfološka Kontrola — Sustantivos</title>
+    <style>
+        :root {
+            --croatia-blue: #0051ba;
+            --croatia-red: #d90f13;
+            --bg-color: #1b264f;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), 
+                        url('imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
+            background-size: cover;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(12px);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border: 3px solid var(--croatia-blue);
+            position: relative;
+            box-sizing: border-box;
+            margin-top: 40px;
+        }
+        
+        /* Botón interactivo de cambio de idioma */
+        .badge-idioma {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--croatia-red);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255,255,255,0.6);
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 20;
+        }
+        .badge-idioma:hover {
+            background: #b50b0f;
+            transform: scale(1.05);
+        }
+
+        /* Títulos dinámicos estilo plantilla */
+        .header-titulos {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+        h2 { color: var(--croatia-red); margin: 0; font-size: 1.5rem; }
+        .sub-espanol { color: var(--croatia-blue); font-weight: bold; font-size: 0.85rem; margin: 0; }
+
+        .contador-info { text-align: center; font-weight: bold; color: var(--croatia-blue); margin-bottom: 15px; font-size: 1.1rem; }
+        
+        /* Barra superior integrada: Naglasci (Acentos) y Audio */
+        .barra-superior-herramientas {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            background: #f8fafc;
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .teclado-virtual {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-acento-croata {
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 2px;
+            background: #fff;
+            object-fit: contain;
+            transition: all 0.2s ease;
+        }
+        .btn-acento-croata:hover {
+            transform: scale(1.08);
+            border-color: var(--croatia-blue);
+        }
+        .btn-audio-barra {
+            background: #e0f2fe;
+            border: 2px solid #38bdf8;
+            color: #0369a1;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+        .btn-audio-barra:hover {
+            background: #bae6fd;
+        }
+
+        /* Pestañas de Modos */
+        .modos-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .btn-modo {
+            padding: 10px 20px;
+            font-weight: bold;
+            border: 2px solid var(--croatia-blue);
+            background: #fff;
+            color: var(--croatia-blue);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-modo.activo {
+            background: var(--croatia-blue);
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,81,186,0.3);
+        }
+
+        /* Paneles */
+        .panel-formulario {
+            display: none;
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+        .panel-formulario.activo { display: block; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .form-grid-full { grid-column: span 2; }
+
+        label { display: block; font-weight: bold; margin-bottom: 4px; color: #475569; font-size: 0.85rem; }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            box-sizing: border-box;
+            background: #fff;
+        }
+        input:focus, select:focus { border-color: var(--croatia-blue); }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 6px;
+        }
+        .checkbox-container input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .autocomplete-container {
+            position: relative;
+            width: 100%;
+        }
+        .lista-sugerencias {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            max-height: 200px;
+            overflow-y: auto;
+            background: #fff;
+            border: 2px solid var(--croatia-blue);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .sugerencia-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .sugerencia-item:hover {
+            background: #e0f2fe;
+            color: var(--croatia-blue);
+            font-weight: bold;
+        }
+
+        button.btn-accion {
+            width: 100%;
+            padding: 12px;
+            font-weight: bold;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .bg-alta { background: #22c55e; }
+        .bg-alta:hover { background: #16a34a; }
+        .bg-mod { background: #eab308; color: #1e293b; }
+        .bg-mod:hover { background: #ca8a04; }
+        .bg-baja { background: #ef4444; }
+        .bg-baja:hover { background: #dc2626; }
+
+        /* Controles de la Tabla de Control */
+        .control-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .badge-porcentaje {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            border: 1px solid #bae6fd;
+        }
+
+        .tabla-contenedor {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: white;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            table-layout: fixed;
+        }
+        th, td {
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            text-align: left;
+            word-wrap: break-word;
+        }
+        th {
+            background: var(--croatia-blue);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th:nth-child(1), td:nth-child(1) { width: 22%; }
+        th:nth-child(2), td:nth-child(2) { width: 22%; }
+        th:nth-child(3), td:nth-child(3) { width: 26%; }
+        th:nth-child(4), td:nth-child(4) { width: 18%; }
+        th:nth-child(5), td:nth-child(5) { width: 12%; }
+
+        tr:nth-child(even) { background: #ffffff; }
+        .fila-coincide { background: #f0fdf4; }
+
+        .navegacion-footer {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .btn-navegacion {
+            padding: 12px 10px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: block;
+            box-sizing: border-box;
+        }
+        .btn-volver-atras {
+            background: #64748b;
+            color: white;
+            border: none;
+        }
+        .btn-volver-atras:hover {
+            background: #475569;
+            transform: translateY(-2px);
+        }
+        .btn-config {
+            background: #d90f13;
+            color: white;
+            border: none;
+        }
+        .btn-config:hover {
+            background: #b50b0f;
+            transform: translateY(-2px);
+        }
+        .btn-volver-inicio {
+            background: var(--croatia-blue);
+            color: white;
+            border: none;
+        }
+        .btn-volver-inicio:hover {
+            background: #003380;
+            transform: translateY(-2px);
+        }
+
+        /* MODAL FLOTANTE PERSONALIZADO */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+        }
+        .modal-overlay.activo {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-box {
+            background: #ffffff;
+            width: 100%;
+            max-width: 420px;
+            padding: 25px;
+            border-radius: 14px;
+            border: 3px solid var(--croatia-blue);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            transform: scale(0.95);
+            transition: transform 0.2s ease;
+        }
+        .modal-overlay.activo .modal-box {
+            transform: scale(1);
+        }
+        .modal-titulo {
+            color: var(--croatia-red);
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 0;
+            margin-bottom: 12px;
+        }
+        .modal-mensaje {
+            color: #1e293b;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+        .modal-botones {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-modal-ok {
+            background: var(--croatia-blue);
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-modal-ok:hover {
+            background: #003d99;
+        }
+        .btn-modal-cancel {
+            background: #64748b;
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-modal-cancel:hover {
+            background: #475569;
+        }
+
+        @media (max-width: 768px) {
+            .navegacion-footer {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Botón interactivo de cambio de idioma -->
+        <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()" title="Cambiar idioma">HR</span>
+
+        <!-- Títulos dinámicos -->
+        <div class="header-titulos">
+            <h2 id="tituloPrincipal">Upravljanje i Morfološka Kontrola — Imenice</h2>
+            <p class="sub-espanol" id="subEspanol">Panel ABM y Control Morfológico de Sustantivos</p>
+        </div>
+
+        <div class="contador-info" id="textoContador">Ukupno imenica u bazi: <span id="spanContador">0</span></div>
+        
+        <!-- Barra superior integrada: Naglasci (Acentos) y Audio -->
+        <div class="barra-superior-herramientas">
+            <div class="teclado-virtual">
+                <span id="labelAcentos" style="font-size: 0.8rem; font-weight: bold; color: #475569;">Naglasci:</span>
+                <img src="imagenes/Caron.bmp" class="btn-acento-croata" id="btnCaron" onmousedown="manejarClickAcento('caron', this, event)" alt="Caron">
+                <img src="imagenes/Acento.bmp" class="btn-acento-croata" id="btnAcento" onmousedown="manejarClickAcento('acento', this, event)" alt="Acento">
+                <img src="imagenes/Guion.bmp" class="btn-acento-croata" id="btnGuion" onmousedown="manejarClickAcento('guion', this, event)" alt="Guion">
+            </div>
+            <div>
+                <button class="btn-audio-barra" id="btnAudioText" onclick="pronunciarCampoActivo()">🔊 Slušaj</button>
+            </div>
+        </div>
+
+        <!-- Pestañas de Funciones -->
+        <div class="modos-container">
+            <button class="btn-modo activo" id="tabAlta" onclick="cambiarModo('alta')">➕ Dodaj</button>
+            <button class="btn-modo" id="tabMod" onclick="cambiarModo('mod')">✏️ Izmjena</button>
+            <button class="btn-modo" id="tabBaja" onclick="cambiarModo('baja')">🗑️ Brisanje</button>
+            <button class="btn-modo" id="tabControl" onclick="cambiarModo('control')">📊 Kontrolna Tablica</button>
+        </div>
+
+        <!-- 1. PANEL DE ALTA -->
+        <div id="panelAlta" class="panel-formulario activo" style="display: block;">
+            <h3 id="h3Alta">Dodaj Novu Imenicu</h3>
+            <div class="form-grid">
+                <div><label id="lblPalabra">Palabra (Croata):</label><input type="text" id="altaPalabra" placeholder="ej. Pas"></div>
+                <div><label id="lblTrad">Prijevod (Traducción):</label><input type="text" id="altaTrad" placeholder="ej. Perro"></div>
+                <div>
+                    <label id="lblGenero">Rod (Género):</label>
+                    <select id="altaGenero">
+                        <option value="Muški rod (Masculino)">Muški rod (Masculino)</option>
+                        <option value="Ženski rod (Femenino)">Ženski rod (Femenino)</option>
+                        <option value="Srednji rod (Neutro)">Srednji rod (Neutro)</option>
+                    </select>
+                </div>
+                <div>
+                    <label id="lblAnimado">Animirano / Živo:</label>
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="altaAnimado">
+                        <span id="txtAnimadoLbl" style="font-size: 0.85rem; color: #475569;">Es animado (Tko?)</span>
+                    </div>
+                </div>
+                <div class="form-grid-full" style="margin-top: 10px;">
+                    <button class="btn-accion bg-alta" id="btnGuardarAlta" onclick="ejecutarAlta()">Spremi i preuzmi datoteku</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. PANEL DE MODIFICACIÓN -->
+        <div id="panelMod" class="panel-formulario">
+            <h3 id="h3Mod">Izmjeni Postojeću Imenicu</h3>
+            <div class="form-grid">
+                <div class="form-grid-full">
+                    <label id="lblBuscaMod">🔍 Pretraži imenicu:</label>
+                    <div class="autocomplete-container">
+                        <input type="text" id="inputModBusqueda" placeholder="Kliknite za prikaz liste..." onfocus="filtrarYMostrar('mod')" oninput="filtrarYMostrar('mod')" autocomplete="off">
+                        <input type="hidden" id="indexModSeleccionado" value="">
+                        <div id="sugerenciasMod" class="lista-sugerencias"></div>
+                    </div>
+                </div>
+                <div><label>Palabra:</label><input type="text" id="modPalabra"></div>
+                <div><label>Prijevod:</label><input type="text" id="modTrad"></div>
+                <div>
+                    <label>Género:</label>
+                    <select id="modGenero">
+                        <option value="Muški rod (Masculino)">Muški rod (Masculino)</option>
+                        <option value="Ženski rod (Femenino)">Ženski rod (Femenino)</option>
+                        <option value="Srednji rod (Neutro)">Srednji rod (Neutro)</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Animirano:</label>
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="modAnimado">
+                        <span style="font-size: 0.85rem; color: #475569;">Es animado</span>
+                    </div>
+                </div>
+                <div class="form-grid-full" style="margin-top: 10px;">
+                    <button class="btn-accion bg-mod" id="btnGuardarMod" onclick="ejecutarModificacion()">Ažuriraj i preuzmi</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. PANEL DE BAJA -->
+        <div id="panelBaja" class="panel-formulario">
+            <h3 id="h3Baja">Izbriši Imenicu</h3>
+            <div class="form-grid">
+                <div class="form-grid-full">
+                    <label id="lblBuscaBaja">🔍 Pretraži imenicu za brisanje:</label>
+                    <div class="autocomplete-container">
+                        <input type="text" id="inputBajaBusqueda" placeholder="Kliknite za prikaz liste..." onfocus="filtrarYMostrar('baja')" oninput="filtrarYMostrar('baja')" autocomplete="off">
+                        <input type="hidden" id="indexBajaSeleccionado" value="">
+                        <div id="sugerenciasBaja" class="lista-sugerencias"></div>
+                    </div>
+                </div>
+                <div class="form-grid-full" style="margin-top: 10px;">
+                    <button class="btn-accion bg-baja" id="btnGuardarBaja" onclick="ejecutarBaja()">Izbriši i preuzmi</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. PANEL DE TABLA DE CONTROL -->
+        <div id="panelControl" class="panel-formulario">
+            <h3 id="h3Control">Kontrolna Tablica i Revizija Imenica</h3>
+            
+            <div class="control-header-flex">
+                <div id="indicadorPorcentaje" class="badge-porcentaje">Ukupno zapisa: 0</div>
+            </div>
+
+            <div class="tabla-contenedor">
+                <table>
+                    <thead>
+                        <tr id="filaThControl">
+                            <th>Palabra</th>
+                            <th>Prijevod</th>
+                            <th>Rod (Género)</th>
+                            <th>Animirano</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpoTablaControl">
+                        <!-- Se llena dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tres botones de Navegación Inferiores -->
+        <div class="navegacion-footer">
+            <button class="btn-navegacion btn-volver-atras" id="btnVolverAtras" onclick="volverAtras()">Povratak / Volver atrás</button>
+            <a href="MS_Config.html" class="btn-navegacion btn-config" id="btnConfig">Postavljanje / Configuración</a>
+            <a href="MS_Index1.html" class="btn-navegacion btn-volver-inicio" id="btnVolverInicio">Glavni izbornik / Menú Principal</a>
+        </div>
+    </div>
+
+    <!-- MODAL FLOTANTE PERSONALIZADO -->
+    <div id="modalPersonalizado" class="modal-overlay">
+        <div class="modal-box">
+            <h3 id="modalTitulo" class="modal-titulo">Obavijest / Aviso</h3>
+            <p id="modalTexto" class="modal-mensaje">Mensaje del sistema...</p>
+            <div id="modalBotonesContainer" class="modal-botones">
+                <button id="modalBtnOk" class="btn-modal-ok" onclick="cerrarModal()">U redu / Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Librería de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Scripts separados y reutilizables para control de sesión y perfil visible -->
+    <script src="auth-check.js"></script>
+    <script src="user-profile.js"></script>
+
+    <!-- Scripts de la aplicación -->
+    <script src="tecladoCroata.js"></script>
+    <script src="sustantivos_db.js"></script>
+
+    <!-- Script general de inactividad -->
+    <script src="inactivity-logout.js"></script>
+
+    <script>
+        let baseSustantivosGlobal = { masculinos: [], femeninos: [], neutros: [] };
+        let campoActivoActual = null;
+        let callbackModalConfirmacion = null;
+
+        function mostrarModal(mensaje, titulo = "", esConfirmacion = false, callback = null) {
+            let idiomaElegido = localStorage.getItem('idiomaApp') || 'hr-es';
+            const modal = document.getElementById('modalPersonalizado');
+            const tituloEl = document.getElementById('modalTitulo');
+            const textoEl = document.getElementById('modalTexto');
+            const botonesContainer = document.getElementById('modalBotonesContainer');
+
+            if (!titulo) {
+                tituloEl.innerText = (idiomaElegido === 'hr') ? "Obavijest sustava" : "Obavijest sustava / Aviso del Sistema";
+            } else {
+                tituloEl.innerText = titulo;
+            }
+
+            textoEl.innerText = mensaje;
+            callbackModalConfirmacion = callback;
+
+            if (esConfirmacion) {
+                let txtSi = (idiomaElegido === 'hr') ? "Da" : "Da / Sí";
+                let txtNo = (idiomaElegido === 'hr') ? "Ne" : "Ne / No";
+                botonesContainer.innerHTML = `
+                    <button class="btn-modal-ok" onclick="ejecutarConfirmacionModal(true)">${txtSi}</button>
+                    <button class="btn-modal-cancel" onclick="ejecutarConfirmacionModal(false)">${txtNo}</button>
+                `;
+            } else {
+                let txtOk = (idiomaElegido === 'hr') ? "U redu" : "U redu / Aceptar";
+                botonesContainer.innerHTML = `
+                    <button class="btn-modal-ok" onclick="cerrarModal()">${txtOk}</button>
+                `;
+            }
+
+            modal.classList.add('activo');
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalPersonalizado').classList.remove('activo');
+            callbackModalConfirmacion = null;
+        }
+
+        function ejecutarConfirmacionModal(resultado) {
+            let cb = callbackModalConfirmacion;
+            cerrarModal();
+            if (cb) cb(resultado);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            aplicarPreferenciaIdioma();
+            let guardadosLocales = localStorage.getItem("misSustantivosCroata");
+            if (guardadosLocales) {
+                baseSustantivosGlobal = JSON.parse(guardadosLocales);
+            } else if (typeof baseSustantivosDB !== 'undefined') {
+                baseSustantivosGlobal = JSON.parse(JSON.stringify(baseSustantivosDB));
+            }
+            sincronizarYRefrescar();
+        });
+
+        document.addEventListener('focusin', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                campoActivoActual = e.target;
+            }
+        });
+
+        function aplicarPreferenciaIdioma() {
+            let idiomaElegido = localStorage.getItem('idiomaApp') || 'hr-es';
+            idiomaElegido = idiomaElegido.trim().toLowerCase();
+
+            const badge = document.getElementById('badgeIdioma');
+            const tituloPrincipal = document.getElementById('tituloPrincipal');
+            const subEspanol = document.getElementById('subEspanol');
+            const labelAcentos = document.getElementById('labelAcentos');
+            const btnAudioText = document.getElementById('btnAudioText');
+            
+            const tabAlta = document.getElementById('tabAlta');
+            const tabMod = document.getElementById('tabMod');
+            const tabBaja = document.getElementById('tabBaja');
+            const tabControl = document.getElementById('tabControl');
+
+            const h3Alta = document.getElementById('h3Alta');
+            const lblPalabra = document.getElementById('lblPalabra');
+            const lblTrad = document.getElementById('lblTrad');
+            const lblGenero = document.getElementById('lblGenero');
+            const lblAnimado = document.getElementById('lblAnimado');
+            const txtAnimadoLbl = document.getElementById('txtAnimadoLbl');
+            const btnGuardarAlta = document.getElementById('btnGuardarAlta');
+
+            const h3Mod = document.getElementById('h3Mod');
+            const lblBuscaMod = document.getElementById('lblBuscaMod');
+            const btnGuardarMod = document.getElementById('btnGuardarMod');
+
+            const h3Baja = document.getElementById('h3Baja');
+            const lblBuscaBaja = document.getElementById('lblBuscaBaja');
+            const btnGuardarBaja = document.getElementById('btnGuardarBaja');
+
+            const h3Control = document.getElementById('h3Control');
+            const filaTh = document.getElementById('filaThControl');
+
+            const btnVolverAtras = document.getElementById('btnVolverAtras');
+            const btnConfig = document.getElementById('btnConfig');
+            const btnVolverInicio = document.getElementById('btnVolverInicio');
+
+            if (idiomaElegido === 'hr') {
+                badge.innerText = "HR";
+                subEspanol.style.display = 'none';
+                tituloPrincipal.innerText = "Upravljanje i Morfološka Kontrola — Imenice";
+                labelAcentos.innerText = "Naglasci:";
+                btnAudioText.innerText = "🔊 Slušaj";
+
+                tabAlta.innerText = "➕ Dodaj";
+                tabMod.innerText = "✏️ Izmjena";
+                tabBaja.innerText = "🗑️ Brisanje";
+                tabControl.innerText = "📊 Kontrolna Tablica";
+
+                h3Alta.innerText = "Dodaj Novu Imenicu";
+                lblPalabra.innerText = "Riječ (Palabra):";
+                lblTrad.innerText = "Prijevod:";
+                lblGenero.innerText = "Rod (Género):";
+                lblAnimado.innerText = "Animirano / Živo:";
+                txtAnimadoLbl.innerText = "Je li živo (Tko?)";
+                btnGuardarAlta.innerText = "Spremi i preuzmi datoteku";
+
+                h3Mod.innerText = "Izmjeni Postojeću Imenicu";
+                lblBuscaMod.innerText = "🔍 Pretraži imenicu:";
+                btnGuardarMod.innerText = "Ažuriraj i preuzmi";
+
+                h3Baja.innerText = "Izbriši Imenicu";
+                lblBuscaBaja.innerText = "🔍 Pretraži imenicu za brisanje:";
+                btnGuardarBaja.innerText = "Izbriši i preuzmi";
+
+                h3Control.innerText = "Kontrolna Tablica Imenica";
+                btnVolverAtras.innerText = "Povratak";
+                btnConfig.innerText = "Postavljanje";
+                btnVolverInicio.innerText = "Glavni izbornik";
+
+                filaTh.innerHTML = `
+                    <th>Riječ</th>
+                    <th>Prijevod</th>
+                    <th>Rod</th>
+                    <th>Animirano</th>
+                    <th>Status</th>
+                `;
+            } else {
+                badge.innerText = "HR-ES";
+                subEspanol.style.display = 'block';
+                tituloPrincipal.innerText = "Upravljanje i Morfološka Kontrola — Imenice";
+                subEspanol.innerText = "Panel ABM y Control Morfológico de Sustantivos";
+                labelAcentos.innerText = "Naglasci / Acentos:";
+                btnAudioText.innerText = "🔊 Slušaj / Escuchar";
+
+                tabAlta.innerText = "➕ Dodaj / Alta";
+                tabMod.innerText = "✏️ Izmjena / Modificación";
+                tabBaja.innerText = "🗑️ Brisanje / Baja";
+                tabControl.innerText = "📊 Kontrolna Tablica / Tabla de Control";
+
+                h3Alta.innerText = "Dodaj Novu Imenicu / Agregar Nuevo Sustantivo";
+                lblPalabra.innerText = "Riječ / Palabra (Croata):";
+                lblTrad.innerText = "Prijevod / Traducción:";
+                lblGenero.innerText = "Rod / Género:";
+                lblAnimado.innerText = "Animirano / Živo:";
+                txtAnimadoLbl.innerText = "Es animado (Tko?)";
+                btnGuardarAlta.innerText = "Spremi i preuzmi / Guardar y Descargar Archivo";
+
+                h3Mod.innerText = "Izmjeni Postojeću Imenicu / Modificar Sustantivo";
+                lblBuscaMod.innerText = "🔍 Pretraži imenicu / Buscar sustantivo a modificar:";
+                btnGuardarMod.innerText = "Ažuriraj i preuzmi / Actualizar y Descargar";
+
+                h3Baja.innerText = "Izbriši Imenicu / Eliminar Sustantivo";
+                lblBuscaBaja.innerText = "🔍 Pretraži imenicu / Buscar sustantivo a eliminar:";
+                btnGuardarBaja.innerText = "Izbriši i preuzmi / Eliminar y Descargar";
+
+                h3Control.innerText = "Kontrolna Tablica / Tabla de Control de Sustantivos";
+                btnVolverAtras.innerText = "Povratak / Volver atrás";
+                btnConfig.innerText = "Postavljanje / Configuración";
+                btnVolverInicio.innerText = "Glavni izbornik / Menú Principal";
+
+                filaTh.innerHTML = `
+                    <th>Riječ / Palabra</th>
+                    <th>Prijevod / Traducción</th>
+                    <th>Rod / Género</th>
+                    <th>Animirano / Animado</th>
+                    <th>Status</th>
+                `;
+            }
+
+            if (document.getElementById('panelControl').classList.contains('activo')) {
+                renderizarTablaControl();
+            }
+        }
+
+        function alternarIdioma() {
+            let idiomaActual = (localStorage.getItem('idiomaApp') || 'hr').trim().toLowerCase();
+            if (idiomaActual === "hr-es" || idiomaActual.includes("es")) {
+                localStorage.setItem('idiomaApp', 'hr');
+            } else {
+                localStorage.setItem('idiomaApp', 'hr-es');
+            }
+            location.reload();
+        }
+
+        function manejarClickAcento(tipoAcento, elementoBtn, evento) {
+            document.querySelectorAll('.btn-acento-croata').forEach(el => el.classList.remove('activo'));
+            elementoBtn.classList.add('activo');
+            if (typeof activarAcentoCroata === 'function') {
+                activarAcentoCroata(tipoAcento, elementoBtn, evento);
+            }
+        }
+
+        function pronunciarCampoActivo() {
+            let idiomaElegido = localStorage.getItem('idiomaApp') || 'hr-es';
+            if (!campoActivoActual) {
+                mostrarModal(idiomaElegido === 'hr' ? "Molimo kliknite prvo na polje teksta." : "Molimo kliknite prvo na polje teksta / Haz clic primero en un campo de texto.");
+                return;
+            }
+            let textoALeer = campoActivoActual.value.trim() || campoActivoActual.placeholder;
+            if (!textoALeer || textoALeer.includes("ej.")) {
+                mostrarModal(idiomaElegido === 'hr' ? "Ovo polje nema teksta za reprodukciju." : "Ovo polje nema teksta za reprodukciju / Este campo no tiene texto válido.");
+                return;
+            }
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(textoALeer);
+                utterance.lang = 'hr-HR';
+                utterance.rate = 0.85;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                mostrarModal("Tu navegador no soporta la síntesis de voz.");
+            }
+        }
+
+        function obtenerTotalSustantivos() {
+            return (baseSustantivosGlobal.masculinos.length || 0) + 
+                   (baseSustantivosGlobal.femeninos.length || 0) + 
+                   (baseSustantivosGlobal.neutros.length || 0);
+        }
+
+        function sincronizarYRefrescar() {
+            baseSustantivosGlobal.masculinos.sort((a, b) => a.palabra.localeCompare(b.palabra));
+            baseSustantivosGlobal.femeninos.sort((a, b) => a.palabra.localeCompare(b.palabra));
+            baseSustantivosGlobal.neutros.sort((a, b) => a.palabra.localeCompare(b.palabra));
+
+            localStorage.setItem("misSustantivosCroata", JSON.stringify(baseSustantivosGlobal));
+            let span = document.getElementById('spanContador');
+            if(span) span.textContent = obtenerTotalSustantivos();
+        }
+
+        function cambiarModo(modo) {
+            document.querySelectorAll('.panel-formulario').forEach(p => {
+                p.classList.remove('activo');
+                p.style.display = 'none';
+            });
+            document.querySelectorAll('.btn-modo').forEach(b => b.classList.remove('activo'));
+
+            const panelActivo = document.getElementById('panel' + modo.charAt(0).toUpperCase() + modo.slice(1));
+            panelActivo.classList.add('activo');
+            panelActivo.style.display = 'block';
+            document.getElementById('tab' + modo.charAt(0).toUpperCase() + modo.slice(1)).classList.add('activo');
+
+            if (modo === 'mod') {
+                document.getElementById('inputModBusqueda').value = '';
+                document.getElementById('indexModSeleccionado').value = '';
+            } else if (modo === 'baja') {
+                document.getElementById('inputBajaBusqueda').value = '';
+                document.getElementById('indexBajaSeleccionado').value = '';
+            } else if (modo === 'control') {
+                renderizarTablaControl();
+            }
+        }
+
+        function renderizarTablaControl() {
+            const tbody = document.getElementById('cuerpoTablaControl');
+            tbody.innerHTML = '';
+
+            let total = obtenerTotalSustantivos();
+            let listaCompleta = [
+                ...baseSustantivosGlobal.masculinos.map(item => ({ ...item, categoria: 'masculinos' })),
+                ...baseSustantivosGlobal.femeninos.map(item => ({ ...item, categoria: 'femeninos' })),
+                ...baseSustantivosGlobal.neutros.map(item => ({ ...item, categoria: 'neutros' }))
+            ];
+
+            listaCompleta.forEach(item => {
+                let tr = document.createElement('tr');
+                tr.classList.add('fila-coincide');
+                tr.innerHTML = `
+                    <td><strong>${item.palabra}</strong></td>
+                    <td style="font-style: italic;">${item.traduccion}</td>
+                    <td>${item.genero}</td>
+                    <td>${item.esAnimado ? "✅ Da / Sí" : "❌ Ne / No"}</td>
+                    <td>✨ OK</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            let idiomaElegido = localStorage.getItem('idiomaApp') || 'hr-es';
+            let txtTotal = (idiomaElegido === 'hr') ? `Ukupno zapisa u bazi: <strong>${total}</strong>` : `Ukupno zapisa u bazi / Total de registros: <strong>${total}</strong>`;
+            document.getElementById('indicadorPorcentaje').innerHTML = `📊 ${txtTotal}`;
+        }
+
+        function filtrarYMostrar(panel) {
+            sincronizarYRefrescar();
+            const inputId = panel === 'mod' ? 'inputModBusqueda' : 'inputBajaBusqueda';
+            const sugerenciasId = panel === 'mod' ? 'sugerenciasMod' : 'sugerenciasBaja';
+            const textoFiltro = document.getElementById(inputId).value.toLowerCase().trim();
+            const contenedor = document.getElementById(sugerenciasId);
+
+            contenedor.innerHTML = '';
+            let resultados = [];
+            
+            let listaCompleta = [
+                ...baseSustantivosGlobal.masculinos.map((item, idx) => ({ ...item, cat: 'masculinos', origIdx: idx })),
+                ...baseSustantivosGlobal.femeninos.map((item, idx) => ({ ...item, cat: 'femeninos', origIdx: idx })),
+                ...baseSustantivosGlobal.neutros.map((item, idx) => ({ ...item, cat: 'neutros', origIdx: idx }))
+            ];
+
+            listaCompleta.forEach((item) => {
+                if (textoFiltro === "" || item.palabra.toLowerCase().includes(textoFiltro) || item.traduccion.toLowerCase().includes(textoFiltro)) {
+                    resultados.push(item);
+                }
+            });
+
+            if (resultados.length > 0) {
+                resultados.forEach(item => {
+                    const div = document.createElement('div');
+                    div.classList.add('sugerencia-item');
+                    div.innerHTML = `<strong>${item.palabra}</strong> <span style="color:#64748b;">(${item.traduccion})</span> - <small>${item.genero}</small>`;
+                    div.onclick = function() {
+                        seleccionarSustantivo(panel, item);
+                    };
+                    contenedor.appendChild(div);
+                });
+                contenedor.style.display = 'block';
+            } else {
+                contenedor.style.display = 'none';
+            }
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.autocomplete-container')) {
+                document.querySelectorAll('.lista-sugerencias').forEach(c => c.style.display = 'none');
+            }
+        });
+
+        function seleccionarSustantivo(panel, item) {
+            if (panel === 'mod') {
+                document.getElementById('inputModBusqueda').value = `${item.palabra} (${item.traduccion})`;
+                document.getElementById('indexModSeleccionado').value = JSON.stringify({ cat: item.cat, idx: item.origIdx });
+                document.getElementById('sugerenciasMod').style.display = 'none';
+
+                document.getElementById('modPalabra').value = item.palabra;
+                document.getElementById('modTrad').value = item.traduccion;
+                document.getElementById('modGenero').value = item.genero;
+                document.getElementById('modAnimado').checked = item.esAnimado;
+            } else {
+                document.getElementById('inputBajaBusqueda').value = `${item.palabra} (${item.traduccion})`;
+                document.getElementById('indexBajaSeleccionado').value = JSON.stringify({ cat: item.cat, idx: item.origIdx });
+                document.getElementById('sugerenciasBaja').style.display = 'none';
+            }
+        }
+
+        function descargarBaseActualizada() {
+            sincronizarYRefrescar();
+            let contenido = "const baseSustantivosDB = {\n" +
+                "    masculinos: [\n" + baseSustantivosGlobal.masculinos.map(s => `        { palabra: "${s.palabra}", traduccion: "${s.traduccion}", genero: "${s.genero}", esAnimado: ${s.esAnimado} }`).join(",\n") + "\n    ],\n" +
+                "    femeninos: [\n" + baseSustantivosGlobal.femeninos.map(s => `        { palabra: "${s.palabra}", traduccion: "${s.traduccion}", genero: "${s.genero}", esAnimado: ${s.esAnimado} }`).join(",\n") + "\n    ],\n" +
+                "    neutros: [\n" + baseSustantivosGlobal.neutros.map(s => `        { palabra: "${s.palabra}", traduccion: "${s.traduccion}", genero: "${s.genero}", esAnimado: ${s.esAnimado} }`).join(",\n") + "\n    ]\n" +
+                "};";
+            
+            let blob = new Blob([contenido], { type: "text/javascript" });
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement("a");
+            a.href = url;
+            a.download = "sustantivos_db.js";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function ejecutarAlta() {
+            let idiomaElegido = localStorage.getItem('idiomaApp') || 'hr-es';
+            const palabra = document.getElementById('altaPalabra').value.trim();
+            const traduccion = document.getElementById('altaTrad').value.trim();
+            const genero = document.getElementById('altaGenero').value;
+            const esAnimado = document.getElementById('altaAnimado').checked;
+
+            if (!palabra || !traduccion) {
+                let msg = (idiomaElegido === 'hr') ? "Molimo popunite obavezna polja." : "Molimo popunite obavezna polja / Por favor completa los campos obligatorios.";
+                mostrarModal(msg);
+                return;
+            }
+
+            let catTarget = 'masculinos';
+            if (genero.includes('Ženski')) catTarget = 'femeninos';
+            else if (genero.includes('Srednji')) catTarget = 'neutros';
+
+            let nuevoSustantivo = { palabra, traduccion, genero, esAnimado };
+            baseSustantivosGlobal[catTarget].push(nuevoSustantivo);
+            descargarBaseActualizada();
+
+            let msgExito = (idiomaElegido === 'hr') ? "Uspješno spremljeno i preuzeto!" : "Uspješno spremljeno i preuzeto / ¡Guardado y descargado con éxito!";
+            mostrarModal(msgExito);
+            
+            document.getElementById('altaPalabra').value = '';
+            document.getElementById('altaTrad').value = '';
+            document.getElementById('altaAnimado').checked = false;
+        }
+
+        function ejecutarModificacion() {
+            let idiomaElegido = localStorage.getItem('idiomaApp') || 'hr-es';
+            const rawIndex = document.getElementById('indexModSeleccionado').value;
+            if (!rawIndex) {
+                let msg = (idiomaElegido === 'hr') ? "Odaberite imenicu za izmjenu." : "Odaberite imenicu za izmjenu / Selecciona un sustantivo para modificar.";
+                mostrarModal(msg);
+                return;
+            }
+
+            let ref = JSON.parse(rawIndex);
+            let palabra = document.getElementById('modPalabra').value.trim();
+            let traduccion = document.getElementById('modTrad').value.trim();
+            let genero = document.getElementById('modGenero').value;
+            let esAnimado = document.getElementById('modAnimado').checked;
+
+            let catTarget = 'masculinos';
+            if (genero.includes('Ženski')) catTarget = 'femeninos';
+            else if (genero.includes('Srednji')) catTarget = 'neutros';
+
+            baseSustantivosGlobal[ref.cat].splice(ref.idx, 1);
+            baseSustantivosGlobal[catTarget].push({ palabra, traduccion, genero, esAnimado });
+
+            descargarBaseActualizada();
+            let msgExito = (idiomaElegido === 'hr') ? "Uspješno ažurirano!" : "Uspješno ažurirano / ¡Sustantivo actualizado con éxito!";
+            mostrarModal(msgExito);
+            document.getElementById('inputModBusqueda').value = '';
+            document.getElementById('indexModSeleccionado').value = '';
+        }
+
+        function ejecutarBaja() {
+            let idiomaElegido = localStorage.getItem('idiomaApp') || 'hr-es';
+            const rawIndex = document.getElementById('indexBajaSeleccionado').value;
+            if (!rawIndex) {
+                let msg = (idiomaElegido === 'hr') ? "Odaberite imenicu za brisanje." : "Odaberite imenicu za brisanje / Selecciona un sustantivo para eliminar.";
+                mostrarModal(msg);
+                return;
+            }
+
+            let ref = JSON.parse(rawIndex);
+            let msgConf = (idiomaElegido === 'hr') ? "Jeste li sigurni da želite izbrisati ovu imenicu?" : "Jeste li sigurni? / ¿Estás seguro de eliminar este sustantivo?";
+            
+            mostrarModal(msgConf, "", true, function(confirmado) {
+                if (confirmado) {
+                    baseSustantivosGlobal[ref.cat].splice(ref.idx, 1);
+                    descargarBaseActualizada();
+                    let msgExito = (idiomaElegido === 'hr') ? "Uspješno obrisano!" : "Uspješno obrisano / ¡Sustantivo eliminado!";
+                    mostrarModal(msgExito);
+                    document.getElementById('inputBajaBusqueda').value = '';
+                    document.getElementById('indexBajaSeleccionado').value = '';
+                }
+            });
+        }
+
+        function volverAtras() {
+            sincronizarYRefrescar();
+            history.back();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kviz — Nominativ (Respuestas Abiertas)</title>
+    <style>
+        :root {
+            --red: #ff1c1c;
+            --white: #ffffff;
+            --blue: #1b264f;
+            --croatia-blue: #0051ba;
+            --croatia-red: #d90f13;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), 
+                        url('imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
+            background-size: cover;
+            background-color: #1b264f;
+            color: #1e293b;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .app-container {
+            width: 95vw;
+            max-width: 950px;
+            height: 94vh;
+            max-height: 950px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* Botón interactivo de cambio de idioma arriba a la izquierda */
+        .badge-idioma {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--croatia-red);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255,255,255,0.6);
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 20;
+        }
+
+        .badge-idioma:hover {
+            background: #b50b0f;
+            transform: scale(1.05);
+        }
+
+        .card-panel {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            border-radius: 18px;
+            padding: 18px 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border: 3px solid var(--croatia-blue);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #ff0000 0%, #ffffff 50%, #0047ab 100%);
+        }
+
+        .header-quiz {
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 8px;
+            margin-top: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        .header-quiz h1 {
+            margin: 0;
+            font-size: 1.3rem;
+            color: var(--blue);
+            font-weight: 800;
+        }
+
+        /* Barra de Teclado Croata */
+        .teclado-virtual {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f8fafc;
+            padding: 6px 12px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            flex-shrink: 0;
+            margin-bottom: 8px;
+        }
+
+        .btn-acento-croata {
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 2px;
+            background: #fff;
+            object-fit: contain;
+            transition: all 0.2s ease;
+        }
+
+        .btn-acento-croata:hover {
+            transform: scale(1.08);
+            border-color: var(--croatia-blue);
+        }
+
+        .btn-acento-croata.activo {
+            border-color: var(--croatia-red) !important;
+            background-color: #fee2e2 !important;
+            box-shadow: 0 0 8px rgba(217, 15, 19, 0.4);
+            transform: scale(1.05);
+        }
+
+        .btn-audio-quiz {
+            background: #e0f2fe;
+            border: 2px solid #38bdf8;
+            color: #0369a1;
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            margin-left: auto;
+        }
+        .btn-audio-quiz:hover {
+            background: #bae6fd;
+        }
+
+        #quizContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+            justify-content: space-evenly;
+            box-sizing: border-box;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .pregunta-card {
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 8px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex-shrink: 1;
+        }
+
+        .enunciado {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--blue);
+            margin: 0;
+        }
+
+        .input-respuesta {
+            width: 100%;
+            max-width: 350px;
+            padding: 5px 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .input-respuesta:focus {
+            border-color: var(--croatia-blue);
+            box-shadow: 0 0 0 3px rgba(0,81,186,0.15);
+        }
+
+        .input-respuesta.correcto-input {
+            border-color: var(--success) !important;
+            background-color: #f0fdf4;
+            color: #166534;
+        }
+
+        .input-respuesta.incorrecto-input {
+            border-color: var(--error) !important;
+            background-color: #fef2f2;
+            color: #991b1b;
+        }
+
+        .frase-completa {
+            font-size: 0.78rem;
+            color: #0f766e;
+            font-weight: 700;
+            margin-top: 1px;
+            display: none;
+        }
+
+        .feedback {
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin: 0;
+            min-height: 8px;
+        }
+
+        .btn-evaluar-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 8px;
+            flex-shrink: 0;
+        }
+
+        .btn-evaluar {
+            background: var(--croatia-blue);
+            color: white;
+            border: none;
+            padding: 9px 28px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(0,81,186,0.3);
+        }
+
+        .btn-evaluar:hover {
+            background: #003380;
+            transform: translateY(-2px);
+        }
+
+        #resultadoFinal {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            flex-grow: 1;
+            gap: 10px;
+        }
+
+        #resultadoFinal h2 {
+            color: var(--blue);
+            font-size: 1.8rem;
+            margin: 0;
+        }
+
+        #mensajeFinalTexto {
+            font-size: 1.05rem;
+            color: #475569;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .numero-nota-cuadrado {
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 1;
+            padding: 4px 20px;
+            border-radius: 14px;
+            margin: 0;
+            display: inline-block;
+        }
+
+        .nota-dorada { color: #ca8a04; background: transparent; text-shadow: 0 4px 10px rgba(202, 138, 4, 0.3); }
+        .nota-cero { background-color: #ef4444; color: #ffffff; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3); }
+        .nota-roja { color: #dc2626; background: transparent; }
+        .nota-verde { color: #16a34a; background: transparent; }
+
+        .botones-finales-container {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-accion-final {
+            background: var(--croatia-blue);
+            color: white;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(0,81,186,0.3);
+        }
+        .btn-accion-final:hover { background: #003380; transform: translateY(-2px); }
+        .btn-reiniciar { background: #475569; }
+        .btn-reiniciar:hover { background: #334155; }
+        .btn-revisar { background: #0284c7; }
+        .btn-revisar:hover { background: #0369a1; }
+
+        /* Contenedor de revisión detallada */
+        #seccionRevision {
+            display: none;
+            flex-direction: column;
+            flex-grow: 1;
+            overflow-y: auto;
+            gap: 8px;
+            padding-right: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .tarjeta-revision {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 8px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .tarjeta-revision.es-correcta { border-color: var(--success); background: #f0fdf4; }
+        .tarjeta-revision.es-incorrecta { border-color: var(--error); background: #fef2f2; }
+
+        .botones-navegacion-container {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+            margin-top: 6px;
+            border-top: 2px solid #e2e8f0;
+            padding-top: 6px;
+            flex-shrink: 0;
+        }
+
+        .btn-navegacion {
+            flex: 1;
+            color: white;
+            border: none;
+            padding: 7px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.82rem;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-volver-declinaciones { background: var(--croatia-blue); }
+        .btn-pagina-inicial { background: #475569; }
+    </style>
+</head>
+<body id="appBody">
+
+    <script src="sustantivos_db.js"></script>
+    <script src="adjetivos_db.js"></script>
+    <script src="plurales_motor.js"></script>
+    <script src="tecladoCroata.js"></script>
+
+    <div class="app-container">
+        <!-- Botón interactivo de cambio de idioma arriba a la izquierda -->
+        <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()" title="Hacer clic para cambiar idioma">HR</span>
+
+        <div class="card-panel">
+            <div class="header-quiz">
+                <h1>📝 Kviz (Respuestas Abiertas): Nominativ</h1>
+            </div>
+
+            <!-- BARRA DE TECLADO CROATA -->
+            <div class="teclado-virtual" id="barraTeclado">
+                <span id="labelAcentos" style="font-size: 0.8rem; font-weight: bold; color: #475569;">Naglasci:</span>
+                <img src="imagenes/Caron.bmp" class="btn-acento-croata" id="btnCaron" onmousedown="manejarClickAcento('caron', this, event)" alt="Caron">
+                <img src="imagenes/Acento.bmp" class="btn-acento-croata" id="btnAcento" onmousedown="manejarClickAcento('acento', this, event)" alt="Acento">
+                <img src="imagenes/Guion.bmp" class="btn-acento-croata" id="btnGuion" onmousedown="manejarClickAcento('guion', this, event)" alt="Guion">
+
+                <button type="button" class="btn-audio-quiz" onclick="pronunciarCampoActivo()">
+                    <span>🔊 Slušaj</span>
+                </button>
+            </div>
+
+            <div id="quizContainer"></div>
+
+            <!-- SECCIÓN DE REVISIÓN DETALLADA -->
+            <div id="seccionRevision">
+                <h2 style="color: var(--blue); font-size: 1.2rem; margin: 0 0 5px 0; text-align: center;">🔍 Pregled odgovora / Revisión de respuestas</h2>
+                <div id="listaRevisionContainer" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                <button class="btn-accion-final btn-reiniciar" onclick="volverAResultados()" style="margin-top: 5px;">← Natrag na rezultate / Volver a resultados</button>
+            </div>
+
+            <!-- BOTÓN GLOBAL DE EVALUACIÓN -->
+            <div class="btn-evaluar-container" id="seccionBotonEvaluar">
+                <button class="btn-evaluar" onclick="evaluarQuizCompleto()">Provjeri / Evaluar todo</button>
+            </div>
+
+            <!-- PANTALLA DE RESULTADOS -->
+            <div id="resultadoFinal">
+                <h2>🎉 ¡Quiz Evaluado!</h2>
+                <p id="mensajeFinalTexto">Resultado general:</p>
+                <div id="contenedorNumeroGrande" class="numero-nota-cuadrado nota-dorada">10</div>
+                
+                <div class="botones-finales-container">
+                    <button class="btn-accion-final btn-revisar" onclick="mostrarRevisionDetallada()">
+                        🔍 Pregled / Revisar
+                    </button>
+                    <button class="btn-accion-final btn-reiniciar" onclick="generarQuizAbierto()">
+                        Novi kviz / Nuevo
+                    </button>
+                </div>
+            </div>
+
+            <div class="botones-navegacion-container">
+                <a href="MSN1DeclinacionesNominativ.html" class="btn-navegacion btn-volver-declinaciones">← Padeži / Declinaciones</a>
+                <a href="MS_Index1.html" class="btn-navegacion btn-pagina-inicial">🏠 Početna / Página Inicial</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const respaldoSustantivosDB = {
+            masculinos: [{ palabra: "Pas", traduccion: "Perro", genero: "Muški rod (Masculino)", esAnimado: true }],
+            femeninos: [{ palabra: "Knjiga", traduccion: "Libro", genero: "Ženski rod (Femenino)", esAnimado: false }],
+            neutros: [{ palabra: "Selo", traduccion: "Pueblo", genero: "Srednji rod (Neutro)", esAnimado: false }]
+        };
+
+        const respaldoAdjetivosDB = {
+            adjetivos: [{ masc: "velik", fem: "velika", neutro: "veliko", traduccion: "grande" }]
+        };
+
+        let preguntasActuales = [];
+        let campoActivoActual = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            aplicarPreferenciaIdioma();
+            generarQuizAbierto();
+        });
+
+        function aplicarPreferenciaIdioma() {
+            let idiomaElegido = localStorage.getItem('idiomaApp');
+            if (!idiomaElegido) {
+                idiomaElegido = 'hr-es';
+                localStorage.setItem('idiomaApp', 'hr-es');
+            }
+            idiomaElegido = idiomaElegido.trim().toLowerCase();
+
+            const badge = document.getElementById('badgeIdioma');
+            const labelAcentos = document.getElementById('labelAcentos');
+
+            if (idiomaElegido === 'hr') {
+                badge.innerText = "HR";
+                labelAcentos.innerText = "Naglasci:";
+            } else {
+                badge.innerText = "HR-ES";
+                labelAcentos.innerText = "Naglasci / Acentos:";
+            }
+        }
+
+        function alternarIdioma() {
+            let idiomaActual = (localStorage.getItem('idiomaApp') || 'hr').trim().toLowerCase();
+            if (idiomaActual === "hr-es" || idiomaActual.includes("es")) {
+                localStorage.setItem('idiomaApp', 'hr');
+            } else {
+                localStorage.setItem('idiomaApp', 'hr-es');
+            }
+            location.reload();
+        }
+
+        document.addEventListener('focusin', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                campoActivoActual = e.target;
+            }
+        });
+
+        function manejarClickAcento(tipoAcento, elementoBtn, evento) {
+            document.querySelectorAll('.btn-acento-croata').forEach(el => el.classList.remove('activo'));
+            elementoBtn.classList.add('activo');
+            if (typeof activarAcentoCroata === 'function') {
+                activarAcentoCroata(tipoAcento, elementoBtn, evento);
+            }
+        }
+
+        function pronunciarCampoActivo() {
+            if (!campoActivoActual) {
+                alert("Haz clic primero en un cuadro de respuesta para escuchar su pronunciación.");
+                return;
+            }
+            let textoALeer = campoActivoActual.value.trim() || campoActivoActual.getAttribute('data-palabra') || campoActivoActual.placeholder;
+            if (!textoALeer || textoALeer.includes("...")) {
+                alert("Ovo polje nema teksta za reprodukciju.");
+                return;
+            }
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(textoALeer);
+                utterance.lang = 'hr-HR';
+                utterance.rate = 0.85;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("Tu navegador no soporta la síntesis de voz.");
+            }
+        }
+
+        function generarQuizAbierto() {
+            document.getElementById('resultadoFinal').style.display = 'none';
+            document.getElementById('seccionRevision').style.display = 'none';
+            document.getElementById('seccionBotonEvaluar').style.display = 'flex';
+            document.getElementById('barraTeclado').style.display = 'flex';
+            
+            const contenedor = document.getElementById('quizContainer');
+            contenedor.style.display = 'flex';
+            contenedor.innerHTML = '';
+
+            let dbSustantivos = (typeof baseSustantivosDB !== 'undefined') ? baseSustantivosDB : respaldoSustantivosDB;
+            let dbAdjetivos = (typeof baseAdjetivosDB !== 'undefined') ? baseAdjetivosDB : respaldoAdjetivosDB;
+
+            let todasLasPalabras = [
+                ...(dbSustantivos.masculinos || []),
+                ...(dbSustantivos.femeninos || []),
+                ...(dbSustantivos.neutros || [])
+            ];
+            let listaAdjetivos = dbAdjetivos.adjetivos || respaldoAdjetivosDB.adjetivos;
+
+            let seleccionadas = [...todasLasPalabras].sort(() => Math.random() - 0.5).slice(0, 5);
+            preguntasActuales = [];
+
+            seleccionadas.forEach((item, index) => {
+                let tipoPregunta = Math.floor(Math.random() * 4); 
+                let enunciadoTexto = "";
+                let respuestaCorrectaTexto = "";
+
+                if (tipoPregunta === 0) {
+                    enunciadoTexto = `¿A qué género pertenece el sustantivo "${item.palabra}" (${item.traduccion})? (Muški rod / mr, Ženski rod / žr o Srednji rod / sr)`;
+                    respuestaCorrectaTexto = item.genero;
+                } 
+                else if (tipoPregunta === 1) {
+                    let preguntaCorrecta = item.esAnimado ? "Tko?" : "Što?";
+                    enunciadoTexto = `¿Qué pregunta interrogativa le corresponde a "${item.palabra}" (${item.traduccion})? (Tko? o Što?)`;
+                    respuestaCorrectaTexto = preguntaCorrecta;
+                }
+                else if (tipoPregunta === 2) {
+                    let pluralCorrecto = obtenerPluralCroata(item.palabra, item.genero);
+                    enunciadoTexto = `Escribe el Plural (Nominativ) del sustantivo "${item.palabra}" (${item.traduccion}):`;
+                    respuestaCorrectaTexto = pluralCorrecto;
+                }
+                else {
+                    let adjObj = listaAdjetivos[Math.floor(Math.random() * listaAdjetivos.length)];
+                    let esPlural = Math.random() >= 0.5;
+                    
+                    let sustantivoForma = item.palabra;
+                    let verboBiti = "je";
+                    let adjetivoForma = adjObj.masc;
+                    let etiquetaBiti = "biti (je)";
+
+                    if (item.genero.includes("Masculino")) {
+                        if (esPlural) {
+                            sustantivoForma = obtenerPluralCroata(item.palabra, item.genero);
+                            verboBiti = "su";
+                            adjetivoForma = adjObj.masc + "i"; 
+                            etiquetaBiti = "biti (mn)";
+                        } else {
+                            adjetivoForma = adjObj.masc;
+                            etiquetaBiti = "biti (je)";
+                        }
+                    } else if (item.genero.includes("Femenino")) {
+                        if (esPlural) {
+                            sustantivoForma = item.palabra.slice(0, -1) + "e";
+                            verboBiti = "su";
+                            adjetivoForma = adjObj.fem.slice(0, -1) + "e";
+                            etiquetaBiti = "biti (mn)";
+                        } else {
+                            sustantivoForma = item.palabra; 
+                            verboBiti = "je";
+                            adjetivoForma = adjObj.fem; 
+                            etiquetaBiti = "biti (je)";
+                        }
+                    } else { 
+                        if (esPlural) {
+                            sustantivoForma = item.palabra.slice(0, -1) + "a";
+                            verboBiti = "su";
+                            adjetivoForma = adjObj.neutro.slice(0, -1) + "a";
+                            etiquetaBiti = "biti (mn)";
+                        } else {
+                            sustantivoForma = item.palabra; 
+                            verboBiti = "je";
+                            adjetivoForma = adjObj.neutro;
+                            etiquetaBiti = "biti (je)";
+                        }
+                    }
+
+                    respuestaCorrectaTexto = `${sustantivoForma} ${verboBiti} ${adjetivoForma}`;
+                    enunciadoTexto = `Arma la oración combinando: "${item.palabra}" (${item.traduccion}) + "${etiquetaBiti}" + "${adjObj.masc}" (${adjObj.traduccion})`;
+                }
+
+                preguntasActuales.push({ 
+                    index, 
+                    enunciado: enunciadoTexto, 
+                    respuestaCorrecta: respuestaCorrectaTexto.trim(), 
+                    generoOriginal: item.genero,
+                    usuarioRespuesta: "", 
+                    esCorrecto: false 
+                });
+
+                let cardHtml = `
+                    <div class="pregunta-card" id="card-preg-${index}">
+                        <p class="enunciado">${index + 1}. ${enunciadoTexto}</p>
+                        <input type="text" class="input-respuesta" id="input-preg-${index}" data-palabra="${item.palabra}" placeholder="Escribe tu respuesta...">
+                        <div class="feedback" id="feedback-preg-${index}"></div>
+                        <div class="frase-completa" id="frase-preg-${index}">✓ Respuesta correcta: ${respuestaCorrectaTexto}</div>
+                    </div>
+                `;
+                contenedor.innerHTML += cardHtml;
+            });
+
+            setTimeout(() => {
+                const primerInput = document.getElementById('input-preg-0');
+                if (primerInput) {
+                    primerInput.focus();
+                    campoActivoActual = primerInput;
+                }
+            }, 100);
+        }
+
+        function evaluarQuizCompleto() {
+            let puntajeTotal = 0;
+
+            preguntasActuales.forEach(p => {
+                const input = document.getElementById(`input-preg-${p.index}`);
+                const feedback = document.getElementById(`feedback-preg-${p.index}`);
+                const fraseDiv = document.getElementById(`frase-preg-${p.index}`);
+                
+                p.usuarioRespuesta = input.value.trim();
+
+                // Normalización absoluta: minúsculas, espacios limpios y reemplazo de tildes o signos extremos si hiciera falta
+                let valorUsuario = p.usuarioRespuesta.toLowerCase().replace(/\s+/g, ' ').replace(/[?]/g, '').trim();
+                let respuestaValida = p.respuestaCorrecta.toLowerCase().replace(/\s+/g, ' ').replace(/[?]/g, '').trim();
+
+                let esValido = (valorUsuario === respuestaValida);
+
+                // Comprobación específica para abreviaturas de género (mr, žr/zr, sr) sin importar mayúsculas
+                if (!esValido && (p.enunciado.includes("género") || p.enunciado.includes("rod"))) {
+                    if ((p.generoOriginal.includes("Masculino") && (valorUsuario === "mr" || valorUsuario === "muški rod")) ||
+                        (p.generoOriginal.includes("Femenino") && (valorUsuario === "žr" || valorUsuario === "zr" || valorUsuario === "ženski rod" || valorUsuario === "zenski rod")) ||
+                        (p.generoOriginal.includes("Neutro") && (valorUsuario === "sr" || valorUsuario === "srednji rod"))) {
+                        esValido = true;
+                    }
+                }
+
+                input.disabled = true;
+                fraseDiv.style.display = 'block';
+
+                if (esValido) {
+                    input.classList.add('correcto-input');
+                    feedback.style.color = 'var(--success)';
+                    feedback.textContent = '¡Correcto! (+2 puntos)';
+                    puntajeTotal += 2;
+                    p.esCorrecto = true;
+                } else {
+                    input.classList.add('incorrecto-input');
+                    feedback.style.color = 'var(--error)';
+                    feedback.textContent = 'Incorrecto.';
+                    p.esCorrecto = false;
+                }
+            });
+
+            document.getElementById('seccionBotonEvaluar').style.display = 'none';
+            document.getElementById('barraTeclado').style.display = 'none';
+            
+            setTimeout(() => {
+                document.getElementById('quizContainer').style.display = 'none';
+                const resultadoDiv = document.getElementById('resultadoFinal');
+                resultadoDiv.style.display = 'flex';
+
+                let claseColor = (puntajeTotal === 10) ? "nota-dorada" : (puntajeTotal === 0 ? "nota-cero" : "nota-verde");
+                const contenedorNum = document.getElementById('contenedorNumeroGrande');
+                contenedorNum.textContent = puntajeTotal;
+                contenedorNum.className = "numero-nota-cuadrado " + claseColor;
+
+                document.getElementById('mensajeFinalTexto').textContent = `Obtuviste ${puntajeTotal} de 10 puntos posibles.`;
+            }, 800);
+        }
+
+        function mostrarRevisionDetallada() {
+            document.getElementById('resultadoFinal').style.display = 'none';
+            const seccionRev = document.getElementById('seccionRevision');
+            seccionRev.style.display = 'flex';
+
+            const listaRev = document.getElementById('listaRevisionContainer');
+            listaRev.innerHTML = '';
+
+            preguntasActuales.forEach((p, idx) => {
+                let claseEstado = p.esCorrecto ? 'es-correcta' : 'es-incorrecta';
+                let iconoEstado = p.esCorrecto ? '✅' : '❌';
+
+                let cardRev = document.createElement('div');
+                cardRev.className = `tarjeta-revision ${claseEstado}`;
+                cardRev.innerHTML = `
+                    <p style="margin: 0; font-weight: 700; color: var(--blue);"><strong>${idx + 1}.</strong> ${p.enunciado}</p>
+                    <p style="margin: 0; font-size: 0.82rem; color: #334155;">Tu respuesta: <strong>${p.usuarioRespuesta || '(Sin responder)'}</strong> ${iconoEstado}</p>
+                    <p style="margin: 0; font-size: 0.82rem; color: #047857;">Respuesta correcta: <strong>${p.respuestaCorrecta}</strong></p>
+                `;
+                listaRev.appendChild(cardRev);
+            });
+        }
+
+        function volverAResultados() {
+            document.getElementById('seccionRevision').style.display = 'none';
+            document.getElementById('resultadoFinal').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>

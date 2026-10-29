@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gramatika — Nominativ</title>
+    <style>
+        :root {
+            --red: #ff1c1c;
+            --white: #ffffff;
+            --blue: #1b264f;
+            --croatia-blue: #0051ba;
+            --croatia-red: #d90f13;
+        }
+
+        body {
+            margin: 0;
+            padding: 15px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
+                        url('imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
+            background-size: cover;
+            background-color: #1b264f;
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-height: 96vh;
+            z-index: 10;
+        }
+
+        .card-panel {
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 25px 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border: 3px solid var(--croatia-blue);
+            width: 100%;
+            box-sizing: border-box;
+            overflow-y: auto;
+            max-height: 90vh;
+        }
+
+        .card-panel::-webkit-scrollbar {
+            width: 8px;
+        }
+        .card-panel::-webkit-scrollbar-thumb {
+            background: var(--croatia-blue);
+            border-radius: 4px;
+        }
+
+        .gramatika-header {
+            background-color: #5c6b73;
+            color: white;
+            padding: 8px 15px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            border-radius: 6px 6px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .bloque-libro {
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background: #fff;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+
+        .bloque-contenido {
+            padding: 15px;
+        }
+
+        .ejemplo-frase {
+            font-style: italic;
+            color: #334155;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+
+        .tabla-gramatica {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .tabla-gramatica th, .tabla-gramatica td {
+            border: 1px solid #cbd5e1;
+            padding: 8px;
+        }
+
+        .tabla-gramatica th {
+            background-color: #f1f5f9;
+            color: #1e293b;
+            font-weight: 700;
+        }
+
+        .tabla-gramatica td {
+            background-color: #ffffff;
+        }
+
+        .resaltado-rojo {
+            color: var(--croatia-red);
+            font-weight: bold;
+        }
+
+        .tres-columnas {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            font-size: 0.88rem;
+            line-height: 1.4;
+        }
+
+        .columna-idioma {
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .columna-hr { background-color: #f8fafc; border-left: 4px solid #3b82f6; }
+        .columna-en { background-color: #f8fafc; border-left: 4px solid #10b981; }
+        .columna-es { background-color: #f8fafc; border-left: 4px solid #f59e0b; }
+
+        .btn-volver-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .btn-volver {
+            background: var(--croatia-blue);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0,81,186,0.3);
+        }
+
+        .btn-volver:hover {
+            background: #003380;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body id="appBody">
+
+    <div class="app-container">
+        
+        <div class="card-panel">
+            
+            <!-- BLOQUE 1: TABLA Y DESINENCIAS (NOMINATIV) -->
+            <div class="bloque-libro">
+                <div class="gramatika-header">
+                    <span>Gramatika: Nominativ — Glavni subjekt</span>
+                </div>
+                <div class="bloque-contenido">
+                    <div class="ejemplo-frase">
+                        <strong>Primjer:</strong> Ovo je student. Ana čita knjigu.
+                    </div>
+                    <table class="tabla-gramatica">
+                        <tr>
+                            <th></th>
+                            <th>muški rod</th>
+                            <th>ženski rod</th>
+                            <th>srednji rod</th>
+                        </tr>
+                        <tr>
+                            <td><strong>jednina</strong></td>
+                            <td>-ø / -prijatelj<span class="resaltado-rojo"></span></td>
+                            <td>-a / prijateljic<span class="resaltado-rojo">a</span></td>
+                            <td>-o / -e / sel<span class="resaltado-rojo">o</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>množina</strong></td>
+                            <td>-i / prijatelj<span class="resaltado-rojo">i</span></td>
+                            <td>-e / prijateljic<span class="resaltado-rojo">e</span></td>
+                            <td>-a / sel<span class="resaltado-rojo">a</span></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- BLOQUE 2: EXPLICACIÓN TRIILINGÜE -->
+            <div class="bloque-libro">
+                <div class="gramatika-header" style="background-color: #334155;">
+                    <span>Objašnjenje / Explanation / Explicación</span>
+                </div>
+                <div class="bloque-contenido">
+                    <div class="tres-columnas">
+                        <div class="columna-idioma columna-hr">
+                            Nominativ je prvi padež i osnovni oblik imenice. On označava subjekt (vršitelja radnje) ili nositelja stanja u rečenici. Ne dolazi s prijedlozima.
+                        </div>
+                        <div class="columna-idioma columna-en">
+                            The nominative is the first case and the base form of the noun. It indicates the subject (the doer of the action) or the holder of a state in a sentence. It does not take prepositions.
+                        </div>
+                        <div class="columna-idioma columna-es">
+                            El nominativo es el primer caso y la forma base del sustantivo. Indica el sujeto (quien realiza la acción) o el portador del estado en la oración. No va acompañado de preposiciones.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BLOQUE 3: PREGUNTAS (PITANJA ZA NOMINATIV) -->
+            <div class="bloque-libro">
+                <div class="gramatika-header" style="background-color: #1e293b;">
+                    <span>Pitanja za Nominativ</span>
+                </div>
+                <div class="bloque-contenido">
+                    <div class="ejemplo-frase">
+                        <strong>Primjer:</strong> <em>Tko</em> je ovo? Ovo je profesor. / <em>Što</em> je ovo? Ovo je knjiga.
+                    </div>
+                    <div class="tres-columnas" style="margin-bottom: 12px;">
+                        <div class="columna-idioma columna-hr">
+                            Pitanja na koja odgovara nominativ jesu <strong>tko?</strong> (za osobe) i <strong>što?</strong> (za stvari i pojmove). To je temeljni padež u rječniku.
+                        </div>
+                        <div class="columna-idioma columna-en">
+                            The questions answered by the nominative are <strong>tko?</strong> (who? for persons) and <strong>što?</strong> (what? for things and concepts). It is the fundamental case in the dictionary.
+                        </div>
+                        <div class="columna-idioma columna-es">
+                            Las preguntas a las que responde el nominativo son <strong>tko?</strong> (¿quién? para personas) y <strong>što?</strong> (¿qué? para cosas y conceptos). Es el caso fundamental en el diccionario.
+                        </div>
+                    </div>
+
+                    <table class="tabla-gramatica" style="max-width: 400px; margin: 0 auto;">
+                        <tr>
+                            <th>padež</th>
+                            <th>osoba</th>
+                            <th>nije osoba</th>
+                        </tr>
+                        <tr>
+                            <td><strong>NOMINATIV</strong></td>
+                            <td>Tko?</td>
+                            <td>Što?</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- BOTÓN DE RETORNO DINÁMICO -->
+            <div class="btn-volver-container">
+                <a href="MSN11declinacionesnominativ.html" id="btnVolverLeccion" class="btn-volver">← Natrag na lekciju / Volver a la lección</a>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        window.addEventListener("DOMContentLoaded", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const origen = urlParams.get('origen');
+            const btnVolver = document.getElementById('btnVolverLeccion');
+
+            if (origen) {
+                btnVolver.href = origen;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mala Škola - Igra Boje</title>
+    <!-- Vinculamos tu archivo externo de datos -->
+    <script src="Colores/Imagenes/colores-data.js"></script>
+    <style>
+        :root {
+            --croatia-blue: #0051ba;
+            --croatia-red: #d90f13;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), 
+                        url('imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
+            background-size: cover;
+            background-color: #1b264f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .game-container {
+            background: #e6e6e6;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            border: 3px solid var(--croatia-blue);
+            width: 90%;
+            max-width: 450px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 40px;
+        }
+
+        /* Cuadro superior que muestra el color a adivinar */
+        .target-box {
+            width: 100%;
+            height: 80px;
+            border-radius: 6px;
+            border: 2px solid #ccc;
+            margin-bottom: 25px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* Grilla de 2 columnas para los botones */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .color-btn {
+            background-color: #ffffff;
+            color: #1e293b;
+            font-size: 1.1rem;
+            font-weight: 800;
+            padding: 12px;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .color-btn:hover {
+            transform: scale(1.03);
+            border-color: var(--croatia-blue);
+        }
+
+        .score-display {
+            margin-top: 5px;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--croatia-blue);
+        }
+
+        .bottom-action {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .btn-back {
+            background: #ffffff;
+            border: 3px solid var(--croatia-red);
+            width: 55px;
+            height: 55px;
+            min-width: 55px;
+            min-height: 55px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--croatia-red);
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .btn-back:hover {
+            background: #fef2f2;
+            transform: scale(1.1);
+        }
+
+        /* --- ESTILOS DE LA VENTANA MODAL PERSONALIZADA --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Contenedor relativo para alojar los elementos centrados */
+        .modal-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 30px;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            transform: scale(0.8);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 4px solid var(--croatia-blue);
+            z-index: 2;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
+        }
+
+        .modal-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .modal-message {
+            font-size: 1.05rem;
+            color: #475569;
+            margin-bottom: 15px;
+        }
+
+        /* Caja llamativa para la nota */
+        .modal-grade-box {
+            font-size: 2.8rem;
+            font-weight: 900;
+            padding: 10px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            box-shadow: inset 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        .modal-btn {
+            background-color: var(--croatia-blue);
+            color: white;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            box-shadow: 0 4px 12px rgba(0,81,186,0.3);
+            width: 100%;
+        }
+
+        .modal-btn:hover {
+            transform: scale(1.03);
+            background-color: #003380;
+        }
+
+        /* --- ESTILOS EXCLUSIVOS PARA CUANDO ES UN 10 --- */
+        .modal-card.ten-card {
+            border: 4px solid #d4af37; /* Borde dorado elegante */
+        }
+
+        .modal-card.ten-card #modalTitle {
+            color: #d4af37; /* Título dorado */
+        }
+
+        /* --- ANIMACIONES DE REVERENCIA Y SALUDO --- */
+        @keyframes boyBow {
+            0%, 100% {
+                transform: translateY(-50%) rotate(0deg);
+                transform-origin: bottom center;
+            }
+            50% {
+                transform: translateY(-50%) rotate(10deg);
+                transform-origin: bottom center;
+            }
+        }
+
+        @keyframes girlCurtsy {
+            0%, 100% {
+                transform: translateY(-50%) rotate(0deg);
+                transform-origin: bottom center;
+            }
+            50% {
+                transform: translateY(-50%) rotate(-10deg);
+                transform-origin: bottom center;
+            }
+        }
+
+        /* Ilustraciones de los niños ubicadas exactamente a los costados de la tarjeta */
+        .child-illustration {
+            position: absolute;
+            top: 50%;
+            width: 75px;   
+            height: auto;
+            z-index: 3;
+            display: none; 
+        }
+
+        .boy-illustration {
+            left: 15px; 
+            animation: boyBow 2.5s ease-in-out infinite;
+        }
+
+        .girl-illustration {
+            right: 15px; 
+            animation: girlCurtsy 2.5s ease-in-out infinite;
+        }
+
+        /* Estilo para el GIF del corazón que explota en flores */
+        .heart-gif {
+            position: absolute;
+            top: -65px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85px;
+            height: auto;
+            z-index: 4;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Dos reproductores independientes -->
+    <audio id="audio-pronunciacion" preload="auto"></audio>
+    <audio id="audio-efecto" preload="auto"></audio>
+
+    <div class="game-container">
+        <!-- Cuadro con el color aleatorio a adivinar -->
+        <div id="targetColorBox" class="target-box"></div>
+
+        <!-- Grilla de botones (opciones) -->
+        <div id="optionsGrid" class="options-grid"></div>
+
+        <!-- Marcador de intentos / Nota -->
+        <div id="scoreDisplay" class="score-display">Intentos: 0 / 4</div>
+
+        <!-- Botón para salir y volver al menú principal -->
+        <div class="bottom-action">
+            <button class="btn-back" onclick="volverAlInicio()" title="Volver">✕</button>
+        </div>
+    </div>
+
+    <!-- VENTANA MODAL PERSONALIZADA PARA EL RESULTADO -->
+    <div id="customModal" class="modal-overlay">
+        <div class="modal-wrapper">
+            <!-- Nene a la izquierda (solo para el 10) -->
+            <img src="imagenes/nenecroata10.png" alt="Nene croata 10" id="boyIllustration" class="child-illustration boy-illustration">
+            
+            <!-- GIF animado del corazón que explota en flores (arriba del modal, solo para el 10) -->
+            <img src="imagenes/corazon-flores.gif" alt="Corazón de flores" id="heartGif" class="heart-gif">
+
+            <div id="modalCard" class="modal-card">
+                <h2 id="modalTitle" class="modal-title">Odlično!</h2>
+                <p id="modalMessage" class="modal-message">Tu nota es:</p>
+                <div id="modalGradeBox" class="modal-grade-box">10</div>
+                <button class="modal-btn" onclick="cerrarModalYContinuar()">Siguiente color ➔</button>
+            </div>
+
+            <!-- Nena a la derecha (solo para el 10) -->
+            <img src="imagenes/nenacroata10.png" alt="Nena croata 10" id="girlIllustration" class="child-illustration girl-illustration">
+        </div>
+    </div>
+
+    <!-- Librería de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Scripts externos modulares -->
+    <script src="auth-check.js"></script>
+    <script src="user-profile.js"></script>
+    <script src="inactivity-logout.js"></script>
+
+    <script>
+        const listaColores = baseDatosColores.jardin;
+
+        let colorCorrecto = {};
+        let intentos = 0;
+        const maxIntentos = 4;
+
+        function iniciarJuego() {
+            intentos = 0;
+            document.getElementById('scoreDisplay').innerText = `Intentos: ${intentos} / ${maxIntentos}`;
+
+            colorCorrecto = listaColores[Math.floor(Math.random() * listaColores.length)];
+            document.getElementById('targetColorBox').style.backgroundColor = colorCorrecto.hex;
+
+            let opcionesSeleccionadas = [colorCorrecto];
+
+            while (opcionesSeleccionadas.length < 10 && opcionesSeleccionadas.length < listaColores.length) {
+                let colorAleatorio = listaColores[Math.floor(Math.random() * listaColores.length)];
+                if (!opcionesSeleccionadas.some(c => c.nombre === colorAleatorio.nombre)) {
+                    opcionesSeleccionadas.push(colorAleatorio);
+                }
+            }
+
+            opcionesSeleccionadas.sort(() => Math.random() - 0.5);
+
+            const grid = document.getElementById('optionsGrid');
+            grid.innerHTML = "";
+
+            opcionesSeleccionadas.forEach(colorItem => {
+                const btn = document.createElement('button');
+                btn.className = 'color-btn';
+                btn.innerText = colorItem.nombre;
+                btn.disabled = false;
+                btn.onclick = () => verificarSeleccion(colorItem, btn);
+                grid.appendChild(btn);
+            });
+        }
+
+        function verificarSeleccion(colorSeleccionado, botonElemento) {
+            intentos++;
+            const audioPronunciacion = document.getElementById('audio-pronunciacion');
+            const audioEfecto = document.getElementById('audio-efecto');
+
+            // 1. (0 ms) Reproducir la pronunciación del color
+            let nombreArchivoAudio = colorSeleccionado.nombre.toLowerCase();
+            audioPronunciacion.src = "Colores/Sonidos/" + nombreArchivoAudio + ".wav";
+            audioPronunciacion.play().catch(err => console.log("Audio de pronunciación no encontrado"));
+
+            if (colorSeleccionado.nombre === colorCorrecto.nombre) {
+                // 2. (800 ms) Suena 'yeah.wav'
+                setTimeout(() => {
+                    audioEfecto.src = "Sonidos/yeah.wav";
+                    audioEfecto.play().catch(err => console.log("Audio yeah no encontrado"));
+                }, 800);
+
+                botonElemento.style.backgroundColor = colorSeleccionado.hex;
+                botonElemento.style.color = (colorSeleccionado.hex === "#ffffff") ? "#000000" : "#ffffff";
+
+                let nota = calcularNota(intentos);
+                
+                // 3. (6000 ms) Pausa holgada, suena la calificación en croata y se abre el modal
+                setTimeout(() => {
+                    reproducirAudioCalificacion(nota);
+                    mostrarModalResultado(true, nota, colorCorrecto.nombre);
+                }, 6000);
+
+            } else {
+                // 2. (800 ms) Suena 'mario.wav'
+                setTimeout(() => {
+                    audioEfecto.src = "Sonidos/mario.wav";
+                    audioEfecto.play().catch(err => console.log("Audio mario no encontrado"));
+                }, 800);
+
+                botonElemento.style.backgroundColor = colorSeleccionado.hex;
+                botonElemento.style.color = (colorSeleccionado.hex === "#ffffff") ? "#000000" : "#ffffff";
+                botonElemento.disabled = true;
+
+                document.getElementById('scoreDisplay').innerText = `Intentos: ${intentos} / ${maxIntentos}`;
+
+                if (intentos >= maxIntentos) {
+                    // 3. (3500 ms) Si agota los 4 intentos, suena 'katastrofa.wav' y se abre el modal
+                    setTimeout(() => {
+                        const audioCal = document.getElementById('audio-efecto');
+                        audioCal.src = "sonidos/katastrofa.wav";
+                        audioCal.play().catch(err => console.log("Audio katastrofa no encontrado"));
+                        
+                        mostrarModalResultado(false, 0, colorCorrecto.nombre);
+                    }, 3500);
+                }
+            }
+        }
+
+        function calcularNota(intentoActual) {
+            switch(intentoActual) {
+                case 1: return 10;
+                case 2: return 7.50;
+                case 3: return 5;
+                case 4: return 2.5;
+                default: return 0;
+            }
+        }
+
+        function reproducirAudioCalificacion(nota) {
+            const audioCal = document.getElementById('audio-efecto');
+            if (nota === 10) {
+                audioCal.src = "sonidos/odlično.wav";
+            } else if (nota === 7.50) {
+                audioCal.src = "sonidos/vrlodobro.wav";
+            } else {
+                audioCal.src = "sonidos/takotako.wav";
+            }
+            audioCal.play().catch(err => console.log("Audio de calificación no encontrado"));
+        }
+
+        function mostrarModalResultado(acerto, nota, nombreCorrecto) {
+            const modal = document.getElementById('customModal');
+            const modalCard = document.getElementById('modalCard');
+            const title = document.getElementById('modalTitle');
+            const message = document.getElementById('modalMessage');
+            const gradeBox = document.getElementById('modalGradeBox');
+            const boyIllustration = document.getElementById('boyIllustration');
+            const girlIllustration = document.getElementById('girlIllustration');
+            const heartGif = document.getElementById('heartGif');
+
+            // Limpiar estilos previos de tarjeta y ocultar niños/GIF
+            modalCard.classList.remove('ten-card');
+            boyIllustration.style.display = 'none';
+            girlIllustration.style.display = 'none';
+            heartGif.style.display = 'none';
+
+            if (acerto) {
+                gradeBox.innerText = nota.toFixed(nota % 1 !== 0 ? 2 : 0);
+
+                if (nota === 10) {
+                    title.innerText = "¡Odlično!";
+                    message.innerText = "Tu nota es:";
+                    gradeBox.style.backgroundColor = "#fefce8";
+                    gradeBox.style.color = "#d4af37";
+                    gradeBox.style.border = "2px solid #fde047";
+                    
+                    // Activar diseño dorado, mostrar a los niños y el GIF animado
+                    modalCard.classList.add('ten-card');
+                    boyIllustration.style.display = 'block';
+                    girlIllustration.style.display = 'block';
+                    heartGif.style.display = 'block';
+
+                } else if (nota === 7.50) {
+                    title.innerText = "¡Vrlo dobro!";
+                    message.innerText = "Tu nota es:";
+                    gradeBox.style.backgroundColor = "#e0f2fe";
+                    gradeBox.style.color = "#0284c7";
+                    gradeBox.style.border = "2px solid #38bdf8";
+                } else {
+                    title.innerText = "¡Tako tako!";
+                    message.innerText = "Tu nota es:";
+                    gradeBox.style.backgroundColor = "#fef9c3";
+                    gradeBox.style.color = "#ca8a04";
+                    gradeBox.style.border = "2px solid #eab308";
+                }
+            } else {
+                title.innerText = "¡Katastrofa!";
+                message.innerHTML = `El color correcto era: <br><strong style="font-size: 1.2rem; color: var(--croatia-red);">${nombreCorrecto}</strong>`;
+                gradeBox.innerText = "0";
+                gradeBox.style.backgroundColor = "#fee2e2";
+                gradeBox.style.color = "#dc2626";
+                gradeBox.style.border = "2px solid #ef4444";
+            }
+
+            modal.classList.add('active');
+        }
+
+        function cerrarModalYContinuar() {
+            const modal = document.getElementById('customModal');
+            modal.classList.remove('active');
+            iniciarJuego();
+        }
+
+        function volverAlInicio() {
+            window.location.href = "MS1.html";
+        }
+
+        window.onload = iniciarJuego;
+    </script>
+</body>
+</html>

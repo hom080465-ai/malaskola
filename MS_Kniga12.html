@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Razgovarajte s Nama A1-A2 — Lector PDF</title>
+    <!-- Incluimos PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    
+    <style>
+        :root {
+            --croatia-blue: #0051ba;
+            --croatia-red: #d90f13;
+        }
+
+        body {
+            margin: 0;
+            background-color: #1b264f;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            overflow: hidden;
+            color: white;
+            background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), 
+                        url('imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
+            background-size: cover;
+            box-sizing: border-box;
+            padding-top: 10px;
+            position: relative;
+        }
+
+        .toolbar {
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px 15px;
+            border-radius: 10px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            color: #1e293b;
+            font-weight: 700;
+            border: 2px solid var(--croatia-blue);
+            z-index: 100;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .toolbar input, .toolbar button, .toolbar a {
+            border-radius: 6px;
+            border: none;
+            font-weight: bold;
+            font-size: 0.85rem;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .toolbar input {
+            padding: 6px 10px;
+            background: #f1f5f9;
+            color: #333;
+            border: 1px solid #cbd5e1;
+            text-align: center;
+            cursor: text;
+        }
+
+        .toolbar button {
+            padding: 8px 12px;
+            background: var(--croatia-blue);
+            color: white;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toolbar button:hover {
+            background: #003380;
+        }
+
+        .btn-toolbar-step {
+            padding: 6px 10px !important;
+            font-size: 0.8rem !important;
+            background: #334155 !important;
+        }
+        .btn-toolbar-step:hover {
+            background: #1e293b !important;
+        }
+
+        .btn-volver {
+            background: #475569 !important;
+            color: white !important;
+            padding: 8px 12px !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-volver:hover {
+            background: #334155 !important;
+        }
+
+        .btn-bilingue, .lbl-bilingue {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.25;
+            text-align: center;
+        }
+
+        .texto-es {
+            display: none;
+            font-size: 0.7rem;
+            font-weight: normal;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .lbl-bilingue .texto-es {
+            color: #64748b;
+        }
+
+        body.modo-bilingue .texto-es {
+            display: block;
+        }
+
+        .badge-idioma {
+            background: var(--croatia-red);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255,255,255,0.6);
+            margin-right: 5px;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        .badge-idioma:hover {
+            background: #b50b0f;
+            transform: scale(1.05);
+        }
+
+        .reader-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            height: 85vh;
+        }
+
+        .book-canvas-wrapper {
+            position: relative;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            max-height: 80vh;
+            max-width: 90vw;
+            overflow: hidden;
+            gap: 2px;
+            padding: 5px;
+        }
+
+        .canvas-pane {
+            position: relative;
+        }
+
+        canvas {
+            display: block;
+            max-height: 76vh;
+            width: auto;
+        }
+
+        .textLayer {
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            opacity: 0.2;
+            line-height: 1.0;
+            pointer-events: none;
+        }
+
+        .textLayer span {
+            color: transparent;
+            position: absolute;
+            white-space: pre;
+            cursor: text;
+            transform-origin: 0% 0%;
+        }
+
+        .textLayer span.highlight {
+            background-color: yellow;
+            color: black;
+            opacity: 0.9;
+        }
+
+        .btn-page-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--croatia-blue);
+            color: white;
+            border: 3px solid white;
+            border-radius: 50%;
+            width: 55px;
+            height: 55px;
+            font-size: 1.6rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+            transition: all 0.2s;
+            z-index: 9999;
+        }
+
+        .btn-page-nav:hover {
+            background: #003380;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        #btnPrev { left: 30px; }
+        #btnNext { right: 30px; }
+    </style>
+</head>
+<body id="appBody">
+
+    <div class="toolbar">
+        <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()" title="Hacer clic para cambiar idioma">HR</span>
+
+        <div class="lbl-bilingue">
+            <span>Stranica</span>
+            <span class="texto-es">Página</span>
+        </div>
+        <button class="btn-toolbar-step" onclick="paginaAnterior()">◀</button>
+        <input type="text" id="txtPagina" value="1" style="width: 50px;" onkeydown="chequearEnter(event)"> 
+        <button class="btn-toolbar-step" onclick="paginaSiguiente()">▶</button>
+        
+        <div class="lbl-bilingue">
+            <span>od <span id="total-paginas">--</span></span>
+            <span class="texto-es">de --</span>
+        </div>
+        
+        <div style="display: flex; align-items: center; gap: 5px; border-left: 2px solid #cbd5e1; padding-left: 12px;">
+            <div class="lbl-bilingue">
+                <span>Traži</span>
+                <span class="texto-es">Buscar</span>
+            </div>
+            <input type="text" id="txtBuscar" placeholder="Riječ..." style="width: 100px; text-align: left; padding-left: 5px;" oninput="reiniciarBusqueda()" onkeydown="chequearEnterBuscar(event)">
+            
+            <button onclick="buscarSiguientePalabra()">
+                <div class="btn-bilingue">
+                    <span>🔍 Traži dalje</span>
+                    <span class="texto-es">Buscar Siguiente</span>
+                </div>
+            </button>
+        </div>
+
+        <button id="btnAudio" onclick="toggleAudio()" style="background: var(--croatia-red);">
+            <div class="btn-bilingue">
+                <span>🔇 <span id="textAudioState">Zvuk isključen</span></span>
+                <span class="texto-es">Sonido Desactivado</span>
+            </div>
+        </button>
+        
+        <button onclick="cerrarLibro()" class="btn-volver" style="margin-left: 10px;">
+            <div class="btn-bilingue">
+                <span>Povratak</span>
+                <span class="texto-es">Volver</span>
+            </div>
+        </button>
+    </div>
+
+    <!-- Botones grandes laterales de apoyo -->
+    <div class="reader-container">
+        <button class="btn-page-nav" id="btnPrev" onclick="paginaAnterior()">❮</button>
+        
+        <div class="book-canvas-wrapper">
+            <div class="canvas-pane">
+                <canvas id="pdf-canvas-left"></canvas>
+                <div id="text-layer-left" class="textLayer"></div>
+            </div>
+            <div class="canvas-pane" id="wrapper-right" style="display: none;">
+                <canvas id="pdf-canvas-right"></canvas>
+                <div id="text-layer-right" class="textLayer"></div>
+            </div>
+        </div>
+        
+        <button class="btn-page-nav" id="btnNext" onclick="paginaSiguiente()">❯</button>
+    </div>
+
+    <!-- Librería de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Scripts separados y reutilizables para control de sesión y perfil visible -->
+    <script src="auth-check.js"></script>
+    <script src="user-profile.js"></script>
+
+    <!-- Script general de inactividad -->
+    <script src="inactivity-logout.js"></script>
+    
+    <script>
+        const urlPDF = 'Kniga/Razgovarajte s Nama A1-A2.pdf';
+        let audioHabilitado = false;
+        let pdfDoc = null;
+        let pageNum = 1;
+        let pageRendering = false;
+        
+        let canvasLeft = document.getElementById('pdf-canvas-left');
+        let ctxLeft = canvasLeft.getContext('2d');
+        let textLayerLeft = document.getElementById('text-layer-left');
+
+        let canvasRight = document.getElementById('pdf-canvas-right');
+        let ctxRight = canvasRight.getContext('2d');
+        let textLayerRight = document.getElementById('text-layer-right');
+        let wrapperRight = document.getElementById('wrapper-right');
+
+        let audioCtx = null;
+        let ultimaBusqueda = "";
+        let paginaBusquedaActual = 1;
+
+        window.addEventListener("DOMContentLoaded", () => {
+            aplicarEstadoIdioma();
+            
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+            pdfjsLib.getDocument(urlPDF).promise.then(function(pdfDoc_) {
+                pdfDoc = pdfDoc_;
+                document.getElementById('total-paginas').textContent = pdfDoc.numPages;
+                renderBookView(pageNum);
+            });
+        });
+
+        function aplicarEstadoIdioma() {
+            let idiomaGuardado = localStorage.getItem('idiomaApp');
+            
+            if (!idiomaGuardado) {
+                idiomaGuardado = 'hr';
+                localStorage.setItem('idiomaApp', 'hr');
+            }
+
+            idiomaGuardado = idiomaGuardado.trim().toLowerCase();
+            const body = document.getElementById('appBody');
+            const badge = document.getElementById('badgeIdioma');
+
+            if (idiomaGuardado === "hr-es" || idiomaGuardado.includes("es")) {
+                body.classList.add('modo-bilingue');
+                badge.innerText = "HR-ES";
+            } else {
+                body.classList.remove('modo-bilingue');
+                badge.innerText = "HR";
+            }
+        }
+
+        function alternarIdioma() {
+            let idiomaActual = (localStorage.getItem('idiomaApp') || 'hr').trim().toLowerCase();
+            
+            if (idiomaActual === "hr-es" || idiomaActual.includes("es")) {
+                localStorage.setItem('idiomaApp', 'hr');
+            } else {
+                localStorage.setItem('idiomaApp', 'hr-es');
+            }
+            
+            location.reload();
+        }
+
+        function cerrarLibro() {
+            const origen = sessionStorage.getItem('paginaOrigenLibro');
+            if (origen) {
+                sessionStorage.removeItem('paginaOrigenLibro');
+                window.location.href = origen;
+            } else {
+                window.location.href = 'MS_Index1.html';
+            }
+        }
+
+        function inicializarAudioWeb() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function reproducirSonidoPapel() {
+            if (!audioHabilitado) return;
+            try {
+                inicializarAudioWeb();
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                let bufferSize = audioCtx.sampleRate * 0.08;
+                let buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                let data = buffer.getChannelData(0);
+                
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+
+                let noise = audioCtx.createBufferSource();
+                noise.buffer = buffer;
+
+                let filter = audioCtx.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.frequency.value = 1000;
+                filter.Q.value = 3;
+
+                let gain = audioCtx.createGain();
+                gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                noise.start();
+            } catch(e) {
+                console.log("Audio sintetizado prevenido", e);
+            }
+        }
+
+        function toggleAudio() {
+            audioHabilitado = !audioHabilitado;
+            let btn = document.getElementById('textAudioState');
+            let btnContainer = document.getElementById('btnAudio');
+
+            if (audioHabilitado) {
+                inicializarAudioWeb();
+                btnContainer.style.background = "#059669";
+                btn.innerText = "Zvuk uključen";
+            } else {
+                btnContainer.style.background = "var(--croatia-red)";
+                btn.innerText = "Zvuk isključen";
+            }
+        }
+
+        async function renderBookView(num) {
+            pageRendering = true;
+            pageNum = num;
+            
+            document.getElementById('txtPagina').value = pageNum;
+
+            textLayerLeft.innerHTML = '';
+            textLayerRight.innerHTML = '';
+
+            if (pageNum === 1) {
+                wrapperRight.style.display = 'none';
+                let page = await pdfDoc.getPage(1);
+                let viewport = page.getViewport({scale: 1.3});
+                
+                canvasLeft.height = viewport.height;
+                canvasLeft.width = viewport.width;
+                textLayerLeft.style.height = viewport.height + 'px';
+                textLayerLeft.style.width = viewport.width + 'px';
+
+                await page.render({canvasContext: ctxLeft, viewport: viewport}).promise;
+
+                let textContent = await page.getTextContent();
+                pdfjsLib.renderTextLayer({
+                    textContent: textContent,
+                    container: textLayerLeft,
+                    viewport: viewport,
+                    textDivs: []
+                });
+            } else {
+                wrapperRight.style.display = 'block';
+
+                let pageL = await pdfDoc.getPage(pageNum);
+                let vpL = pageL.getViewport({scale: 1.3});
+                canvasLeft.height = vpL.height;
+                canvasLeft.width = vpL.width;
+                textLayerLeft.style.height = vpL.height + 'px';
+                textLayerLeft.style.width = vpL.width + 'px';
+                await pageL.render({canvasContext: ctxLeft, viewport: vpL}).promise;
+                
+                let textContentL = await pageL.getTextContent();
+                pdfjsLib.renderTextLayer({
+                    textContent: textContentL,
+                    container: textLayerLeft,
+                    viewport: vpL,
+                    textDivs: []
+                });
+
+                if (pageNum + 1 <= pdfDoc.numPages) {
+                    let pageR = await pdfDoc.getPage(pageNum + 1);
+                    let vpR = pageR.getViewport({scale: 1.3});
+                    canvasRight.height = vpR.height;
+                    canvasRight.width = vpR.width;
+                    textLayerRight.style.height = vpR.height + 'px';
+                    textLayerRight.style.width = vpR.width + 'px';
+                    await pageR.render({canvasContext: ctxRight, viewport: vpR}).promise;
+                    
+                    let textContentR = await pageR.getTextContent();
+                    pdfjsLib.renderTextLayer({
+                        textContent: textContentR,
+                        container: textLayerRight,
+                        viewport: vpR,
+                        textDivs: []
+                    });
+                    wrapperRight.style.display = 'block';
+                } else {
+                    wrapperRight.style.display = 'none';
+                }
+            }
+            pageRendering = false;
+
+            if (ultimaBusqueda) {
+                aplicarResaltado(ultimaBusqueda);
+            }
+        }
+
+        function paginaAnterior() {
+            if (pageRendering) return;
+            if (pageNum <= 1) return;
+
+            if (pageNum <= 3) {
+                pageNum = 1;
+            } else {
+                pageNum -= 2;
+            }
+            
+            document.getElementById('txtPagina').value = pageNum;
+            paginaBusquedaActual = pageNum;
+            reproducirSonidoPapel();
+            renderBookView(pageNum);
+        }
+
+        function paginaSiguiente() {
+            if (pageRendering) return;
+            if (pageNum >= pdfDoc.numPages) return;
+
+            if (pageNum === 1) {
+                pageNum = 2;
+            } else {
+                pageNum += 2;
+            }
+            
+            if (pageNum > pdfDoc.numPages) {
+                pageNum = pdfDoc.numPages;
+            }
+
+            document.getElementById('txtPagina').value = pageNum;
+            paginaBusquedaActual = pageNum;
+            reproducirSonidoPapel();
+            renderBookView(pageNum);
+        }
+
+        function aplicarResaltado(query) {
+            document.querySelectorAll('.textLayer span').forEach(span => {
+                span.classList.remove('highlight');
+            });
+
+            let encontrados = 0;
+            document.querySelectorAll('.textLayer').forEach(layer => {
+                layer.querySelectorAll('span').forEach(span => {
+                    if (span.textContent.toLowerCase().includes(query)) {
+                        span.classList.add('highlight');
+                        encontrados++;
+                    }
+                });
+            });
+            return encontrados;
+        }
+
+        function reiniciarBusqueda() {
+            ultimaBusqueda = "";
+            paginaBusquedaActual = pageNum;
+            document.querySelectorAll('.textLayer span').forEach(span => {
+                span.classList.remove('highlight');
+            });
+        }
+
+        async function buscarSiguientePalabra() {
+            let query = document.getElementById('txtBuscar').value.trim().toLowerCase();
+            if (!query) return;
+
+            if (ultimaBusqueda !== query) {
+                ultimaBusqueda = query;
+                paginaBusquedaActual = pageNum;
+            }
+
+            let total = pdfDoc.numPages;
+            let encontradaEn = -1;
+
+            let startP = paginaBusquedaActual;
+            if (startP === pageNum) {
+                startP = (pageNum === 1) ? 2 : pageNum + 2;
+            }
+
+            for (let p = startP; p <= total; p = (p === 1 ? 2 : p + 2)) {
+                let pAlineada = (p > 1 && p % 2 !== 0) ? p - 1 : p;
+                
+                let enc = false;
+                let pageL = await pdfDoc.getPage(pAlineada);
+                let textL = await pageL.getTextContent();
+                if (textL.items.some(item => item.str.toLowerCase().includes(query))) {
+                    enc = true;
+                }
+
+                if (!enc && pAlineada + 1 <= total) {
+                    let pageR = await pdfDoc.getPage(pAlineada + 1);
+                    let textR = await pageR.getTextContent();
+                    if (textR.items.some(item => item.str.toLowerCase().includes(query))) {
+                        enc = true;
+                    }
+                }
+
+                if (enc) {
+                    encontradaEn = pAlineada;
+                    paginaBusquedaActual = pAlineada;
+                    break;
+                }
+            }
+
+            if (encontradaEn !== -1) {
+                pageNum = encontradaEn;
+                document.getElementById('txtPagina').value = pageNum;
+                reproducirSonidoPapel();
+                await renderBookView(pageNum);
+                aplicarResaltado(query);
+            } else {
+                alert("Se llegó al final del libro sin más coincidencias. Volviendo al inicio.");
+                paginaBusquedaActual = 1;
+                pageNum = 1;
+                renderBookView(pageNum);
+                ultimaBusqueda = "";
+            }
+        }
+
+        function chequearEnterBuscar(event) {
+            if (event.key === 'Enter') {
+                buscarSiguientePalabra();
+            }
+        }
+
+        function irAPaginaManual() {
+            if (!pdfDoc) return;
+            let valInput = document.getElementById('txtPagina').value;
+            if (valInput === "") return;
+            
+            let num = parseInt(valInput);
+            if (!isNaN(num) && num >= 1 && num <= pdfDoc.numPages) {
+                if (num > 1 && num % 2 !== 0) num--;
+                if (num !== pageNum) {
+                    pageNum = num;
+                    paginaBusquedaActual = pageNum;
+                    reproducirSonidoPapel();
+                    renderBookView(pageNum);
+                }
+            }
+        }
+
+        function chequearEnter(event) {
+            if (event.key === 'Enter') {
+                irAPaginaManual();
+            }
+        }
+    </script>
+
+</body>
+</html>

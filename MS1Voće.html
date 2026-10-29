@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mala Škola - Voće</title>
+    <!-- Archivo de datos externo de frutas -->
+    <script src="Frutas/frutasdata.js"></script>
+    <style>
+        :root {
+            --croatia-blue: #0051ba;
+            --croatia-red: #d90f13;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), 
+                        url('imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
+            background-size: cover;
+            background-color: #1b264f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .game-container {
+            background: #e6e6e6;
+            border-radius: 12px;
+            padding: 25px 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            border: 3px solid var(--croatia-blue);
+            width: 90%;
+            max-width: 520px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 40px;
+        }
+
+        .title-header {
+            font-size: 2rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+            color: #111;
+        }
+
+        .score-display {
+            margin-top: 2px;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--croatia-blue);
+        }
+
+        .content-layout {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .image-box {
+            width: 200px;
+            height: 200px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            border: 2px solid #cbd5e1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+
+        .image-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-action {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            border: 3px solid #fff;
+            transition: transform 0.2s;
+        }
+
+        .btn-action:hover {
+            transform: scale(1.08);
+        }
+
+        .btn-green {
+            background-color: #22c55e;
+            color: white;
+        }
+
+        .btn-red {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 220px;
+        }
+
+        .fruit-option-btn {
+            background-color: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1e293b;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        .fruit-option-btn:hover {
+            border-color: var(--croatia-blue);
+            background-color: #f1f5f9;
+            transform: scale(1.03);
+        }
+
+        .fruit-option-btn.selected {
+            border-color: var(--croatia-blue);
+            background-color: #e0f2fe;
+            box-shadow: 0 0 10px rgba(0,81,186,0.4);
+            color: #0051ba;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 30px;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            transform: scale(0.8);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 4px solid var(--croatia-blue);
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
+        }
+
+        .modal-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .modal-message {
+            font-size: 1.05rem;
+            color: #475569;
+            margin-bottom: 15px;
+        }
+
+        .modal-grade-box {
+            font-size: 2.8rem;
+            font-weight: 900;
+            padding: 10px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            box-shadow: inset 0 3px 6px rgba(0,0,0,0.1);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .odlicno-gif {
+            width: 90px;
+            height: auto;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .modal-btn {
+            background-color: var(--croatia-blue);
+            color: white;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            width: 100%;
+        }
+
+        .modal-btn:hover {
+            transform: scale(1.03);
+            background-color: #003380;
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="audio-reproductor" preload="auto"></audio>
+
+    <div class="game-container">
+        <div class="title-header">ŠTO JE OVO?</div>
+        
+        <div id="scoreDisplay" class="score-display">Voće: 0 / 4</div>
+
+        <div class="content-layout">
+            <div class="left-column">
+                <div class="image-box">
+                    <img id="fruitImage" src="" alt="Fruta desconocida" style="display: none;">
+                    <span id="questionMark" style="font-size: 4rem; font-weight: bold; color: #d90f13;">???</span>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn-action btn-green" onclick="iniciarOContinuarJuego()" title="Empezar">✔</button>
+                    <button class="btn-action btn-red" onclick="volverAlInicio()" title="Salir">✕</button>
+                </div>
+            </div>
+
+            <div class="right-column" id="optionsContainer">
+                <div class="fruit-option-btn">---</div>
+                <div class="fruit-option-btn">---</div>
+                <div class="fruit-option-btn">---</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VENTANA MODAL -->
+    <div id="customModal" class="modal-overlay">
+        <div class="modal-card" id="modalCard">
+            <h2 id="modalTitle" class="modal-title">¡Vrlo Dobro!</h2>
+            <p id="modalMessage" class="modal-message">¡Respuesta correcta!</p>
+            <div id="modalGradeBox" class="modal-grade-box">
+                <span id="gradeText">10</span>
+                <img src="imagenes/Odlično.gif" alt="Odlično GIF" id="odlicnoGif" class="odlicno-gif">
+            </div>
+            <button class="modal-btn" id="modalButton" onclick="cerrarModalYContinuar()">Continuar ➔</button>
+        </div>
+    </div>
+
+    <!-- Librería de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Scripts externos modulares -->
+    <script src="auth-check.js"></script>
+    <script src="user-profile.js"></script>
+    <script src="inactivity-logout.js"></script>
+
+    <script>
+        let frutaActual = null;
+        let opcionesFrutas = [];
+        let frutaSeleccionadaIndex = null;
+        let juegoIniciado = false;
+        
+        let rondaActual = 0;
+        const maxRondas = 4;
+        let erroresCometidos = 0;
+        let esPantallaFinal = false;
+
+        // Arreglo para almacenar las 4 frutas seleccionadas sin repetir en cada partida
+        let frutasPartidaActual = [];
+
+        function iniciarOContinuarJuego() {
+            if (typeof listaFrutasActiva === 'undefined' || listaFrutasActiva.length === 0) {
+                alert("Error: No se pudo cargar listaFrutasActiva desde frutasdata.js o está vacío.");
+                return;
+            }
+
+            if (!juegoIniciado) {
+                juegoIniciado = true;
+                rondaActual = 0;
+                erroresCometidos = 0;
+                esPantallaFinal = false;
+
+                // Creamos una copia de la base de datos, la mezclamos al azar y tomamos exactamente 4 sin repetición
+                let copiaFrutas = [...listaFrutasActiva];
+                copiaFrutas.sort(() => Math.random() - 0.5);
+                frutasPartidaActual = copiaFrutas.slice(0, maxRondas);
+
+                siguienteRonda();
+            }
+        }
+
+        function siguienteRonda() {
+            rondaActual++;
+            document.getElementById('scoreDisplay').innerText = `Voće: ${rondaActual} / ${maxRondas}`;
+            frutaSeleccionadaIndex = null;
+
+            // Tomamos la fruta correspondiente a la ronda actual (índice rondaActual - 1)
+            frutaActual = frutasPartidaActual[rondaActual - 1];
+
+            const imgElement = document.getElementById('fruitImage');
+            const qmElement = document.getElementById('questionMark');
+            
+            imgElement.onerror = () => {
+                alert(`¡Atención! Falta la imagen para la fruta: "${frutaActual.nombre}" en la ruta: ${frutaActual.imagen}`);
+            };
+
+            imgElement.src = frutaActual.imagen;
+            imgElement.style.display = 'block';
+            qmElement.style.display = 'none';
+
+            // Seleccionar 2 frutas trampa distintas del total (que no sean la fruta actual)
+            let frutasTrampa = listaFrutasActiva.filter(f => f.nombre !== frutaActual.nombre);
+            frutasTrampa.sort(() => Math.random() - 0.5);
+            let seleccionTrampa = frutasTrampa.slice(0, 2);
+
+            opcionesFrutas = [frutaActual, ...seleccionTrampa];
+            opcionesFrutas.sort(() => Math.random() - 0.5);
+
+            renderizarCasilleros();
+        }
+
+        function renderizarCasilleros() {
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = "";
+
+            opcionesFrutas.forEach((itemFruta, index) => {
+                const btn = document.createElement('div');
+                btn.className = 'fruit-option-btn';
+                btn.innerText = itemFruta.nombre;
+                btn.onclick = () => seleccionarOVerificar(index, itemFruta);
+                container.appendChild(btn);
+            });
+        }
+
+        function seleccionarOVerificar(index, itemFruta) {
+            if (!juegoIniciado || esPantallaFinal) return;
+            
+            frutaSeleccionadaIndex = index;
+
+            const botones = document.querySelectorAll('.fruit-option-btn');
+            botones.forEach((b, i) => {
+                if (i === index) {
+                    b.classList.add('selected');
+                } else {
+                    b.classList.remove('selected');
+                }
+            });
+
+            verificarRespuestaSecuencial(itemFruta);
+        }
+
+        function verificarRespuestaSecuencial(itemFrutaSeleccionada) {
+            const esElCorrecto = (itemFrutaSeleccionada.nombre === frutaActual.nombre);
+            const player = document.getElementById('audio-reproductor');
+
+            player.src = itemFrutaSeleccionada.sonido;
+            player.play().then(() => {
+                player.onended = () => {
+                    player.onended = null;
+                    
+                    if (esElCorrecto) {
+                        player.src = "Sonidos/vrlodobro.wav";
+                    } else {
+                        erroresCometidos++;
+                        player.src = "Sonidos/mario.wav";
+                    }
+                    
+                    player.play().catch(err => console.log("Audio de efecto no encontrado"));
+                };
+            }).catch(err => {
+                console.log("Audio de fruta no encontrado, reproduciendo efecto directo");
+                if (esElCorrecto) {
+                    player.src = "Sonidos/vrlodobro.wav";
+                } else {
+                    erroresCometidos++;
+                    player.src = "Sonidos/mario.wav";
+                }
+                player.play().catch(e => console.log(e));
+            });
+
+            mostrarModalFeedback(esElCorrecto, esElCorrecto ? "¡Muy bien! Acertaste." : "¡Ops! Fallaste esta vez.");
+        }
+
+        function mostrarModalFeedback(esAcierto, mensaje) {
+            const modal = document.getElementById('customModal');
+            const title = document.getElementById('modalTitle');
+            const msg = document.getElementById('modalMessage');
+            const gradeBox = document.getElementById('modalGradeBox');
+            const card = document.getElementById('modalCard');
+
+            gradeBox.style.display = 'none';
+
+            if (esAcierto) {
+                title.innerText = "¡Vrlo Dobro!";
+                title.style.color = "#22c55e";
+                card.style.border = "4px solid #22c55e";
+            } else {
+                title.innerText = "¡Pazi!";
+                title.style.color = "var(--croatia-red)";
+                card.style.border = "4px solid var(--croatia-red)";
+            }
+
+            msg.innerText = mensaje;
+            modal.classList.add('active');
+        }
+
+        function finalizarJuego() {
+            esPantallaFinal = true;
+            let nota = 10 - (erroresCometidos * 2.5);
+            if (nota < 0) nota = 0;
+
+            const modal = document.getElementById('customModal');
+            const title = document.getElementById('modalTitle');
+            const msg = document.getElementById('modalMessage');
+            const gradeBox = document.getElementById('modalGradeBox');
+            const gradeText = document.getElementById('gradeText');
+            const odlicnoGif = document.getElementById('odlicnoGif');
+            const card = document.getElementById('modalCard');
+
+            title.innerText = "¡Resultado Final!";
+            title.style.color = "var(--croatia-blue)";
+            card.style.border = "4px solid var(--croatia-blue)";
+            msg.innerText = "Tu nota final es:";
+            
+            gradeText.innerText = nota.toFixed(nota % 1 !== 0 ? 2 : 0);
+            gradeBox.style.display = 'flex';
+            gradeBox.style.backgroundColor = "#fefce8";
+            gradeBox.style.color = "#d4af37";
+            gradeBox.style.border = "2px solid #fde047";
+
+            if (nota === 10) {
+                odlicnoGif.style.display = 'block';
+            } else {
+                odlicnoGif.style.display = 'none';
+            }
+
+            const audioCal = document.getElementById('audio-reproductor');
+            if (nota >= 10) {
+                audioCal.src = "sonidos/odlično.wav";
+            } else if (nota >= 7.5) {
+                audioCal.src = "sonidos/vrlodobro.wav";
+            } else if (nota >= 5) {
+                audioCal.src = "sonidos/takotako.wav";
+            } else {
+                audioCal.src = "sonidos/katastrofa.wav";
+            }
+            audioCal.play().catch(err => console.log("Audio de calificación no encontrado"));
+
+            modal.classList.add('active');
+        }
+
+        function cerrarModalYContinuar() {
+            const modal = document.getElementById('customModal');
+            modal.classList.remove('active');
+
+            if (esPantallaFinal) {
+                juegoIniciado = false;
+                rondaActual = 0;
+                erroresCometidos = 0;
+                esPantallaFinal = false;
+                document.getElementById('scoreDisplay').innerText = `Voće: 0 / 4`;
+                document.getElementById('fruitImage').style.display = 'none';
+                document.getElementById('questionMark').style.display = 'block';
+                document.getElementById('optionsContainer').innerHTML = `
+                    <div class="fruit-option-btn">---</div>
+                    <div class="fruit-option-btn">---</div>
+                    <div class="fruit-option-btn">---</div>
+                `;
+            } else if (rondaActual >= maxRondas) {
+                finalizarJuego();
+            } else {
+                siguienteRonda();
+            }
+        }
+
+        function volverAlInicio() {
+            window.location.href = "MS1.html";
+        }
+    </script>
+</body>
+</html>
