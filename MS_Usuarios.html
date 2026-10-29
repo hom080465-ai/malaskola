@@ -221,7 +221,7 @@
         }
         input:focus, select:focus { border-color: var(--croatia-blue); }
         
-        input:readonly {
+        input:readonly, select:disabled {
             background-color: #f1f5f9;
             color: #64748b;
             cursor: not-allowed;
@@ -529,6 +529,7 @@
         let archivoFotoSeleccionado = null;
         let esPrimerIngresoPorToken = false;
         let passwordModificadaConExito = false;
+        let rolUsuarioLogueado = null; // Variable para almacenar el rol del usuario conectado
 
         window.addEventListener('DOMContentLoaded', async () => {
             const paramsUrl = new URLSearchParams(window.location.search);
@@ -581,16 +582,24 @@
             try {
                 const { data, error } = await supabaseClient
                     .from('perfiles')
-                    .select('nombre, apellido, foto_url')
+                    .select('nombre, apellido, foto_url, role')
                     .eq('id', userId)
                     .single();
 
                 if (data) {
+                    rolUsuarioLogueado = data.role; // Almacenamos el rol
                     const nombreCompleto = `${data.nombre || ''} ${data.apellido || ''}`.trim();
                     document.getElementById('userNameMini').innerText = nombreCompleto || "Usuario";
                     
                     if (data.foto_url) {
                         document.getElementById('userAvatarMini').src = data.foto_url;
+                    }
+
+                    // Restricción visual si el usuario conectado es alumno
+                    if (rolUsuarioLogueado === 'alumno') {
+                        document.getElementById('emailAlumno').readOnly = true;
+                        document.getElementById('rolUsuario').disabled = true;
+                        document.getElementById('estadoUsuario').disabled = true;
                     }
                 } else {
                     document.getElementById('userNameMini').innerText = "Administrador";
@@ -681,7 +690,7 @@
                 document.getElementById('apellidoMaterno').value = data.apellido_materno || '';
                 document.getElementById('fechaNacimiento').value = data.fecha_nacimiento || '';
                 document.getElementById('emailAlumno').value = data.email || '';
-                document.getElementById('rolUsuario').value = data.role || ''; // <--- Usando 'role'
+                document.getElementById('rolUsuario').value = data.role || '';
                 document.getElementById('nivelIdioma').value = data.nivel_idioma || '';
                 document.getElementById('vinculoCroacia').value = data.vinculo_croacia || '';
                 document.getElementById('regionCroacia').value = data.region_croacia || '';
@@ -873,15 +882,15 @@
             const nombre = document.getElementById('nombreAlumno').value.trim();
             const apellido = document.getElementById('apellidoAlumno').value.trim();
             const apellidoMaterno = document.getElementById('apellidoMaterno').value.trim();
-            const email = document.getElementById('emailAlumno').value.trim();
-            const rol = document.getElementById('rolUsuario').value;
+            let email = document.getElementById('emailAlumno').value.trim();
+            let rol = document.getElementById('rolUsuario').value;
             const fechaNac = document.getElementById('fechaNacimiento').value;
             const nivel = document.getElementById('nivelIdioma').value;
             const vinculo = document.getElementById('vinculoCroacia').value;
             const region = document.getElementById('regionCroacia').value.trim();
             const apOriginal = document.getElementById('apellidoOriginal').value.trim();
             const motivacion = document.getElementById('motivacionEstudio').value;
-            const estado = document.getElementById('estadoUsuario').value;
+            let estado = document.getElementById('estadoUsuario').value;
             const msgEstado = document.getElementById('mensajeEstado');
 
             let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
@@ -949,7 +958,7 @@
                             nombre: nombre, 
                             apellido: apellido, 
                             apellido_materno: apellidoMaterno, 
-                            role: rol, // <--- Usando 'role' aquí
+                            role: rol, 
                             fecha_nacimiento: fechaNac || null, 
                             nivel_idioma: nivel,
                             vinculo_croacia: vinculo, 
@@ -984,6 +993,21 @@
                     const { data: { session } } = await supabaseClient.auth.getSession();
                     if (!session) throw new Error("Nema aktivne sesije.");
                     
+                    // Si el usuario logueado es alumno, protegemos trayendo sus datos originales de la BD para prevenir alteraciones
+                    if (rolUsuarioLogueado === 'alumno') {
+                        const { data: datosOriginales } = await supabaseClient
+                            .from('perfiles')
+                            .select('email, role, estado')
+                            .eq('id', alumnoIdActual)
+                            .single();
+
+                        if (datosOriginales) {
+                            email = datosOriginales.email;
+                            rol = datosOriginales.role;
+                            estado = datosOriginales.estado;
+                        }
+                    }
+
                     msgEstado.innerText = (idiomaElegido === 'hr') ? "Ažuriranje podataka..." : "Ažuriranje podataka... / Guardando cambios...";
 
                     let datosActualizados = {
@@ -991,7 +1015,7 @@
                         apellido: apellido,
                         apellido_materno: apellidoMaterno,
                         email: email,
-                        role: rol, // <--- Usando 'role' aquí
+                        role: rol, 
                         fecha_nacimiento: fechaNac || null,
                         nivel_idioma: nivel,
                         vinculo_croacia: vinculo,
