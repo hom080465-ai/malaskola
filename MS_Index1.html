@@ -680,26 +680,6 @@
     <script src="user-profile.js"></script>
 
     <script>
-        // Script automático para adaptar rutas si se ejecuta en internet (GitHub Pages)
-        window.addEventListener('DOMContentLoaded', () => {
-            if (window.location.hostname.includes("github.io") || window.location.hostname.includes("msarg.ar")) {
-                document.querySelectorAll('img').forEach(img => {
-                    let src = img.getAttribute('src');
-                    if (src) {
-                        src = src.replace(/^imagenes\//i, 'Imagenes/');
-                        img.setAttribute('src', src);
-                    }
-                });
-                let bg = document.body.style.backgroundImage;
-                if (bg) {
-                    document.body.style.backgroundImage = bg.replace(/imagenes\//i, 'Imagenes/');
-                } else {
-                    document.body.style.background = "linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url('Imagenes/Bandera-Croacia.avif') no-repeat center center fixed";
-                    document.body.style.backgroundSize = "cover";
-                }
-            }
-        });
-
         const RUTA_SONIDOS = "sonidos/";
 
         window.addEventListener("DOMContentLoaded", () => {
@@ -828,7 +808,7 @@
             modal.style.display = 'flex';
 
             if (!sonidoHabilitado) {
-                setTimeout(() => { window.location.href = "MS_Login.html"; }, 2000);
+                setTimeout(() => { window.location.href = "index.html"; }, 2000);
                 return;
             }
 
@@ -851,7 +831,7 @@
             });
 
             setTimeout(() => {
-                window.location.href = "MS_Login.html";
+                window.location.href = "index.html";
             }, 4000);
         }
 
@@ -939,6 +919,7 @@
                 alert(`¡Cargando lección para Adultos - ${nivel.value}!\nIdioma: ${idioma}`);
             }
         }
+        
     </script>
 </body>
 </html>
