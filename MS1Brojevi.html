@@ -15,7 +15,7 @@
 
         body {
             margin: 0;
-            padding: 0;
+            padding: 5px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
                         url('imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
@@ -33,17 +33,18 @@
 
         .game-container {
             width: 100%;
-            max-width: 1250px;
+            max-width: 1100px;
+            max-height: 96vh;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(12px);
-            border-radius: 20px;
-            padding: 30px;
+            border-radius: 16px;
+            padding: 15px 25px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            border: 4px solid var(--croatia-blue);
+            border: 3px solid var(--croatia-blue);
             display: flex;
             flex-direction: column;
-            gap: 25px;
-            margin-top: 40px;
+            gap: 12px;
+            box-sizing: border-box;
         }
 
         .top-control-bar {
@@ -51,21 +52,21 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 2px solid #cbd5e1;
-            padding-bottom: 15px;
+            padding-bottom: 8px;
         }
 
         .score-board {
-            font-size: 1.4rem;
+            font-size: 1.1rem;
             font-weight: 800;
             color: var(--croatia-blue);
         }
 
         .audio-controls {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             background: #f1f5f9;
-            padding: 8px 15px;
-            border-radius: 30px;
+            padding: 5px 12px;
+            border-radius: 25px;
             border: 2px solid #cbd5e1;
             align-items: center;
         }
@@ -73,36 +74,36 @@
         .audio-option {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
 
         .game-body {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
+            gap: 20px;
             align-items: center;
         }
 
         .display-number-box {
             background: #f8fafc;
             border: 3px dashed var(--croatia-blue);
-            border-radius: 16px;
-            height: 310px;
+            border-radius: 12px;
+            height: 200px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
             box-shadow: inset 0 4px 10px rgba(0,0,0,0.05);
-            padding: 10px;
+            padding: 8px;
             text-align: center;
         }
 
         .display-number-text {
-            font-size: 13.5rem;
+            font-size: 9rem;
             font-weight: 900;
             color: var(--croatia-blue);
             line-height: 1;
@@ -110,7 +111,7 @@
         }
 
         .display-instruction {
-            font-size: 1.6rem;
+            font-size: 1.3rem;
             font-weight: 700;
             color: var(--croatia-red);
             text-align: center;
@@ -120,17 +121,17 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
+            gap: 8px;
         }
 
         .ruleta-container {
-            width: 270px;
-            height: 270px;
+            width: 190px;
+            height: 190px;
             border-radius: 50%;
-            border: 6px solid var(--croatia-blue);
+            border: 5px solid var(--croatia-blue);
             cursor: pointer;
             position: relative;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
             overflow: hidden;
             background: conic-gradient(
                 #ff1c1c 0deg 36deg, 
@@ -153,16 +154,16 @@
         .ruleta-container::after {
             content: '';
             position: absolute;
-            width: 55px;
-            height: 55px;
+            width: 40px;
+            height: 40px;
             background: white;
-            border: 4px solid var(--croatia-blue);
+            border: 3px solid var(--croatia-blue);
             border-radius: 50%;
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
 
         .ruleta-label {
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             font-weight: bold;
             color: #475569;
             text-align: center;
@@ -171,27 +172,27 @@
         .options-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 12px;
         }
 
         .btn-option {
             background: #ffffff;
             border: 3px solid var(--croatia-blue);
             color: var(--croatia-blue);
-            padding: 22px;
-            font-size: 1.8rem;
+            padding: 14px;
+            font-size: 1.4rem;
             font-weight: 800;
-            border-radius: 14px;
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             text-align: center;
         }
 
         .btn-option.hover:not(:disabled) {
             background: var(--croatia-blue);
             color: white;
-            transform: translateY(-3px);
+            transform: translateY(-2px);
         }
 
         .btn-option.correct {
@@ -211,21 +212,21 @@
             justify-content: space-between;
             align-items: center;
             border-top: 2px solid #cbd5e1;
-            padding-top: 15px;
+            padding-top: 8px;
         }
 
         .action-btn {
-            width: 65px;
-            height: 65px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            border: 3px solid #fff;
-            font-size: 1.8rem;
+            border: 2px solid #fff;
+            font-size: 1.4rem;
             font-weight: bold;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             transition: transform 0.2s;
         }
 
@@ -257,10 +258,10 @@
         .modal-content-wrapper {
             display: flex;
             align-items: center;
-            gap: 30px;
+            gap: 25px;
             background: #ffffff;
-            padding: 35px 45px;
-            border-radius: 20px;
+            padding: 25px 35px;
+            border-radius: 16px;
             border: 4px solid var(--croatia-red);
             box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
@@ -269,23 +270,23 @@
             text-align: center;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
             align-items: center;
         }
 
         .modal-card h2 {
             color: var(--croatia-red);
             margin: 0;
-            font-size: 2rem;
+            font-size: 1.7rem;
             font-weight: 800;
         }
 
         .nota-gigante {
-            font-size: 7rem;
+            font-size: 5.5rem;
             font-weight: 900;
             color: var(--croatia-blue);
             line-height: 1;
-            margin: 5px 0;
+            margin: 2px 0;
         }
 
         .nota-gigante.dorada {
@@ -297,10 +298,10 @@
             background: var(--croatia-blue);
             color: white;
             border: none;
-            padding: 14px 25px;
-            font-size: 1.1rem;
+            padding: 10px 20px;
+            font-size: 1rem;
             font-weight: bold;
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0,81,186,0.3);
             transition: background 0.2s, transform 0.2s;
@@ -312,9 +313,9 @@
         }
 
         .modal-video-container {
-            width: 150px;
-            height: 250px;
-            border-radius: 12px;
+            width: 120px;
+            height: 200px;
+            border-radius: 10px;
             overflow: hidden;
             border: 3px solid var(--croatia-red);
             box-shadow: 0 8px 20px rgba(0,0,0,0.2);
@@ -356,7 +357,7 @@
             </div>
             <!-- Contenedor del video con fondo negro -->
             <div class="modal-video-container">
-                <video id="videoBaile" src="imagenes/NenaCroataBaile.mp4" autoplay loop muted playsinline></video>
+                <video id="videoBaile" src="Imagenes/NenaCroataBaile.mp4" autoplay loop muted playsinline></video>
             </div>
         </div>
     </div>
@@ -500,7 +501,6 @@
                 }
                 const btn = document.createElement('button');
                 btn.className = "btn-option";
-                // Mostramos el texto capitalizado en el botón para que se vea estético, pero conservamos la ruta en minúsculas
                 btn.innerText = op.texto.charAt(0).toUpperCase() + op.texto.slice(1);
                 btn.onclick = () => verificarRespuesta(index, op.texto, op.numero === correctoObj.numero);
                 container.appendChild(btn);
@@ -528,7 +528,6 @@
 
             const reproducirSecuenciaAudios = () => {
                 if (audioActivo) {
-                    // Ahora buscará el archivo en minúsculas (ej: numeros/sonidos/jedan.wav)
                     const audioNumero = new Audio(`numeros/sonidos/${textoCroataMinusc}.wav`);
                     audioNumero.play().then(() => {
                         audioNumero.onended = () => {
