@@ -44,7 +44,7 @@
             margin-top: 40px;
         }
 
-        /* Botón interactivo de cambio de idioma arriba a la izquierda (FUNCIONA IGUAL QUE ANTES) */
+        /* Botón rojo interactivo de cambio de idioma arriba a la izquierda */
         .badge-idioma {
             position: absolute;
             top: 20px;
@@ -106,7 +106,7 @@
             margin: 0 0 25px 0;
         }
 
-        /* Cuadrícula de botones donde antes estaba el botón único de ingreso */
+        /* Cuadrícula de botones central */
         .menu-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -120,36 +120,15 @@
             }
         }
 
-        /* Botón principal de Clases de Idioma (Antiguo Započni / Ingresar) */
-        .btn-clases {
-            grid-column: 1 / -1; /* Ocupa todo el ancho superior */
-            background: linear-gradient(135deg, var(--croatia-red), #b50b0f);
-            color: white;
-            padding: 16px 20px;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            text-decoration: none;
-            box-shadow: 0 4px 15px rgba(217, 15, 19, 0.3);
-            transition: all 0.2s;
-            display: inline-block;
-        }
-
-        .btn-clases:hover {
-            transform: translateY(-2px);
-            background: #b50b0f;
-            box-shadow: 0 6px 20px rgba(217, 15, 19, 0.4);
-        }
-
-        /* Nuevos botones secundarios */
+        /* Botón blanco de Clases de Idioma (estilo idéntico a los otros tres botones) */
         .btn-menu-item {
             background: #ffffff;
             color: var(--croatia-blue);
             border: 2px solid var(--croatia-blue);
-            padding: 12px 15px;
+            padding: 14px 18px;
             border-radius: 12px;
             font-weight: bold;
-            font-size: 0.95rem;
+            font-size: 1rem;
             cursor: pointer;
             box-shadow: 0 3px 8px rgba(0,0,0,0.06);
             transition: all 0.2s;
@@ -166,6 +145,11 @@
             color: var(--croatia-red);
             transform: translateY(-2px);
         }
+
+        /* Ocupa todo el ancho superior de la grilla */
+        .full-width {
+            grid-column: 1 / -1;
+        }
     </style>
 </head>
 <body>
@@ -176,7 +160,7 @@
     </button>
 
     <div class="container">
-        <!-- Botón interactivo de cambio de idioma arriba a la izquierda (MANTIENE SU FUNCIONALIDAD ORIGINAL) -->
+        <!-- Botón rojo interactivo de cambio de idioma (arriba a la izquierda) -->
         <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()" title="Hacer clic para cambiar idioma">HR</span>
 
         <!-- Títulos solicitados -->
@@ -185,17 +169,19 @@
 
         <!-- Bloque de botones central -->
         <div class="menu-grid">
-            <!-- Botón de Clases de Idioma (Lleva a MS_Index1.html como antes) -->
-            <a href="MS_Index1.html" class="btn-clases" id="btnClases">Započni / Ingresar (Clases de Idioma)</a>
+            <!-- Botón de Clases de Idioma (Rectángulo blanco, ahora apunta a MS_Index1.html) -->
+            <a href="MS_Index1.html" class="btn-menu-item full-width" id="btnClases">
+                📚 <span id="textClases">Započni / Ingresar (Clases de Idioma)</span>
+            </a>
 
-            <!-- Tres nuevos botones a definir -->
+            <!-- Tres botones secundarios adicionales -->
             <button class="btn-menu-item" onclick="alert('Sección de Actividades en construcción')" id="btnActividades">
                 🎯 <span id="textActividades">Aktivnosti / Actividades</span>
             </button>
             <button class="btn-menu-item" onclick="alert('Sección de Agenda en construcción')" id="btnAgenda">
                 📅 <span id="textAgenda">Agenda / Agenda</span>
             </button>
-            <button class="btn-menu-item" onclick="alert('Sección de Historia en construcción')" id="btnHistoria" style="grid-column: 1 / -1;">
+            <button class="btn-menu-item full-width" onclick="alert('Sección de Historia en construcción')" id="btnHistoria">
                 🏛️ <span id="textHistoria">Povijest / Historia</span>
             </button>
         </div>
@@ -211,7 +197,7 @@
             idiomaElegido = idiomaElegido.trim().toLowerCase();
 
             const subEspanol = document.getElementById('subEspanol');
-            const btnClases = document.getElementById('btnClases');
+            const textClases = document.getElementById('textClases');
             const btnLibro = document.getElementById('btnLibro');
             const badge = document.getElementById('badgeIdioma');
             const textActividades = document.getElementById('textActividades');
@@ -221,7 +207,7 @@
             if (idiomaElegido === 'hr') {
                 badge.innerText = "HR";
                 subEspanol.style.display = 'none';
-                btnClases.innerText = "Započni (Tečaj jezika)";
+                textClases.innerText = "Započni (Tečaj jezika)";
                 btnLibro.innerHTML = "📖 Otvori knjigu";
                 textActividades.innerText = "Aktivnosti";
                 textAgenda.innerText = "Agenda";
@@ -230,7 +216,7 @@
                 badge.innerText = "HR-ES";
                 subEspanol.style.display = 'block';
                 subEspanol.innerText = "Bienvenidos a Mala škola";
-                btnClases.innerText = "Započni / Ingresar (Clases de Idioma)";
+                textClases.innerText = "Započni / Ingresar (Clases de Idioma)";
                 btnLibro.innerHTML = "📖 Otvori knjigu / Abrir libro";
                 textActividades.innerText = "Aktivnosti / Actividades";
                 textAgenda.innerText = "Agenda / Agenda";
