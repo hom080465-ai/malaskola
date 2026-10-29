@@ -551,6 +551,7 @@
                 await cargarPerfilUsuarioLogueado(userIdLogueado);
             }
 
+            // RESTRICCIÓN ABSOLUTA: Si el usuario conectado es alumno, bloqueamos cualquier intento de ver alta
             if (rolUsuarioLogueado === 'alumno') {
                 modoFormulario = 'editar';
                 alumnoIdActual = userIdLogueado;
@@ -607,10 +608,17 @@
                         document.getElementById('userAvatarMini').src = data.foto_url;
                     }
 
+                    // Si es alumno, bloqueamos campos protegidos y evitamos cualquier pantalla de alta
                     if (rolUsuarioLogueado === 'alumno') {
                         document.getElementById('emailAlumno').readOnly = true;
                         document.getElementById('rolUsuario').disabled = true;
                         document.getElementById('estadoUsuario').disabled = true;
+
+                        const paramsUrl = new URLSearchParams(window.location.search);
+                        if (paramsUrl.get('modo') === 'alta') {
+                            window.location.href = `MS_Usuarios.html?modo=editar&id=${userId}`;
+                            return;
+                        }
                     }
                 } else {
                     document.getElementById('userNameMini').innerText = "Administrador";
