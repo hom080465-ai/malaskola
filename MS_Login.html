@@ -61,6 +61,29 @@
             transition: background 0.2s;
         }
         .btn-login:hover { background: #003380; }
+
+        /* Estilo para el botón de cancelar / volver */
+        .btn-cancelar {
+            display: block;
+            width: 100%;
+            padding: 9px;
+            font-weight: bold;
+            color: #475569;
+            background: #f1f5f9;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-top: 8px;
+            text-decoration: none;
+            box-sizing: border-box;
+            transition: all 0.2s;
+        }
+        .btn-cancelar:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
         .msg { font-size: 0.82rem; margin-top: 10px; font-weight: bold; }
     </style>
 </head>
@@ -81,6 +104,10 @@
         </div>
 
         <button class="btn-login" onclick="iniciarSesion()">Uđi / Iniciar Sesión 🔑</button>
+        
+        <!-- Botón para cancelar y volver a la página de inicio (index.html) -->
+        <a href="index.html" class="btn-cancelar">Odustani / Cancelar ↩</a>
+
         <div id="msgLogin" class="msg"></div>
     </div>
 
