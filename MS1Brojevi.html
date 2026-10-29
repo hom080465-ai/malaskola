@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Učenje brojeva - Aprendiendo los números en Croata</title>
-    <!-- Vinculamos tu archivo externo de datos -->
     <style>
         :root {
             --red: #ff1c1c;
@@ -420,16 +419,16 @@
 
     <script>
         const numerosCroata = [
-            { numero: 1, texto: "Jedan" },
-            { numero: 2, texto: "Dva" },
-            { numero: 3, texto: "Tri" },
-            { numero: 4, texto: "Četiri" },
-            { numero: 5, texto: "Pet" },
-            { numero: 6, texto: "Šest" },
-            { numero: 7, texto: "Sedam" },
-            { numero: 8, texto: "Osam" },
-            { numero: 9, texto: "Devet" },
-            { numero: 10, texto: "Deset" }
+            { numero: 1, texto: "jedan" },
+            { numero: 2, texto: "dva" },
+            { numero: 3, texto: "tri" },
+            { numero: 4, texto: "četiri" },
+            { numero: 5, texto: "pet" },
+            { numero: 6, texto: "šest" },
+            { numero: 7, texto: "sedam" },
+            { numero: 8, texto: "osam" },
+            { numero: 9, texto: "devet" },
+            { numero: 10, texto: "deset" }
         ];
 
         let numeroActual = null;
@@ -439,7 +438,6 @@
         let turnoRespondido = false;
         let gradosTotales = 0;
 
-        // Arreglo para almacenar los 4 números seleccionados sin repetición en cada partida
         let numerosPartidaActual = [];
 
         function girarRuleta() {
@@ -449,7 +447,6 @@
 
             if (intentoActual > 4) return;
 
-            // Si es el primer intento, barajamos la lista completa y seleccionamos 4 números únicos para toda la partida
             if (intentoActual === 1 && numerosPartidaActual.length === 0) {
                 let copiaNumeros = [...numerosCroata];
                 copiaNumeros.sort(() => Math.random() - 0.5);
@@ -468,7 +465,6 @@
             ruletaEl.style.transform = `rotate(${gradosTotales}deg)`;
 
             setTimeout(() => {
-                // Seleccionamos el número de la serie correspondiente al intento actual sin repetición
                 const seleccionado = numerosPartidaActual[intentoActual - 1];
                 numeroActual = seleccionado.numero;
 
@@ -504,7 +500,8 @@
                 }
                 const btn = document.createElement('button');
                 btn.className = "btn-option";
-                btn.innerText = op.texto;
+                // Mostramos el texto capitalizado en el botón para que se vea estético, pero conservamos la ruta en minúsculas
+                btn.innerText = op.texto.charAt(0).toUpperCase() + op.texto.slice(1);
                 btn.onclick = () => verificarRespuesta(index, op.texto, op.numero === correctoObj.numero);
                 container.appendChild(btn);
             });
@@ -521,7 +518,7 @@
             });
         }
 
-        function verificarRespuesta(indexElegido, textoCroata, esCorrecto) {
+        function verificarRespuesta(indexElegido, textoCroataMinusc, esCorrecto) {
             if (turnoRespondido) return;
             turnoRespondido = true;
             habilitarBotonesOpcion(false);
@@ -531,7 +528,8 @@
 
             const reproducirSecuenciaAudios = () => {
                 if (audioActivo) {
-                    const audioNumero = new Audio(`numeros/sonidos/${textoCroata}.wav`);
+                    // Ahora buscará el archivo en minúsculas (ej: numeros/sonidos/jedan.wav)
+                    const audioNumero = new Audio(`numeros/sonidos/${textoCroataMinusc}.wav`);
                     audioNumero.play().then(() => {
                         audioNumero.onended = () => {
                             const audioFeedback = esCorrecto ? document.getElementById('sound-acierto') : document.getElementById('sound-error');
@@ -638,7 +636,7 @@
             document.getElementById('modalResultado').style.display = 'none';
             intentoActual = 1;
             puntos = 0;
-            numerosPartidaActual = []; // Limpiamos la serie para que se genere una nueva combinación sin repetir en la siguiente partida
+            numerosPartidaActual = []; 
             document.getElementById('intentosActuales').innerText = 1;
             document.getElementById('puntuacion').innerText = 0;
             resetearTurno();
