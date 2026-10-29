@@ -392,7 +392,7 @@
             <div class="form-grid-full">
                 <label id="lblEmail">Elektronička pošta <span class="asterisco-obligatorio">*</span></label>
                 <span id="subEmail" class="sub-label">Correo electrónico institucional (para enviar invitación)</span>
-                <input type="email" id="emailAlumno" class="campo-obligatorio" placeholder="alumno@malaskola.com" oninput="validarFormularioCompleto()">
+                <input type="email" id="emailAlumno" class="campo-obligatorio" placeholder="alumno@malaskola.com" autocomplete="new-email" oninput="validarFormularioCompleto()">
             </div>
 
             <!-- Campo Rol (role) -->
@@ -551,7 +551,6 @@
                 await cargarPerfilUsuarioLogueado(userIdLogueado);
             }
 
-            // RESTRICCIÓN ABSOLUTA: Si el usuario conectado es alumno, bloqueamos cualquier intento de ver alta
             if (rolUsuarioLogueado === 'alumno') {
                 modoFormulario = 'editar';
                 alumnoIdActual = userIdLogueado;
@@ -608,7 +607,6 @@
                         document.getElementById('userAvatarMini').src = data.foto_url;
                     }
 
-                    // Si es alumno, bloqueamos campos protegidos y evitamos cualquier pantalla de alta
                     if (rolUsuarioLogueado === 'alumno') {
                         document.getElementById('emailAlumno').readOnly = true;
                         document.getElementById('rolUsuario').disabled = true;
@@ -690,6 +688,11 @@
                     return;
                 }
                 btnAccion.innerText = (idiomaElegido === 'hr') ? "Registriraj i pošalji pozivnicu ✉️" : "Registriraj i pošalji pozivnicu / Registrar y Enviar Invitación ✉️";
+                
+                // Forzamos limpiar explícitamente el campo email y deshabilitar autocompletado en alta
+                const inputEmail = document.getElementById('emailAlumno');
+                inputEmail.value = "";
+                inputEmail.readOnly = false;
             }
         }
 
@@ -922,6 +925,96 @@
                     if (rolUsuarioLogueado === 'alumno') {
                         throw new Error("Acceso denegado.");
                     }
+
+                    msgEstado.innerText = (idiomaElegido === 'hr') ? "Provjera pošte..." : "Provjera pošte... / Verificando disponibilidad del correo...";
+                    
+                    const { data: usuarioExistente, error: errorCheck } = await supabaseClient
+                        .from('perfiles')
+                        .select('email')
+                        .eq('email', email)
+                        .maybeSingle();
+
+                    if (errorCheck) {
+                        console.error(errorCheck);
+                    }
+
+                    if (usuarioExistente) {
+                        msgEstado.innerText = "";
+                        mostrarModal(
+                            "Elektronička pošta već postoji u sustavu.",
+                            "El correo electrónico ya se encuentra registrado en el sistema.",
+                            "⚠️ Pažnja",
+                            "Atención"
+                        );
+                        return;
+                    }
+
+                    msgEstado.innerText = (idiomaElegido === 'hr') ? "Generiranje vjerodajnica..." : "Generiranje vjerodajnica... / Generando credenciales...";
+
+                    const tempPassword = Math.random().toString(36).slice(-8) + 'A1!';
+
+                    const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+                        email: email,
+                        password: tempPassword,
+                        options: {
+                            data: { nombre: nombre, apellido: apellido, role: rol }
+                        }
+                    });
+
+                    if (authError) {
+                        throw new Error(authError.message);
+                    }
+
+                    const nuevoId = authData?.user?.id;
+                    if (!nuevoId) {
+                        throw new Error("No se pudo obtener el ID del usuario.");
+                    }
+
+                    msgEstado.innerText = (idiomaElegido === 'hr') ? "Učitavanje datoteke..." : "Učitavanje datoteke... / Subiendo archivo...";
+
+                    let urlFotoFinal = null;
+                    if (archivoFotoSeleccionado) {
+                        urlFotoFinal = await subirFotoANube(archivoFotoSeleccionado, nuevoId);
+                    }
+
+                    const { error: dbError } = await supabaseClient.from('perfiles').insert([
+                        { 
+                            id: nuevoId, 
+                            email: email, 
+                            nombre: nombre, 
+                            apellido: apellido, 
+                            apellido_materno: apellidoMaterno, 
+                            role: rol, 
+                            fecha_nacimiento: fechaNac || null, 
+                            nivel_idioma: nivel,
+                            vinculo_croacia: vinculo, 
+                            region_croacia: region, 
+                            apellido_original: apOriginal,
+                            motivacion: motivacion,
+                            estado: estado,
+                            foto_url: urlFotoFinal 
+                        }
+                    ]);
+
+                    if (dbError) throw dbError;
+
+                    msgEstado.innerText = (idiomaElegido === 'hr') ? "Slanje pozivnice..." : "Slanje pozivnice... / Enviando invitación...";
+
+                    const { error: resetError } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                        redirectTo: window.location.origin + '/MS_Index1.html'
+                    });
+
+                    if (resetError) {
+                        console.warn("Aviso SMTP: " + resetError.message);
+                    }
+
+                    msgEstado.style.color = "#16a34a";
+                    msgEstado.innerText = (idiomaElegido === 'hr') ? "Uspješno! Korisnik je registriran." : "Uspješno! / ¡Usuario dado de alta con éxito!";
+                    
+                    setTimeout(() => {
+                        window.location.href = "MS_Index1.html";
+                    }, 2500);
+
                 } else {
                     const { data: { session } } = await supabaseClient.auth.getSession();
                     if (!session) throw new Error("Nema aktivne sesije.");
