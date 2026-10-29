@@ -1,8 +1,8 @@
 const baseDatosAnimales = [
-    { nombre: "Kokoš", imagen: "animales/imagenes/kokoš.bmp", sonido: "animales/sonidos/Kokoš.wav", pronunciacion: "animales/pronunc/Kokoš.wav" },
-    { nombre: "Konj", imagen: "animales/imagenes/konj.bmp", sonido: "animales/sonidos/Konj.wav", pronunciacion: "animales/pronunc/Konj.wav" },
-    { nombre: "Krava", imagen: "animales/imagenes/krava.bmp", sonido: "animales/sonidos/Krava.wav", pronunciacion: "animales/pronunc/Krava.wav" },
-    { nombre: "Lav", imagen: "animales/imagenes/lav.bmp", sonido: "animales/sonidos/Lav.wav", pronunciacion: "animales/pronunc/Lav.wav" },
+    { nombre: "kokoš", imagen: "animales/imagenes/kokoš.bmp", sonido: "animales/sonidos/Kokoš.wav", pronunciacion: "animales/pronunc/Kokoš.wav" },
+    { nombre: "konj", imagen: "animales/imagenes/konj.bmp", sonido: "animales/sonidos/Konj.wav", pronunciacion: "animales/pronunc/Konj.wav" },
+    { nombre: "krava", imagen: "animales/imagenes/krava.bmp", sonido: "animales/sonidos/Krava.wav", pronunciacion: "animales/pronunc/Krava.wav" },
+    { nombre: "lav", imagen: "animales/imagenes/lav.bmp", sonido: "animales/sonidos/Lav.wav", pronunciacion: "animales/pronunc/Lav.wav" },
     { nombre: "mačka", imagen: "animales/imagenes/mačka.bmp", sonido: "animales/sonidos/mačka.wav", pronunciacion: "animales/pronunc/mačka.wav" },
     { nombre: "Magarac", imagen: "animales/imagenes/magarac.bmp", sonido: "animales/sonidos/Magarac.wav", pronunciacion: "animales/pronunc/Magarac.wav" },
     { nombre: "Pas", imagen: "animales/imagenes/pas.bmp", sonido: "animales/sonidos/Pas.wav", pronunciacion: "animales/pronunc/Pas.wav" },
