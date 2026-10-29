@@ -398,7 +398,7 @@
                 <input type="email" id="emailAlumno" class="campo-obligatorio" placeholder="alumno@malaskola.com" oninput="validarFormularioCompleto()">
             </div>
 
-            <!-- Nuevo campo: Rol / Tipo de usuario -->
+            <!-- Campo Rol (role) -->
             <div class="form-grid-full">
                 <label id="lblRol">Uloga / Rol <span class="asterisco-obligatorio">*</span></label>
                 <span id="subRol" class="sub-label">Tipo de usuario en el sistema</span>
@@ -681,7 +681,7 @@
                 document.getElementById('apellidoMaterno').value = data.apellido_materno || '';
                 document.getElementById('fechaNacimiento').value = data.fecha_nacimiento || '';
                 document.getElementById('emailAlumno').value = data.email || '';
-                document.getElementById('rolUsuario').value = data.rol || '';
+                document.getElementById('rolUsuario').value = data.role || ''; // <--- Usando 'role'
                 document.getElementById('nivelIdioma').value = data.nivel_idioma || '';
                 document.getElementById('vinculoCroacia').value = data.vinculo_croacia || '';
                 document.getElementById('regionCroacia').value = data.region_croacia || '';
@@ -922,7 +922,7 @@
                         email: email,
                         password: tempPassword,
                         options: {
-                            data: { nombre: nombre, apellido: apellido, rol: rol }
+                            data: { nombre: nombre, apellido: apellido, role: rol }
                         }
                     });
 
@@ -949,7 +949,7 @@
                             nombre: nombre, 
                             apellido: apellido, 
                             apellido_materno: apellidoMaterno, 
-                            rol: rol,
+                            role: rol, // <--- Usando 'role' aquí
                             fecha_nacimiento: fechaNac || null, 
                             nivel_idioma: nivel,
                             vinculo_croacia: vinculo, 
@@ -991,7 +991,7 @@
                         apellido: apellido,
                         apellido_materno: apellidoMaterno,
                         email: email,
-                        rol: rol,
+                        role: rol, // <--- Usando 'role' aquí
                         fecha_nacimiento: fechaNac || null,
                         nivel_idioma: nivel,
                         vinculo_croacia: vinculo,
