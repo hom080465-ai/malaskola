@@ -16,7 +16,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), 
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
                         url('imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
             background-size: cover;
             background-color: var(--bg-color);
@@ -31,41 +31,17 @@
 
         .container {
             width: 100%;
-            max-width: 650px;
-            background: rgba(255, 255, 255, 0.96);
-            backdrop-filter: blur(12px);
-            border: 3px solid var(--croatia-blue);
-            border-radius: 20px;
-            padding: 40px 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            max-width: 700px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(14px);
+            border: 4px solid var(--croatia-blue);
+            border-radius: 24px;
+            padding: 45px 35px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
             text-align: center;
             position: relative;
             z-index: 10;
-            margin-top: 40px;
-        }
-
-        /* Botón interactivo de cambio de idioma arriba a la izquierda */
-        .badge-idioma {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: var(--croatia-red);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            border: 1px solid rgba(255,255,255,0.6);
-            cursor: pointer;
-            transition: transform 0.1s, background 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            z-index: 20;
-        }
-
-        .badge-idioma:hover {
-            background: #b50b0f;
-            transform: scale(1.05);
+            margin: 20px;
         }
 
         /* Botón flotante superior derecho para abrir el libro */
@@ -73,56 +49,102 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            background: var(--croatia-blue);
+            background: linear-gradient(135deg, var(--croatia-blue), #003380);
             color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 10px;
+            border: 2px solid rgba(255,255,255,0.8);
+            padding: 12px 22px;
+            border-radius: 12px;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
             transition: all 0.2s;
             z-index: 1000;
         }
 
         .btn-abrir-libro:hover {
-            background: #003380;
             transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            background: linear-gradient(135deg, #00429c, #002255);
         }
 
         h1 {
             color: var(--croatia-red);
-            margin: 0 0 12px 0;
-            font-size: 2.2rem;
+            margin: 0 0 8px 0;
+            font-size: 2.4rem;
             font-weight: 800;
             letter-spacing: 0.5px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
 
         .sub-espanol {
             color: var(--croatia-blue);
-            font-size: 1.3rem;
+            font-size: 1.35rem;
             font-weight: 700;
             margin: 0 0 30px 0;
         }
 
-        .btn-ingresar {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--croatia-blue), #003380);
-            color: white;
-            padding: 14px 30px;
-            border-radius: 12px;
+        /* Contenedor principal de botones de navegación / menú */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 600px) {
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .menu-btn {
+            background: #ffffff;
+            color: var(--croatia-blue);
+            border: 2px solid var(--croatia-blue);
+            padding: 14px 20px;
+            border-radius: 14px;
             font-weight: bold;
             font-size: 1.05rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
             text-decoration: none;
-            box-shadow: 0 4px 15px rgba(0, 81, 186, 0.3);
+        }
+
+        .menu-btn:hover {
+            background: #f1f5f9;
+            border-color: var(--croatia-red);
+            color: var(--croatia-red);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        /* Botón principal de Acceso / Započni destacado */
+        .btn-ingresar {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, var(--croatia-red), #b50b0f);
+            color: white;
+            padding: 16px 30px;
+            border-radius: 14px;
+            font-weight: bold;
+            font-size: 1.15rem;
+            text-decoration: none;
+            box-shadow: 0 6px 20px rgba(217, 15, 19, 0.4);
             transition: all 0.2s;
+            box-sizing: border-box;
+            letter-spacing: 0.5px;
         }
 
         .btn-ingresar:hover {
             transform: translateY(-2px);
-            background: #003380;
-            box-shadow: 0 6px 20px rgba(0, 81, 186, 0.4);
+            background: linear-gradient(135deg, #c50c10, #96090c);
+            box-shadow: 0 8px 25px rgba(217, 15, 19, 0.6);
         }
     </style>
 </head>
@@ -134,14 +156,34 @@
     </button>
 
     <div class="container">
-        <!-- Botón interactivo de cambio de idioma arriba a la izquierda -->
-        <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()" title="Hacer clic para cambiar idioma">HR</span>
-
         <!-- Títulos solicitados -->
         <h1 id="tituloCroata">Dobrodošli u Malu školu</h1>
         <p class="sub-espanol" id="subEspanol">Bienvenidos a Mala škola</p>
 
-        <!-- Botón de acceso directo que redirige a MS_Index1.html -->
+        <!-- Cuadrícula con los 4 botones principales (Idioma, Actividades, Agenda, Historia) -->
+        <div class="menu-grid">
+            <!-- Botón de cambio de Idioma -->
+            <button class="menu-btn" onclick="alternarIdioma()" id="btnIdiomaText" title="Cambiar idioma de la interfaz">
+                🌐 <span id="badgeIdiomaLabel">Idioma: HR-ES</span>
+            </button>
+
+            <!-- Botón Actividades (Pendiente de definir destino) -->
+            <button class="menu-btn" onclick="alert('Sección de Actividades en construcción')" id="btnActividades">
+                🎯 <span id="textActividades">Aktivnosti / Actividades</span>
+            </button>
+
+            <!-- Botón Agenda (Pendiente de definir destino) -->
+            <button class="menu-btn" onclick="alert('Sección de Agenda en construcción')" id="btnAgenda">
+                📅 <span id="textAgenda">Agenda / Agenda</span>
+            </button>
+
+            <!-- Botón Historia (Pendiente de definir destino) -->
+            <button class="menu-btn" onclick="alert('Sección de Historia en construcción')" id="btnHistoria">
+                🏛️ <span id="textHistoria">Povijest / Historia</span>
+            </button>
+        </div>
+
+        <!-- Botón de acceso directo principal que redirige a MS_Index1.html -->
         <a href="MS_Index1.html" class="btn-ingresar" id="btnAcceso">Započni / Ingresar</a>
     </div>
 
@@ -157,19 +199,28 @@
             const subEspanol = document.getElementById('subEspanol');
             const btnAcceso = document.getElementById('btnAcceso');
             const btnLibro = document.getElementById('btnLibro');
-            const badge = document.getElementById('badgeIdioma');
+            const badgeLabel = document.getElementById('badgeIdiomaLabel');
+            const textActividades = document.getElementById('textActividades');
+            const textAgenda = document.getElementById('textAgenda');
+            const textHistoria = document.getElementById('textHistoria');
 
             if (idiomaElegido === 'hr') {
-                badge.innerText = "HR";
+                badgeLabel.innerText = "Jezik: HR";
                 subEspanol.style.display = 'none';
                 btnAcceso.innerText = "Započni";
                 btnLibro.innerHTML = "📖 Otvori knjigu";
+                textActividades.innerText = "Aktivnosti";
+                textAgenda.innerText = "Agenda";
+                textHistoria.innerText = "Povijest";
             } else {
-                badge.innerText = "HR-ES";
+                badgeLabel.innerText = "Idioma: HR-ES";
                 subEspanol.style.display = 'block';
                 subEspanol.innerText = "Bienvenidos a Mala škola";
                 btnAcceso.innerText = "Započni / Ingresar";
                 btnLibro.innerHTML = "📖 Otvori knjigu / Abrir libro";
+                textActividades.innerText = "Aktivnosti / Actividades";
+                textAgenda.innerText = "Agenda / Agenda";
+                textHistoria.innerText = "Povijest / Historia";
             }
         });
 
