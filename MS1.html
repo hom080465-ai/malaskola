@@ -351,19 +351,22 @@
     <script src="inactivity-logout.js"></script>
 
     <script>
-        function reproducirItem(categoria, archivo, tipo = "normal") {
+    function reproducirItem(categoria, archivo, tipo = "normal") {
             const audio = document.getElementById('sound-item');
             let rutaFinal = "";
 
-            if (categoria === "Animales") {
+            // Convertimos la categoría a minúsculas para que coincida con tus carpetas reales (ej: 'animales')
+            let catMinuscula = categoria.toLowerCase();
+
+            if (catMinuscula === "animales") {
                 if (tipo === "grito") {
-                    rutaFinal = "Animales/Sonidos/" + archivo + ".wav";
+                    rutaFinal = "animales/sonidos/" + archivo + ".wav";
                 } else {
-                    rutaFinal = "Animales/Pronunc/" + archivo + ".wav";
+                    rutaFinal = "animales/pronunc/" + archivo + ".wav";
                 }
             } 
             else {
-                rutaFinal = categoria + "/Sonidos/" + archivo + ".wav";
+                rutaFinal = catMinuscula + "/sonidos/" + archivo + ".wav";
             }
 
             audio.src = rutaFinal;
