@@ -361,59 +361,74 @@
             });
         }
 
-        function verificarSeleccion(colorSeleccionado, botonElemento) {
-            intentos++;
-            const audioPronunciacion = document.getElementById('audio-pronunciacion');
-            const audioEfecto = document.getElementById('audio-efecto');
+function verificarSeleccion(colorSeleccionado, botonElemento) {
+    const audioPronunciacion = document.getElementById('audio-pronunciacion');
+    const audioEfecto = document.getElementById('audio-efecto');
 
-            // 1. (0 ms) Reproducir la pronunciación del color
-            let nombreArchivoAudio = colorSeleccionado.nombre.toLowerCase();
-            audioPronunciacion.src = "colores/sonidos/" + nombreArchivoAudio + ".wav";
-            audioPronunciacion.play().catch(err => console.log("Audio de pronunciación no encontrado"));
+    // 1. DESHABILITAR TODOS LOS BOTONES AL INSTANTE
+    const todosLosBotones = document.querySelectorAll('.options-grid .color-btn');
+    todosLosBotones.forEach(btn => btn.disabled = true);
 
-            if (colorSeleccionado.nombre === colorCorrecto.nombre) {
-                // 2. (800 ms) Suena 'yeah.wav'
-                setTimeout(() => {
-                    audioEfecto.src = "Sonidos/yeah.wav";
-                    audioEfecto.play().catch(err => console.log("Audio yeah no encontrado"));
-                }, 800);
+    intentos++;
 
-                botonElemento.style.backgroundColor = colorSeleccionado.hex;
-                botonElemento.style.color = (colorSeleccionado.hex === "#ffffff") ? "#000000" : "#ffffff";
+    // 2. Reproducir la pronunciación del color elegido
+    let nombreArchivoAudio = colorSeleccionado.nombre.toLowerCase();
+    audioPronunciacion.src = "Colores/Sonidos/" + nombreArchivoAudio + ".wav";
+    audioPronunciacion.play().catch(err => console.log("Audio de pronunciación no encontrado"));
 
-                let nota = calcularNota(intentos);
+    if (colorSeleccionado.nombre === colorCorrecto.nombre) {
+        // Acertó: esperamos un poco a que termine de decir el color y suena 'yeah.wav'
+        setTimeout(() => {
+            audioEfecto.src = "Sonidos/yeah.wav";
+            audioEfecto.play().catch(err => console.log("Audio yeah no encontrado"));
+        }, 800);
+
+        botonElemento.style.backgroundColor = colorSeleccionado.hex;
+        botonElemento.style.color = (colorSeleccionado.hex === "#ffffff") ? "#000000" : "#ffffff";
+
+        let nota = calcularNota(intentos);
+        
+        // Mantenemos tu tiempo original de 6 segundos para que escuche la calificación completa antes del modal
+        setTimeout(() => {
+            reproducirAudioCalificacion(nota);
+            mostrarModalResultado(true, nota, colorCorrecto.nombre);
+        }, 6000);
+
+    } else {
+        // Falló: suena 'mario.wav'
+        setTimeout(() => {
+            audioEfecto.src = "Sonidos/mario.wav";
+            audioEfecto.play().catch(err => console.log("Audio mario no encontrado"));
+        }, 800);
+
+        botonElemento.style.backgroundColor = colorSeleccionado.hex;
+        botonElemento.style.color = (colorSeleccionado.hex === "#ffffff") ? "#000000" : "#ffffff";
+        
+        document.getElementById('scoreDisplay').innerText = `Intentos: ${intentos} / ${maxIntentos}`;
+
+        if (intentos >= maxIntentos) {
+            // Si agotó los 4 intentos
+            setTimeout(() => {
+                const audioCal = document.getElementById('audio-efecto');
+                audioCal.src = "sonidos/katastrofa.wav";
+                audioCal.play().catch(err => console.log("Audio katastrofa no encontrado"));
                 
-                // 3. (6000 ms) Pausa holgada, suena la calificación en croata y se abre el modal
-                setTimeout(() => {
-                    reproducirAudioCalificacion(nota);
-                    mostrarModalResultado(true, nota, colorCorrecto.nombre);
-                }, 6000);
-
-            } else {
-                // 2. (800 ms) Suena 'mario.wav'
-                setTimeout(() => {
-                    audioEfecto.src = "Sonidos/mario.wav";
-                    audioEfecto.play().catch(err => console.log("Audio mario no encontrado"));
-                }, 800);
-
-                botonElemento.style.backgroundColor = colorSeleccionado.hex;
-                botonElemento.style.color = (colorSeleccionado.hex === "#ffffff") ? "#000000" : "#ffffff";
-                botonElemento.disabled = true;
-
-                document.getElementById('scoreDisplay').innerText = `Intentos: ${intentos} / ${maxIntentos}`;
-
-                if (intentos >= maxIntentos) {
-                    // 3. (3500 ms) Si agota los 4 intentos, suena 'katastrofa.wav' y se abre el modal
-                    setTimeout(() => {
-                        const audioCal = document.getElementById('audio-efecto');
-                        audioCal.src = "sonidos/katastrofa.wav";
-                        audioCal.play().catch(err => console.log("Audio katastrofa no encontrado"));
-                        
-                        mostrarModalResultado(false, 0, colorCorrecto.nombre);
-                    }, 3500);
-                }
-            }
+                mostrarModalResultado(false, 0, colorCorrecto.nombre);
+            }, 3500);
+        } else {
+            // Si falló pero LE QUEDAN INTENTOS:
+            // Esperamos a que pasen los audios y volvemos a HABILITAR los botones que no estén usados
+            setTimeout(() => {
+                todosLosBotones.forEach(btn => {
+                    // Si el botón no tiene color de fondo asignado (sigue blanco), lo rehabilitamos
+                    if (btn.style.backgroundColor === "" || btn.style.backgroundColor === "rgb(255, 255, 255)") {
+                        btn.disabled = false;
+                    }
+                });
+            }, 2000); // Se liberan los botones después de 2 segundos para que pueda seguir jugando
         }
+    }
+}
 
         function calcularNota(intentoActual) {
             switch(intentoActual) {
