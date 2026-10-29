@@ -529,23 +529,14 @@
         let archivoFotoSeleccionado = null;
         let esPrimerIngresoPorToken = false;
         let passwordModificadaConExito = false;
-        let rolUsuarioLogueado = null; // Variable para almacenar el rol del usuario conectado
+        let rolUsuarioLogueado = null; 
+        let userIdLogueado = null;
 
         window.addEventListener('DOMContentLoaded', async () => {
             const paramsUrl = new URLSearchParams(window.location.search);
-            const modo = paramsUrl.get('modo'); 
+            let modo = paramsUrl.get('modo'); 
             const idAlumno = paramsUrl.get('id'); 
             let idiomaActual = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
-
-            if (!modo || (modo !== 'alta' && modo !== 'editar') || (modo === 'editar' && !idAlumno)) {
-                let msgAlerta = (idiomaActual === 'hr') ? 
-                    "Pristup nije dopušten. Morate odabrati opciju iz izbornika." : 
-                    "Acceso no permitido. Debe ingresar seleccionando una opción válida desde el menú anterior.";
-                
-                alert(msgAlerta);
-                window.location.href = "MS_Index1.html"; 
-                return; 
-            }
 
             const hash = window.location.hash;
             if (hash && (hash.includes('type=recovery') || hash.includes('type=invite') || hash.includes('access_token'))) {
@@ -562,7 +553,42 @@
             }
 
             if (session) {
-                await cargarPerfilUsuarioLogueado(session.user.id);
+                userIdLogueado = session.user.id;
+                await cargarPerfilUsuarioLogueado(userIdLogueado);
+            }
+
+            // RESTRICCIÓN NUEVA: Si el rol es alumno, NUNCA puede dar de alta y SOLO puede entrar a su propio usuario
+            if (rolUsuarioLogueado === 'alumno') {
+                if (modo === 'alta') {
+                    let msgRestriccion = (idiomaActual === 'hr') ? 
+                        "Učenici nemaju dopuštenje za unos novih korisnika." : 
+                        "Los alumnos no tienen permiso para registrar nuevos usuarios.";
+                    alert(msgRestriccion);
+                    window.location.href = "MS_Index1.html";
+                    return;
+                }
+
+                // Si intenta editar y el ID en la URL no coincide con su propio ID, lo redirigimos obligatoriamente al suyo
+                if (modo === 'editar' && idAlumno !== userIdLogueado) {
+                    window.location.href = `MS_Usuarios.html?modo=editar&id=${userIdLogueado}`;
+                    return;
+                }
+
+                // Si por alguna razón entró sin parámetros o solo solicitó editar sin ID, forzamos su propio ID
+                if (!modo || modo !== 'editar' || !idAlumno) {
+                    window.location.href = `MS_Usuarios.html?modo=editar&id=${userIdLogueado}`;
+                    return;
+                }
+            }
+
+            if (!modo || (modo !== 'alta' && modo !== 'editar') || (modo === 'editar' && !idAlumno)) {
+                let msgAlerta = (idiomaActual === 'hr') ? 
+                    "Pristup nije dopušten. Morate odabrati opciju iz izbornika." : 
+                    "Acceso no permitido. Debe ingresar seleccionando una opción válida desde el menú anterior.";
+                
+                alert(msgAlerta);
+                window.location.href = "MS_Index1.html"; 
+                return; 
             }
 
             detectarModoFormulario();
@@ -587,7 +613,7 @@
                     .single();
 
                 if (data) {
-                    rolUsuarioLogueado = data.role; // Almacenamos el rol
+                    rolUsuarioLogueado = data.role; 
                     const nombreCompleto = `${data.nombre || ''} ${data.apellido || ''}`.trim();
                     document.getElementById('userNameMini').innerText = nombreCompleto || "Usuario";
                     
@@ -900,6 +926,11 @@
 
             try {
                 if (modoFormulario === 'alta') {
+                    // Doble validación por seguridad lógica
+                    if (rolUsuarioLogueado === 'alumno') {
+                        throw new Error("Acceso denegado. Los alumnos no pueden dar de alta usuarios.");
+                    }
+
                     msgEstado.innerText = (idiomaElegido === 'hr') ? "Provjera pošte..." : "Provjera pošte... / Verificando disponibilidad del correo...";
                     
                     const { data: usuarioExistente, error: errorCheck } = await supabaseClient
@@ -993,8 +1024,12 @@
                     const { data: { session } } = await supabaseClient.auth.getSession();
                     if (!session) throw new Error("Nema aktivne sesije.");
                     
-                    // Si el usuario logueado es alumno, protegemos trayendo sus datos originales de la BD para prevenir alteraciones
+                    // Si el usuario logueado es alumno, protegemos trayendo sus datos originales de la BD y forzando que solo edite su propio ID
                     if (rolUsuarioLogueado === 'alumno') {
+                        if (alumnoIdActual !== session.user.id) {
+                            throw new Error("No autorizado para editar este perfil.");
+                        }
+
                         const { data: datosOriginales } = await supabaseClient
                             .from('perfiles')
                             .select('email, role, estado')
