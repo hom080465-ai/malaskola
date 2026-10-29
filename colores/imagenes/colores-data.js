@@ -3,7 +3,7 @@ const baseDatosColores = {
     // Colores específicos para el Nivel Jardín (la lista base de 10 colores)
     jardin: [
         { nombre: "ŽUTA", hex: "#ffff00" },
-	{ nombre: "BIJELA", hex: "#ffffff" },
+		{ nombre: "BIJELA", hex: "#ffffff" },
         { nombre: "CRNA", hex: "#000000" },
         { nombre: "PLAVA", hex: "#0066cc" },
         { nombre: "CRVENA", hex: "#ff0000" },
