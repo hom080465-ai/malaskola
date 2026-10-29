@@ -315,7 +315,7 @@
     <div class="game-container">
         <div class="title-header">Kako kaže</div>
         
-        <div id="scoreDisplay" class="score-display">Animales: 0 / 4</div>
+        <div id="scoreDisplay" class="score-display">animales: 0 / 4</div>
 
         <div class="name-container" onclick="reproducirPronunciacion()">
             <h1 id="animalNameDisplay" class="target-name">???</h1>
@@ -394,7 +394,7 @@
 
         function siguienteRonda() {
             rondaActual++;
-            document.getElementById('scoreDisplay').innerText = `Animales: ${rondaActual} / ${maxRondas}`;
+            document.getElementById('scoreDisplay').innerText = `animales: ${rondaActual} / ${maxRondas}`;
             indiceMegafonoSeleccionado = null;
 
             const indexAleatorio = Math.floor(Math.random() * baseDatosAnimales.length);
