@@ -16,7 +16,7 @@ const baseDatosFrutas = {
         { nombre: "Banana", imagen: "frutas/Imagenes/banana.bmp", sonido: "frutas/sonidos/banana.wav" },
         { nombre: "Jabuka", imagen: "frutas/Imagenes/jabuka.bmp", sonido: "frutas/sonidos/jabuka.wav" },
         { nombre: "Dinja", imagen: "frutas/Imagenes/dinja.bmp", sonido: "frutas/sonidos/dinja.wav" },
-        { nombre: "Breskva", imagen: "frutas/Imagenes/Breskva.bmp", sonido: "frutas/sonidos/breskva.wav" },
+        { nombre: "Breskva", imagen: "frutas/Imagenes/breskva.bmp", sonido: "frutas/sonidos/breskva.wav" },
         { nombre: "Jagoda", imagen: "frutas/Imagenes/jagoda.bmp", sonido: "frutas/sonidos/jagoda.wav" },
         { nombre: "Lubenica", imagen: "frutas/Imagenes/lubenica.bmp", sonido: "frutas/sonidos/lubenica.wav" },
         { nombre: "Limun", imagen: "frutas/Imagenes/limun.bmp", sonido: "frutas/sonidos/limun.wav" },
