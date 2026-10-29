@@ -3,8 +3,8 @@ const baseNacionalidades = {
     
     // NIVEL 1: Los principales / Fundacionales
     nivel1: [
-        { pais: "Hrvatska", bandera: "Nacionalidades/nanderas/hrvatska.png", muski: "Hrvat", zenski: "Hrvatica", neutral: "Hrvatsko", iz: "iz Hrvatske", espanol: "Croacia" },
-        { pais: "Argentina", bandera: "Nacionalidades/nanderas/argentina.png", muski: "Argentinac", zenski: "Argentinka", neutral: "Argentinsko", iz: "iz Argentine", espanol: "Argentina" }
+        { pais: "Hrvatska", bandera: "nacionalidades/banderas/hrvatska.png", muski: "Hrvat", zenski: "Hrvatica", neutral: "Hrvatsko", iz: "iz Hrvatske", espanol: "Croacia" },
+        { pais: "Argentina", bandera: "nacionalidades/banderas/argentina.png", muski: "Argentinac", zenski: "Argentinka", neutral: "Argentinsko", iz: "iz Argentine", espanol: "Argentina" }
     ],
 
     // NIVEL 2: Incluye Nivel 1 + Latinoamérica y Europa cercana
