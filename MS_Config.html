@@ -324,10 +324,11 @@
             <h3 class="modal-titulo">Upravljanje korisnicima</h3>
             <p class="modal-sub">Seleccione una acción / Odaberite opciju</p>
             
-            <button class="btn-modal-accion btn-alta" onclick="irA('alta')">
+            <!-- Botón de Alta (Oculto automáticamente si es Alumno) -->
+            <button id="btnDarDeAlta" class="btn-modal-accion btn-alta" onclick="irA('alta')">
                 ➕ Novi unos / Dar de Alta
             </button>
-            <button class="btn-modal-accion btn-modificar" onclick="cargarListaUsuariosParaEditar()">
+            <button class="btn-modal-accion btn-modificar" onclick="manejarAccionModificarPerfil()">
                 ✏️ Izmjena / Modificar perfil
             </button>
             <button class="btn-modal-accion btn-cancelar" onclick="cerrarModal('modalUsuarios')">
@@ -367,7 +368,10 @@
     <script src="inactivity-logout.js"></script>
 
     <script>
-        window.addEventListener('DOMContentLoaded', () => {
+        let rolUsuarioLogueado = null;
+        let idUsuarioLogueado = null;
+
+        window.addEventListener('DOMContentLoaded', async () => {
             let idiomaElegido = localStorage.getItem('idiomaApp') || 'hr-es';
             idiomaElegido = idiomaElegido.trim().toLowerCase();
 
@@ -397,6 +401,30 @@
                 textVerbEs.style.display = 'block';
                 textVolver.innerText = "Povratak na glavni izbornik / Volver al Menú Principal";
             }
+
+            // Consultar el rol del usuario conectado para restringir el botón rojo de alta
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session) {
+                    idUsuarioLogueado = session.user.id;
+                    const { data: perfil } = await supabaseClient
+                        .from('perfiles')
+                        .select('role')
+                        .eq('id', idUsuarioLogueado)
+                        .single();
+
+                    if (perfil) {
+                        rolUsuarioLogueado = perfil.role;
+                        if (rolUsuarioLogueado === 'alumno') {
+                            // Ocultamos totalmente el botón rojo de alta
+                            const btnAlta = document.getElementById('btnDarDeAlta');
+                            if (btnAlta) btnAlta.style.display = 'none';
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Error al verificar el rol del usuario:", err);
+            }
         });
 
         function alternarIdioma() {
@@ -421,8 +449,17 @@
             window.location.href = `MS_Usuarios.html?modo=${modo}`;
         }
 
-        async function cargarListaUsuariosParaEditar() {
+        function manejarAccionModificarPerfil() {
             cerrarModal('modalUsuarios');
+            // Si es un alumno, va directo a editar su propio perfil sin mostrar la lista
+            if (rolUsuarioLogueado === 'alumno') {
+                window.location.href = `MS_Usuarios.html?modo=editar&id=${idUsuarioLogueado}`;
+            } else {
+                cargarListaUsuariosParaEditar();
+            }
+        }
+
+        async function cargarListaUsuariosParaEditar() {
             const modalSelect = document.getElementById('modalSeleccionarUsuario');
             const contenedor = document.getElementById('contenedorListaUsuarios');
             
@@ -430,7 +467,6 @@
             contenedor.innerHTML = "<div style='padding: 10px; text-align:center;'>Buscando usuarios... ⏳</div>";
 
             try {
-                // Usamos supabaseClient expuesto de manera global por los scripts externos
                 const { data: perfiles, error } = await supabaseClient
                     .from('perfiles')
                     .select('id, nombre, apellido, email, foto_url')
