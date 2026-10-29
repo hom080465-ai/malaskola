@@ -970,6 +970,8 @@
                     msgEstado.innerText = (idiomaElegido === 'hr') ? "Ažuriranje podataka..." : "Ažuriranje podataka... / Guardando cambios...";
 
                     let datosActualizados = {
+                        nombre: nombre,             // <--- ¡Agregado aquí!
+                        apellido: apellido,         // <--- ¡Agregado aquí!
                         apellido_materno: apellidoMaterno,
                         email: email,
                         fecha_nacimiento: fechaNac || null,
