@@ -13,22 +13,23 @@
             --croatia-red: #d90f13;
         }
 
-    body {
-        margin: 0;
-        padding: 0;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), 
-                url('./imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
-        background-size: cover;
-        background-color: var(--bg-color);
-        color: #222;
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        box-sizing: border-box;
-        position: relative;
-    }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), 
+                        url('imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
+            background-size: cover;
+            background-color: #1b264f;
+            color: #222;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            position: relative;
+            overflow-x: hidden;
+        }
 
         .app-container {
             width: 100%;
@@ -251,24 +252,6 @@
             align-items: center;
             gap: 15px;
             flex-shrink: 0;
-        }
-
-        .btn-start {
-            background-color: var(--croatia-red);
-            color: white;
-            border: 2px solid #fff;
-            padding: 14px 35px;
-            font-size: 1.15rem;
-            font-weight: bold;
-            border-radius: 14px;
-            cursor: pointer;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-            transition: all 0.2s;
-        }
-
-        .btn-start:hover {
-            background-color: #b50b0f;
-            transform: translateY(-2px);
         }
 
         .btn-close {
@@ -521,7 +504,7 @@
             <div class="modal-header-visual">
                 <img src="imagenes/ManoSaludo.gif" alt="Mano saludando" class="mano-gif">
                 <div class="croatian-avatar-container">
-                    <img src="/imagenes/Escudo-Croacia.jpg" alt="Escudo Croacia">
+                    <img src="imagenes/Escudo-Croacia.jpg" alt="Escudo Croacia">
                 </div>
             </div>
             <h2 id="tituloSaludoModal">Dobar dan!</h2>
@@ -588,18 +571,18 @@
                         <div class="options-group" style="margin-top: 10px; gap: 10px;">
                             <label class="radio-label" style="font-size: 0.95rem;">
                                 <div class="radio-left">
-                                    <input type="radio" name="nivel" value="3-6">
+                                    <input type="radio" name="nivel" value="3-6" onclick="seleccionarNivel(this)">
                                     <div class="level-content">
-                                        <img src="/imagenes/Icono-Nina.avif" alt="3-6" class="level-icon">
+                                        <img src="imagenes/Icono-Nina.avif" alt="3-6" class="level-icon">
                                         <span>3 - 6</span>
                                     </div>
                                 </div>
                             </label>
                             <label class="radio-label" style="font-size: 0.95rem;">
                                 <div class="radio-left">
-                                    <input type="radio" name="nivel" value="6-12">
+                                    <input type="radio" name="nivel" value="6-12" onclick="seleccionarNivel(this)">
                                     <div class="level-content">
-                                        <img src="/imagenes/Icono-Nino.avif" alt="6-12" class="level-icon">
+                                        <img src="imagenes/Icono-Nino.avif" alt="6-12" class="level-icon">
                                         <span>6 - 12</span>
                                     </div>
                                 </div>
@@ -611,7 +594,7 @@
                         <div class="options-group" style="margin-top: 10px; gap: 10px;">
                             <label class="radio-label" style="font-size: 0.95rem;">
                                 <div class="radio-left">
-                                    <input type="radio" name="nivel" value="nivel-1">
+                                    <input type="radio" name="nivel" value="nivel-1" onclick="seleccionarNivel(this)">
                                     <div class="level-content">
                                         <img src="imagenes/icono-nivel1.jpg" alt="Nivel 1" class="level-icon">
                                         <span>Nivel 1</span>
@@ -620,7 +603,7 @@
                             </label>
                             <label class="radio-label" style="font-size: 0.95rem;">
                                 <div class="radio-left">
-                                    <input type="radio" name="nivel" value="nivel-2">
+                                    <input type="radio" name="nivel" value="nivel-2" onclick="seleccionarNivel(this)">
                                     <div class="level-content">
                                         <img src="imagenes/icono-nivel2.jpg" alt="Nivel 2" class="level-icon">
                                         <span>Nivel 2</span>
@@ -629,7 +612,7 @@
                             </label>
                             <label class="radio-label" style="font-size: 0.95rem;">
                                 <div class="radio-left">
-                                    <input type="radio" name="nivel" value="nivel-3">
+                                    <input type="radio" name="nivel" value="nivel-3" onclick="seleccionarNivel(this)">
                                     <div class="level-content">
                                         <img src="imagenes/icono-nivel3.jpg" alt="Nivel 3" class="level-icon">
                                         <span>Nivel 3</span>
@@ -649,7 +632,6 @@
 
         <div class="bottom-row">
             <div class="actions-left">
-                <button class="btn-start" id="btnStartText" onclick="iniciarLeccion()">Započni / Iniciar</button>
                 <button class="btn-close" onclick="cerrarPagina(event)" title="Salir">✕</button>
             </div>
 
@@ -708,7 +690,6 @@
             const colMalaSkola = document.getElementById('colMalaSkola');
             const colAdultos = document.getElementById('colAdultos');
             const btnConfigText = document.getElementById('btnConfigText');
-            const btnStartText = document.getElementById('btnStartText');
             const profTitle = document.getElementById('profTitle');
 
             if (idiomaSeleccionado === 'hr') {
@@ -718,7 +699,6 @@
                 colMalaSkola.innerText = "Mala Škola";
                 colAdultos.innerText = "Odrasli";
                 btnConfigText.innerText = "⚙️ Postaviti";
-                btnStartText.innerText = "Započni";
                 profTitle.innerText = "Profesorice";
             } else {
                 mainTitleText.innerText = "Učenici hrvatskog jezika - Estudiantes de Croata";
@@ -727,7 +707,6 @@
                 colMalaSkola.innerText = "Mala Škola";
                 colAdultos.innerText = "Adultos - Odrasli";
                 btnConfigText.innerText = "⚙️ Postaviti - Configuración";
-                btnStartText.innerText = "Započni / Iniciar";
                 profTitle.innerText = "Profesorice - Profesoras";
             }
         }
@@ -894,28 +873,21 @@
             window.location.href = "MS_Config.html";
         }
 
-        function iniciarLeccion() {
+        function seleccionarNivel(nivelInput) {
             const idioma = document.querySelector('input[name="lang"]:checked').value;
-            const nivel = document.querySelector('input[name="nivel"]:checked');
-
-            if (!nivel) {
-                alert("Molim vas, izaberite nivo / Por favor, seleccione un nivel.");
-                return;
-            }
-
             localStorage.setItem('idiomaApp', idioma);
 
-            if (nivel.value === "3-6") {
+            if (nivelInput.value === "3-6") {
                 window.location.href = "MS1.html";
             } 
-            else if (nivel.value === "6-12") {
+            else if (nivelInput.value === "6-12") {
                 window.location.href = "MS2.html";
             } 
-            else if (nivel.value === "nivel-1") {
+            else if (nivelInput.value === "nivel-1") {
                 window.location.href = "MSN1.html";
             }
             else {
-                alert(`¡Cargando lección para Adultos - ${nivel.value}!\nIdioma: ${idioma}`);
+                alert(`¡Cargando lección para Adultos - ${nivelInput.value}!\nIdioma: ${idioma}`);
             }
         }
         
