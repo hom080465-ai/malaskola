@@ -17,13 +17,12 @@
             background-size: cover;
             background-color: var(--bg-color);
             margin: 0;
-            padding: 10px;
+            padding: 5px;
             color: #1e293b;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
             box-sizing: border-box;
             position: relative;
         }
@@ -31,13 +30,13 @@
         /* Perfil flotante en la esquina superior izquierda */
         .user-floating-badge {
             position: absolute;
-            top: 12px;
-            left: 12px;
+            top: 10px;
+            left: 10px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             background: rgba(27, 38, 79, 0.85);
-            padding: 4px 10px 4px 4px;
+            padding: 3px 8px 3px 3px;
             border-radius: 30px;
             border: 2px solid var(--croatia-blue);
             backdrop-filter: blur(8px);
@@ -46,8 +45,8 @@
         }
 
         .user-avatar-mini {
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid #ffffff;
@@ -56,44 +55,42 @@
 
         .user-name-mini {
             color: #ffffff;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: bold;
             text-shadow: 0 1px 2px rgba(0,0,0,0.5);
             padding-right: 4px;
         }
 
         .container {
-            max-width: 680px;
+            max-width: 660px;
             width: 100%;
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(12px);
-            padding: 15px 25px;
-            border-radius: 14px;
+            padding: 10px 20px;
+            border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             border: 3px solid var(--croatia-blue);
             position: relative;
             box-sizing: border-box;
-            max-height: 98vh;
-            overflow-y: auto;
-            margin-top: 35px;
+            margin-top: 30px;
         }
         
         .badge-idioma {
             position: absolute;
-            top: 15px;
-            left: 15px;
-            display: none; /* Oculto para evitar superposición con el perfil flotante */
+            top: 10px;
+            left: 10px;
+            display: none;
         }
 
         .btn-cambiar-clave-top {
             position: absolute;
-            top: 15px;
+            top: 10px;
             right: 15px;
             background: #f1f5f9;
             color: var(--croatia-blue);
-            padding: 4px 10px;
+            padding: 3px 8px;
             border-radius: 6px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: bold;
             border: 2px solid var(--croatia-blue);
             cursor: pointer;
@@ -109,36 +106,36 @@
             text-align: center;
             display: flex;
             flex-direction: column;
-            gap: 2px;
-            margin-top: 5px;
-            margin-bottom: 8px;
+            gap: 1px;
+            margin-top: 2px;
+            margin-bottom: 6px;
         }
-        h2 { color: var(--croatia-red); margin: 0; font-size: 1.1rem; }
-        .sub-espanol { color: var(--croatia-blue); font-weight: bold; font-size: 0.75rem; margin: 0; }
+        h2 { color: var(--croatia-red); margin: 0; font-size: 1rem; }
+        .sub-espanol { color: var(--croatia-blue); font-weight: bold; font-size: 0.7rem; margin: 0; }
         
         .barra-superior-herramientas {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             background: #f8fafc;
-            padding: 4px 10px;
-            border-radius: 8px;
+            padding: 3px 8px;
+            border-radius: 6px;
             border: 2px solid #e2e8f0;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             flex-wrap: wrap;
         }
         .teclado-virtual {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
         }
         .btn-acento-croata {
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             cursor: pointer;
             border: 2px solid #cbd5e1;
-            border-radius: 6px;
+            border-radius: 5px;
             padding: 2px;
             background: #fff;
             object-fit: contain;
@@ -152,11 +149,11 @@
             background: #e0f2fe;
             border: 2px solid #38bdf8;
             color: #0369a1;
-            padding: 3px 8px;
-            border-radius: 6px;
+            padding: 2px 6px;
+            border-radius: 5px;
             font-weight: bold;
             cursor: pointer;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             transition: background 0.2s;
         }
         .btn-audio-barra:hover { background: #bae6fd; }
@@ -164,33 +161,33 @@
         .seccion-foto-destacada {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             background: #f8fafc;
-            padding: 8px 12px;
-            border-radius: 10px;
+            padding: 6px 10px;
+            border-radius: 8px;
             border: 2px solid #cbd5e1;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         .avatar-preview {
-            width: 48px;
-            height: 48px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             object-fit: cover;
-            border: 3px solid var(--croatia-blue);
+            border: 2px solid var(--croatia-blue);
             background: #e2e8f0;
             flex-shrink: 0;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
         }
 
         .form-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 5px 10px;
-            margin-bottom: 8px;
+            gap: 4px 8px;
+            margin-bottom: 6px;
         }
         .form-grid-full { grid-column: span 2; }
 
-        label { display: block; font-weight: bold; margin-bottom: 1px; color: #475569; font-size: 0.75rem; }
+        label { display: block; font-weight: bold; margin-bottom: 1px; color: #475569; font-size: 0.7rem; }
         
         .campo-obligatorio {
             border-left: 4px solid var(--croatia-red) !important;
@@ -203,18 +200,18 @@
 
         .sub-label {
             display: block;
-            font-size: 0.63rem;
+            font-size: 0.6rem;
             color: #94a3b8;
             font-weight: normal;
-            margin-bottom: 2px;
+            margin-bottom: 1px;
         }
 
         input, select {
             width: 100%;
-            padding: 5px 8px;
+            padding: 4px 6px;
             border: 2px solid #cbd5e1;
-            border-radius: 6px;
-            font-size: 0.82rem;
+            border-radius: 5px;
+            font-size: 0.78rem;
             outline: none;
             box-sizing: border-box;
             background: #fff;
@@ -229,13 +226,13 @@
 
         button.btn-accion {
             width: 100%;
-            padding: 9px;
+            padding: 7px;
             font-weight: bold;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 5px;
             cursor: pointer;
-            font-size: 0.88rem;
+            font-size: 0.82rem;
             background: #22c55e;
             transition: background 0.2s;
         }
@@ -247,8 +244,8 @@
         button.btn-accion:not(:disabled):hover { background: #16a34a; }
 
         .msg-estado {
-            font-size: 0.78rem;
-            margin-top: 3px;
+            font-size: 0.72rem;
+            margin-top: 2px;
             font-weight: bold;
             text-align: center;
         }
@@ -256,19 +253,19 @@
         .navegacion-footer {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-top: 8px;
+            gap: 6px;
+            margin-top: 6px;
         }
         .btn-navegacion {
-            padding: 7px 10px;
-            border-radius: 8px;
+            padding: 5px 8px;
+            border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
             text-align: center;
             text-decoration: none;
             transition: all 0.2s ease;
-            font-size: 0.78rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 0.72rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             display: block;
             box-sizing: border-box;
         }
@@ -295,38 +292,38 @@
         .modal-box {
             background: #ffffff;
             width: 100%;
-            max-width: 420px;
-            padding: 20px;
-            border-radius: 12px;
+            max-width: 400px;
+            padding: 15px;
+            border-radius: 10px;
             border: 3px solid var(--croatia-red);
             box-shadow: 0 12px 30px rgba(0,0,0,0.3);
             text-align: center;
             box-sizing: border-box;
         }
-        .modal-titulo { color: var(--croatia-red); font-size: 1.05rem; font-weight: bold; margin-top: 0; }
-        .modal-mensaje { color: #1e293b; font-size: 0.82rem; margin-bottom: 15px; line-height: 1.4; text-align: left; background: #fff1f2; padding: 10px; border-radius: 6px; border-left: 4px solid var(--croatia-red); }
+        .modal-titulo { color: var(--croatia-red); font-size: 1rem; font-weight: bold; margin-top: 0; }
+        .modal-mensaje { color: #1e293b; font-size: 0.78rem; margin-bottom: 12px; line-height: 1.4; text-align: left; background: #fff1f2; padding: 8px; border-radius: 5px; border-left: 4px solid var(--croatia-red); }
         
         .btn-modal-ok {
             background: var(--croatia-blue);
             color: white;
             border: none;
-            padding: 8px 18px;
+            padding: 7px 15px;
             font-weight: bold;
-            border-radius: 6px;
+            border-radius: 5px;
             cursor: pointer;
             width: 100%;
-            margin-top: 10px;
+            margin-top: 8px;
         }
         .btn-modal-cancelar {
             background: #64748b;
             color: white;
             border: none;
-            padding: 8px 18px;
+            padding: 7px 15px;
             font-weight: bold;
-            border-radius: 6px;
+            border-radius: 5px;
             cursor: pointer;
             width: 100%;
-            margin-top: 5px;
+            margin-top: 4px;
         }
     </style>
 </head>
@@ -349,7 +346,7 @@
 
         <div class="barra-superior-herramientas">
             <div class="teclado-virtual">
-                <span id="labelAcentos" style="font-size: 0.75rem; font-weight: bold; color: #475569;">Naglasci / Acentos:</span>
+                <span id="labelAcentos" style="font-size: 0.7rem; font-weight: bold; color: #475569;">Naglasci / Acentos:</span>
                 <img src="imagenes/Caron.bmp" class="btn-acento-croata" id="btnCaron" onmousedown="manejarClickAcento('caron', this, event)" alt="Caron">
                 <img src="imagenes/Acento.bmp" class="btn-acento-croata" id="btnAcento" onmousedown="manejarClickAcento('acento', this, event)" alt="Acento">
                 <img src="imagenes/Guion.bmp" class="btn-acento-croata" id="btnGuion" onmousedown="manejarClickAcento('guion', this, event)" alt="Guion">
@@ -469,7 +466,7 @@
                 </select>
             </div>
 
-            <div class="form-grid-full" style="margin-top: 2px;">
+            <div class="form-grid-full" style="margin-top: 1px;">
                 <button class="btn-accion" id="btnAccionFormulario" onclick="ejecutarAccionFormulario()" disabled>Registriraj i pošalji pozivnicu ✉️</button>
             </div>
         </div>
@@ -488,11 +485,11 @@
             <h3 class="modal-titulo" style="text-align: center;" id="modalPassTitulo">🔒 Promjena lozinke</h3>
             <p id="textoModalPass" class="modal-mensaje">Defina su nueva contraseña de acceso al sistema.</p>
             
-            <div style="margin-bottom: 10px;">
+            <div style="margin-bottom: 8px;">
                 <label id="lblModalPassNueva">Nova lozinka</label>
                 <input type="password" id="modalNuevaPass" placeholder="Mínimo 6 caracteres">
             </div>
-            <div style="margin-bottom: 15px;">
+            <div style="margin-bottom: 12px;">
                 <label id="lblModalPassConfirm">Potvrdi lozinku</label>
                 <input type="password" id="modalConfirmarPass" placeholder="Repita la clave">
             </div>
@@ -524,7 +521,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let campoActivoActual = null;
-        let modoFormulario = 'editar'; // Por defecto forzamos editar para alumnos
+        let modoFormulario = 'editar'; 
         let alumnoIdActual = null;
         let archivoFotoSeleccionado = null;
         let esPrimerIngresoPorToken = false;
@@ -554,7 +551,6 @@
                 await cargarPerfilUsuarioLogueado(userIdLogueado);
             }
 
-            // RESTRICCIÓN ESTRICTA: Si es alumno, NUNCA puede dar de alta ni acceder a otro perfil. Forzamos su propio ID.
             if (rolUsuarioLogueado === 'alumno') {
                 modoFormulario = 'editar';
                 alumnoIdActual = userIdLogueado;
@@ -611,7 +607,6 @@
                         document.getElementById('userAvatarMini').src = data.foto_url;
                     }
 
-                    // Restricción visual si el usuario conectado es alumno
                     if (rolUsuarioLogueado === 'alumno') {
                         document.getElementById('emailAlumno').readOnly = true;
                         document.getElementById('rolUsuario').disabled = true;
@@ -682,7 +677,6 @@
                 cargarDatosAlumnoParaEditar(alumnoIdActual);
 
             } else {
-                // Si es alumno, nos aseguramos de que no pueda ver de ninguna forma la pantalla de alta
                 if (rolUsuarioLogueado === 'alumno') {
                     window.location.href = `MS_Usuarios.html?modo=editar&id=${userIdLogueado}`;
                     return;
@@ -925,7 +919,7 @@
                     if (!session) throw new Error("Nema aktivne sesije.");
                     
                     if (rolUsuarioLogueado === 'alumno') {
-                        alumnoIdActual = session.user.id; // Forzamos estrictamente al propio ID del alumno
+                        alumnoIdActual = session.user.id;
 
                         const { data: datosOriginales } = await supabaseClient
                             .from('perfiles')
