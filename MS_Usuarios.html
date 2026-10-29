@@ -398,6 +398,18 @@
                 <input type="email" id="emailAlumno" class="campo-obligatorio" placeholder="alumno@malaskola.com" oninput="validarFormularioCompleto()">
             </div>
 
+            <!-- Nuevo campo: Rol / Tipo de usuario -->
+            <div class="form-grid-full">
+                <label id="lblRol">Uloga / Rol <span class="asterisco-obligatorio">*</span></label>
+                <span id="subRol" class="sub-label">Tipo de usuario en el sistema</span>
+                <select id="rolUsuario" class="campo-obligatorio" onchange="validarFormularioCompleto()">
+                    <option value="">-- Odaberite / Seleccionar --</option>
+                    <option value="alumno">Alumno / Učenik</option>
+                    <option value="profesor">Profesor / Profesor</option>
+                    <option value="administrador">Administrador / Administrator</option>
+                </select>
+            </div>
+
             <div>
                 <label id="lblNivel">Razina jezika</label>
                 <span id="subNivel" class="sub-label">Nivel de idioma</span>
@@ -453,7 +465,7 @@
                 <select id="estadoUsuario" onchange="validarFormularioCompleto()">
                     <option value="">-- Odaberite / Seleccionar --</option>
                     <option value="activo">Aktivan / Activo (true)</option>
-                    <option value="suspendido">Suspendiran / Suspendido (false)</option>
+                    <option value="suspendiran">Suspendiran / Suspendido (false)</option>
                 </select>
             </div>
 
@@ -669,6 +681,7 @@
                 document.getElementById('apellidoMaterno').value = data.apellido_materno || '';
                 document.getElementById('fechaNacimiento').value = data.fecha_nacimiento || '';
                 document.getElementById('emailAlumno').value = data.email || '';
+                document.getElementById('rolUsuario').value = data.rol || '';
                 document.getElementById('nivelIdioma').value = data.nivel_idioma || '';
                 document.getElementById('vinculoCroacia').value = data.vinculo_croacia || '';
                 document.getElementById('regionCroacia').value = data.region_croacia || '';
@@ -690,6 +703,7 @@
             const nombre = document.getElementById('nombreAlumno').value.trim();
             const apellido = document.getElementById('apellidoAlumno').value.trim();
             const email = document.getElementById('emailAlumno').value.trim();
+            const rol = document.getElementById('rolUsuario').value;
             
             const nivel = document.getElementById('nivelIdioma').value;
             const vinculo = document.getElementById('vinculoCroacia').value;
@@ -705,13 +719,14 @@
                     nombre !== "" && 
                     apellido !== "" && 
                     email !== "" && 
+                    rol !== "" &&
                     nivel !== "" && 
                     vinculo !== "" && 
                     motivacion !== "" && 
                     estado !== ""
                 );
             } else {
-                camposValidos = (email !== "");
+                camposValidos = (email !== "" && rol !== "");
             }
 
             if (esPrimerIngresoPorToken && !passwordModificadaConExito) {
@@ -859,6 +874,7 @@
             const apellido = document.getElementById('apellidoAlumno').value.trim();
             const apellidoMaterno = document.getElementById('apellidoMaterno').value.trim();
             const email = document.getElementById('emailAlumno').value.trim();
+            const rol = document.getElementById('rolUsuario').value;
             const fechaNac = document.getElementById('fechaNacimiento').value;
             const nivel = document.getElementById('nivelIdioma').value;
             const vinculo = document.getElementById('vinculoCroacia').value;
@@ -906,7 +922,7 @@
                         email: email,
                         password: tempPassword,
                         options: {
-                            data: { nombre: nombre, apellido: apellido }
+                            data: { nombre: nombre, apellido: apellido, rol: rol }
                         }
                     });
 
@@ -933,6 +949,7 @@
                             nombre: nombre, 
                             apellido: apellido, 
                             apellido_materno: apellidoMaterno, 
+                            rol: rol,
                             fecha_nacimiento: fechaNac || null, 
                             nivel_idioma: nivel,
                             vinculo_croacia: vinculo, 
@@ -970,10 +987,11 @@
                     msgEstado.innerText = (idiomaElegido === 'hr') ? "Ažuriranje podataka..." : "Ažuriranje podataka... / Guardando cambios...";
 
                     let datosActualizados = {
-                        nombre: nombre,             // <--- ¡Agregado aquí!
-                        apellido: apellido,         // <--- ¡Agregado aquí!
+                        nombre: nombre,
+                        apellido: apellido,
                         apellido_materno: apellidoMaterno,
                         email: email,
+                        rol: rol,
                         fecha_nacimiento: fechaNac || null,
                         nivel_idioma: nivel,
                         vinculo_croacia: vinculo,
