@@ -13,17 +13,17 @@ const baseDatosFrutas = {
         { nombre: "Grožđe", imagen: "frutas/imagenes/grožđe.avif", sonido: "frutas/sonidos/grožđe.wav" }
     ],
     segundonivel: [
-        { nombre: "Banana", imagen: "frutas/Imagenes/banana.bmp", sonido: "frutas/sonidos/banana.wav" },
-        { nombre: "Jabuka", imagen: "frutas/Imagenes/jabuka.bmp", sonido: "frutas/sonidos/jabuka.wav" },
-        { nombre: "Dinja", imagen: "frutas/Imagenes/dinja.bmp", sonido: "frutas/sonidos/dinja.wav" },
-        { nombre: "Breskva", imagen: "frutas/Imagenes/breskva.bmp", sonido: "frutas/sonidos/breskva.wav" },
-        { nombre: "Jagoda", imagen: "frutas/Imagenes/jagoda.bmp", sonido: "frutas/sonidos/jagoda.wav" },
-        { nombre: "Lubenica", imagen: "frutas/Imagenes/lubenica.bmp", sonido: "frutas/sonidos/lubenica.wav" },
-        { nombre: "Limun", imagen: "frutas/Imagenes/limun.bmp", sonido: "frutas/sonidos/limun.wav" },
-        { nombre: "Kruška", imagen: "frutas/Imagenes/Kruška.bmp", sonido: "frutas/sonidos/Kruška.wav" },
-        { nombre: "Trešnja", imagen: "frutas/Imagenes/Trešnja.bmp", sonido: "frutas/sonidos/trešnja.wav" },
-        { nombre: "Šljiva", imagen: "frutas/Imagenes/Šljiva.bmp", sonido: "frutas/sonidos/šljiva.wav" },
-        { nombre: "Grožđe", imagen: "frutas/Imagenes/Grožđe.avif", sonido: "frutas/sonidos/grožđe.wav" }
+        { nombre: "Banana", imagen: "frutas/imagenes/banana.bmp", sonido: "frutas/sonidos/banana.wav" },
+        { nombre: "Jabuka", imagen: "frutas/imagenes/jabuka.bmp", sonido: "frutas/sonidos/jabuka.wav" },
+        { nombre: "Dinja", imagen: "frutas/imagenes/dinja.bmp", sonido: "frutas/sonidos/dinja.wav" },
+        { nombre: "Breskva", imagen: "frutas/imagenes/breskva.bmp", sonido: "frutas/sonidos/breskva.wav" },
+        { nombre: "Jagoda", imagen: "frutas/imagenes/jagoda.bmp", sonido: "frutas/sonidos/jagoda.wav" },
+        { nombre: "Lubenica", imagen: "frutas/imagenes/lubenica.bmp", sonido: "frutas/sonidos/lubenica.wav" },
+        { nombre: "Limun", imagen: "frutas/imagenes/limun.bmp", sonido: "frutas/sonidos/limun.wav" },
+        { nombre: "Kruška", imagen: "frutas/imagenes/Kruška.bmp", sonido: "frutas/sonidos/Kruška.wav" },
+        { nombre: "Trešnja", imagen: "frutas/imagenes/Trešnja.bmp", sonido: "frutas/sonidos/trešnja.wav" },
+        { nombre: "Šljiva", imagen: "frutas/imagenes/Šljiva.bmp", sonido: "frutas/sonidos/šljiva.wav" },
+        { nombre: "Grožđe", imagen: "frutas/imagenes/Grožđe.avif", sonido: "frutas/sonidos/grožđe.wav" }
     ]
 };
 
