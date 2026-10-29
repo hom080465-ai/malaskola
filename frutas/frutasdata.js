@@ -1,29 +1,29 @@
 const baseDatosFrutas = {
     jardin: [
-        { nombre: "Banana", imagen: "Frutas/Imagenes/banana.bmp", sonido: "Frutas/sonidos/banana.wav" },
-        { nombre: "Jabuka", imagen: "Frutas/Imagenes/jabuka.bmp", sonido: "Frutas/sonidos/jabuka.wav" },
-        { nombre: "Dinja", imagen: "Frutas/Imagenes/dinja.bmp", sonido: "Frutas/sonidos/dinja.wav" },
-        { nombre: "Breskva", imagen: "Frutas/Imagenes/Breskva.bmp", sonido: "Frutas/sonidos/Breskva.wav" },
-        { nombre: "Jagoda", imagen: "Frutas/Imagenes/jagoda.bmp", sonido: "Frutas/sonidos/jagoda.wav" },
-        { nombre: "Lubenica", imagen: "Frutas/Imagenes/lubenica.bmp", sonido: "Frutas/sonidos/lubenica.wav" },
-        { nombre: "Limun", imagen: "Frutas/Imagenes/limun.bmp", sonido: "Frutas/sonidos/limun.wav" },
-        { nombre: "Kruška", imagen: "Frutas/Imagenes/Kruška.bmp", sonido: "Frutas/sonidos/Kruška.wav" },
-        { nombre: "Trešnja", imagen: "Frutas/Imagenes/Trešnja.bmp", sonido: "Frutas/sonidos/Trešnja.wav" },
-        { nombre: "Šljiva", imagen: "Frutas/Imagenes/Šljiva.bmp", sonido: "Frutas/sonidos/Šljiva.wav" },
-        { nombre: "Grožđe", imagen: "Frutas/Imagenes/Grožđe.avif", sonido: "Frutas/sonidos/Grožđe.wav" }
+        { nombre: "Banana", imagen: "frutas/imagenes/banana.bmp", sonido: "frutas/sonidos/banana.wav" },
+        { nombre: "Jabuka", imagen: "frutas/imagenes/jabuka.bmp", sonido: "frutas/sonidos/jabuka.wav" },
+        { nombre: "Dinja", imagen: "frutas/imagenes/dinja.bmp", sonido: "frutas/sonidos/dinja.wav" },
+        { nombre: "Breskva", imagen: "frutas/imagenes/breskva.bmp", sonido: "frutas/sonidos/breskva.wav" },
+        { nombre: "Jagoda", imagen: "frutas/imagenes/jagoda.bmp", sonido: "frutas/sonidos/jagoda.wav" },
+        { nombre: "Lubenica", imagen: "frutas/imagenes/lubenica.bmp", sonido: "frutas/sonidos/lubenica.wav" },
+        { nombre: "Limun", imagen: "frutas/imagenes/limun.bmp", sonido: "frutas/sonidos/limun.wav" },
+        { nombre: "Kruška", imagen: "frutas/imagenes/kruška.bmp", sonido: "frutas/sonidos/kruška.wav" },
+        { nombre: "Trešnja", imagen: "frutas/imagenes/trešnja.bmp", sonido: "frutas/sonidos/trešnja.wav" },
+        { nombre: "Šljiva", imagen: "frutas/imagenes/šljiva.bmp", sonido: "frutas/sonidos/šljiva.wav" },
+        { nombre: "Grožđe", imagen: "frutas/imagenes/grožđe.avif", sonido: "frutas/sonidos/grožđe.wav" }
     ],
     segundonivel: [
-        { nombre: "Banana", imagen: "Frutas/Imagenes/banana.bmp", sonido: "Frutas/sonidos/banana.wav" },
-        { nombre: "Jabuka", imagen: "Frutas/Imagenes/jabuka.bmp", sonido: "Frutas/sonidos/jabuka.wav" },
-        { nombre: "Dinja", imagen: "Frutas/Imagenes/dinja.bmp", sonido: "Frutas/sonidos/dinja.wav" },
-        { nombre: "Breskva", imagen: "Frutas/Imagenes/Breskva.bmp", sonido: "Frutas/sonidos/Breskva.wav" },
-        { nombre: "Jagoda", imagen: "Frutas/Imagenes/jagoda.bmp", sonido: "Frutas/sonidos/jagoda.wav" },
-        { nombre: "Lubenica", imagen: "Frutas/Imagenes/lubenica.bmp", sonido: "Frutas/sonidos/lubenica.wav" },
-        { nombre: "Limun", imagen: "Frutas/Imagenes/limun.bmp", sonido: "Frutas/sonidos/limun.wav" },
-        { nombre: "Kruška", imagen: "Frutas/Imagenes/Kruška.bmp", sonido: "Frutas/sonidos/Kruška.wav" },
-        { nombre: "Trešnja", imagen: "Frutas/Imagenes/Trešnja.bmp", sonido: "Frutas/sonidos/Trešnja.wav" },
-        { nombre: "Šljiva", imagen: "Frutas/Imagenes/Šljiva.bmp", sonido: "Frutas/sonidos/Šljiva.wav" },
-        { nombre: "Grožđe", imagen: "Frutas/Imagenes/Grožđe.avif", sonido: "Frutas/sonidos/Grožđe.wav" }
+        { nombre: "Banana", imagen: "frutas/Imagenes/banana.bmp", sonido: "frutas/sonidos/banana.wav" },
+        { nombre: "Jabuka", imagen: "frutas/Imagenes/jabuka.bmp", sonido: "frutas/sonidos/jabuka.wav" },
+        { nombre: "Dinja", imagen: "frutas/Imagenes/dinja.bmp", sonido: "frutas/sonidos/dinja.wav" },
+        { nombre: "Breskva", imagen: "frutas/Imagenes/Breskva.bmp", sonido: "frutas/sonidos/breskva.wav" },
+        { nombre: "Jagoda", imagen: "frutas/Imagenes/jagoda.bmp", sonido: "frutas/sonidos/jagoda.wav" },
+        { nombre: "Lubenica", imagen: "frutas/Imagenes/lubenica.bmp", sonido: "frutas/sonidos/lubenica.wav" },
+        { nombre: "Limun", imagen: "frutas/Imagenes/limun.bmp", sonido: "frutas/sonidos/limun.wav" },
+        { nombre: "Kruška", imagen: "frutas/Imagenes/Kruška.bmp", sonido: "frutas/sonidos/Kruška.wav" },
+        { nombre: "Trešnja", imagen: "frutas/Imagenes/Trešnja.bmp", sonido: "frutas/sonidos/trešnja.wav" },
+        { nombre: "Šljiva", imagen: "frutas/Imagenes/Šljiva.bmp", sonido: "frutas/sonidos/šljiva.wav" },
+        { nombre: "Grožđe", imagen: "frutas/Imagenes/Grožđe.avif", sonido: "frutas/sonidos/grožđe.wav" }
     ]
 };
 
