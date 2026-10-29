@@ -15,7 +15,7 @@
 
         body {
             margin: 0;
-            padding: 0;
+            padding: 5px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), 
                         url('imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
@@ -33,12 +33,12 @@
 
         .app-container {
             width: 100%;
-            max-width: 1450px;
-            padding: 20px;
+            max-width: 1400px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 12px;
             z-index: 10;
         }
 
@@ -47,16 +47,17 @@
             text-align: center;
             background: linear-gradient(135deg, rgba(0, 81, 186, 0.95), rgba(27, 38, 79, 0.95));
             backdrop-filter: blur(8px);
-            border-radius: 16px;
-            padding: 18px 30px;
+            border-radius: 12px;
+            padding: 12px 20px;
             width: 100%;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            border: 3px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            box-sizing: border-box;
         }
 
         .main-title-box h1 {
             margin: 0;
-            font-size: 2.1rem;
+            font-size: 1.7rem;
             color: var(--white);
             font-weight: 800;
             letter-spacing: 0.5px;
@@ -65,19 +66,19 @@
 
         .btn-global-audio {
             position: absolute;
-            right: 20px;
+            right: 15px;
             top: 50%;
             transform: translateY(-50%);
             background: rgba(255, 255, 255, 0.95);
             border: 2px solid var(--croatia-blue);
             border-radius: 50%;
-            width: 42px;
-            height: 42px;
+            width: 36px;
+            height: 36px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 1rem;
             transition: all 0.2s;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
@@ -89,53 +90,56 @@
 
         .panels-row {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
+            gap: 20px;
             width: 100%;
-            max-width: 1350px;
+            max-width: 1300px;
             margin: 0 auto;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 850px) {
             .panels-row {
                 flex-direction: column;
                 align-items: center;
-                gap: 20px;
+                gap: 12px;
             }
         }
 
         .card-panel {
             background: #ffffff;
             backdrop-filter: blur(12px);
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+            border-radius: 12px;
+            padding: 15px 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.35);
             border: 3px solid var(--croatia-blue);
-            width: 420px;
+            width: 400px;
             flex-shrink: 0;
+            box-sizing: border-box;
         }
 
         .card-panel h3 {
             margin-top: 0;
-            font-size: 1.25rem;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
             color: var(--croatia-blue);
             text-align: center;
             border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 10px;
+            padding-bottom: 6px;
             font-weight: 800;
         }
 
         .options-group {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 10px;
+            margin-top: 10px;
         }
 
         .radio-label {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 1rem;
+            font-size: 0.92rem;
             cursor: pointer;
             font-weight: 600;
             color: #1e293b;
@@ -144,12 +148,12 @@
         .radio-left {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .radio-label input {
             accent-color: var(--croatia-red);
-            transform: scale(1.3);
+            transform: scale(1.2);
             cursor: pointer;
         }
 
@@ -157,13 +161,13 @@
             background: #f1f5f9;
             border: 2px solid var(--croatia-blue);
             border-radius: 50%;
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1rem;
+            font-size: 0.85rem;
             transition: all 0.2s;
             box-shadow: 0 2px 5px rgba(0,0,0,0.15);
         }
@@ -180,8 +184,8 @@
         }
 
         .flag-icon {
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             object-fit: contain;
             border-radius: 4px;
             background: rgba(255, 255, 255, 0.8);
@@ -190,8 +194,8 @@
         }
 
         .flag-rect {
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             object-fit: cover;
             border-radius: 3px;
             border: 1px solid #cbd5e1;
@@ -204,8 +208,8 @@
         }
 
         .level-icon {
-            width: 26px;
-            height: 26px;
+            width: 22px;
+            height: 22px;
             object-fit: contain;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.9);
@@ -216,57 +220,56 @@
         .levels-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 15px;
+            gap: 12px;
+            margin-top: 10px;
         }
 
         .level-column h4 {
-            margin: 0 0 10px 0;
-            font-size: 0.95rem;
+            margin: 0 0 8px 0;
+            font-size: 0.88rem;
             color: var(--croatia-red);
             text-align: center;
             border-bottom: 1px solid #cbd5e1;
-            padding-bottom: 5px;
+            padding-bottom: 4px;
             font-weight: 700;
         }
 
         .bottom-row {
             display: flex;
             justify-content: space-between;
-            align-items: flex-end;
+            align-items: center;
             width: 100%;
-            max-width: 1350px;
-            margin-top: 15px;
+            max-width: 1300px;
+            margin-top: 5px;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 850px) {
             .bottom-row {
                 flex-direction: column;
                 align-items: center;
-                gap: 20px;
+                gap: 15px;
             }
         }
 
         .actions-left {
             display: flex;
             align-items: center;
-            gap: 15px;
             flex-shrink: 0;
         }
 
         .btn-close {
             background: #ffffff;
             border: 2px solid var(--croatia-blue);
-            width: 48px;
-            height: 48px;
-            min-width: 48px;
-            min-height: 48px;
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            min-height: 40px;
             border-radius: 50%;
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: bold;
             color: var(--croatia-blue);
             cursor: pointer;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -281,96 +284,96 @@
 
         .central-buttons-wrapper {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
+            justify-content: center;
             align-items: center;
-            gap: 10px;
-            margin: 5px 0;
+            gap: 12px;
+            margin: 2px 0;
+            flex-wrap: wrap;
         }
 
         .btn-libro {
             background: linear-gradient(135deg, var(--croatia-blue), #003380);
             color: white;
             border: 2px solid rgba(255, 255, 255, 0.9);
-            padding: 12px 28px;
-            font-size: 1.05rem;
+            padding: 10px 22px;
+            font-size: 0.95rem;
             font-weight: bold;
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .btn-libro:hover {
             transform: translateY(-2px);
             background: linear-gradient(135deg, #00429c, #002255);
-            box-shadow: 0 8px 22px rgba(0,0,0,0.4);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.4);
         }
 
         .btn-config {
             background: var(--croatia-red);
             color: white;
             border: 2px solid rgba(255, 255, 255, 0.9);
-            padding: 12px 28px;
-            font-size: 1.05rem;
+            padding: 10px 22px;
+            font-size: 0.95rem;
             font-weight: bold;
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 10px;
-            min-width: 290px;
+            gap: 8px;
             justify-content: center;
         }
 
         .btn-config:hover {
             transform: translateY(-2px);
             background: #b50b0f;
-            box-shadow: 0 8px 22px rgba(0,0,0,0.4);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.4);
         }
 
         .professors-card {
             background: #ffffff;
             backdrop-filter: blur(12px);
-            border-radius: 16px;
-            padding: 15px 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-            width: 420px;
+            border-radius: 12px;
+            padding: 10px 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+            width: 320px;
             border: 3px solid var(--croatia-blue);
             flex-shrink: 0;
-            margin-top: 40px;
-            transform: translateX(120px);
+            box-sizing: border-box;
         }
 
         .professors-title {
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 800;
             color: var(--croatia-blue);
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
             border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 6px;
+            padding-bottom: 4px;
         }
 
         .professors-items {
             display: flex;
-            flex-direction: column;
+            justify-content: space-around;
             gap: 10px;
         }
 
         .professor-row {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
         }
 
         .professor-img {
-            width: 45px;
-            height: 45px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid var(--croatia-red);
@@ -378,7 +381,7 @@
         }
 
         .professor-name {
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             font-weight: 600;
             color: #1e293b;
         }
@@ -400,12 +403,12 @@
 
         .modal-card-croatia {
             background: #ffffff; 
-            padding: 35px 30px; 
-            border-radius: 20px;
+            padding: 30px 25px; 
+            border-radius: 16px;
             text-align: center; 
             border: 4px solid var(--croatia-blue);
             box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            max-width: 420px;
+            max-width: 400px;
             width: 90%;
             position: relative;
             animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -421,23 +424,23 @@
             align-items: center;
             justify-content: center;
             gap: 15px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             position: relative;
-            padding-left: 110px;
+            padding-left: 90px;
         }
 
         .mano-gif {
             position: absolute;
-            left: 15px;
-            width: 110px;
-            height: 110px;
+            left: 10px;
+            width: 90px;
+            height: 90px;
             object-fit: contain;
             flex-shrink: 0;
         }
 
         .croatian-avatar-container {
-            width: 105px;
-            height: 105px;
+            width: 85px;
+            height: 85px;
             border-radius: 50%;
             border: 3px solid var(--croatia-red);
             overflow: hidden;
@@ -458,14 +461,14 @@
         .modal-card-croatia h2 {
             margin: 0 0 5px 0; 
             color: var(--croatia-blue); 
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             font-weight: 800;
         }
 
         .modal-card-croatia p {
-            margin: 0 0 25px 0; 
+            margin: 0 0 20px 0; 
             color: #d90f13; 
-            font-size: 1.15rem; 
+            font-size: 1.05rem; 
             font-weight: 700;
         }
 
@@ -473,10 +476,10 @@
             background: linear-gradient(135deg, var(--croatia-blue), #003380);
             color: white; 
             border: none;
-            font-size: 1.1rem; 
+            font-size: 1rem; 
             font-weight: bold; 
-            padding: 14px 30px;
-            border-radius: 12px; 
+            padding: 12px 25px;
+            border-radius: 10px; 
             cursor: pointer; 
             transition: transform 0.2s, box-shadow 0.2s;
             width: 100%;
@@ -568,8 +571,8 @@
                 <div class="levels-grid">
                     <div class="level-column">
                         <h4 id="colMalaSkola">Mala Škola</h4>
-                        <div class="options-group" style="margin-top: 10px; gap: 10px;">
-                            <label class="radio-label" style="font-size: 0.95rem;">
+                        <div class="options-group" style="margin-top: 5px; gap: 8px;">
+                            <label class="radio-label" style="font-size: 0.88rem;">
                                 <div class="radio-left">
                                     <input type="radio" name="nivel" value="3-6" onclick="seleccionarNivel(this)">
                                     <div class="level-content">
@@ -578,7 +581,7 @@
                                     </div>
                                 </div>
                             </label>
-                            <label class="radio-label" style="font-size: 0.95rem;">
+                            <label class="radio-label" style="font-size: 0.88rem;">
                                 <div class="radio-left">
                                     <input type="radio" name="nivel" value="6-12" onclick="seleccionarNivel(this)">
                                     <div class="level-content">
@@ -591,8 +594,8 @@
                     </div>
                     <div class="level-column">
                         <h4 id="colAdultos">Adultos - Odrasli</h4>
-                        <div class="options-group" style="margin-top: 10px; gap: 10px;">
-                            <label class="radio-label" style="font-size: 0.95rem;">
+                        <div class="options-group" style="margin-top: 5px; gap: 6px;">
+                            <label class="radio-label" style="font-size: 0.88rem;">
                                 <div class="radio-left">
                                     <input type="radio" name="nivel" value="nivel-1" onclick="seleccionarNivel(this)">
                                     <div class="level-content">
@@ -601,7 +604,7 @@
                                     </div>
                                 </div>
                             </label>
-                            <label class="radio-label" style="font-size: 0.95rem;">
+                            <label class="radio-label" style="font-size: 0.88rem;">
                                 <div class="radio-left">
                                     <input type="radio" name="nivel" value="nivel-2" onclick="seleccionarNivel(this)">
                                     <div class="level-content">
@@ -610,7 +613,7 @@
                                     </div>
                                 </div>
                             </label>
-                            <label class="radio-label" style="font-size: 0.95rem;">
+                            <label class="radio-label" style="font-size: 0.88rem;">
                                 <div class="radio-left">
                                     <input type="radio" name="nivel" value="nivel-3" onclick="seleccionarNivel(this)">
                                     <div class="level-content">
@@ -890,7 +893,6 @@
                 alert(`¡Cargando lección para Adultos - ${nivelInput.value}!\nIdioma: ${idioma}`);
             }
         }
-        
     </script>
 </body>
 </html>
