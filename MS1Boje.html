@@ -373,7 +373,7 @@ function verificarSeleccion(colorSeleccionado, botonElemento) {
 
     // 2. Reproducir inmediatamente la pronunciación del color elegido
     let nombreArchivoAudio = colorSeleccionado.nombre.toLowerCase();
-    audioPronunciacion.src = "Colores/Sonidos/" + nombreArchivoAudio + ".wav";
+    audioPronunciacion.src = "colores/sonidos/" + nombreArchivoAudio + ".wav";
     audioPronunciacion.play().catch(err => console.log("Audio de pronunciación no encontrado"));
 
     if (colorSeleccionado.nombre === colorCorrecto.nombre) {
