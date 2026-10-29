@@ -524,7 +524,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let campoActivoActual = null;
-        let modoFormulario = 'alta'; 
+        let modoFormulario = 'editar'; // Por defecto forzamos editar para alumnos
         let alumnoIdActual = null;
         let archivoFotoSeleccionado = null;
         let esPrimerIngresoPorToken = false;
@@ -533,9 +533,6 @@
         let userIdLogueado = null;
 
         window.addEventListener('DOMContentLoaded', async () => {
-            const paramsUrl = new URLSearchParams(window.location.search);
-            let modo = paramsUrl.get('modo'); 
-            const idAlumno = paramsUrl.get('id'); 
             let idiomaActual = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
 
             const hash = window.location.hash;
@@ -557,38 +554,31 @@
                 await cargarPerfilUsuarioLogueado(userIdLogueado);
             }
 
-            // RESTRICCIÓN NUEVA: Si el rol es alumno, NUNCA puede dar de alta y SOLO puede entrar a su propio usuario
+            // RESTRICCIÓN ESTRICTA: Si es alumno, NUNCA puede dar de alta ni acceder a otro perfil. Forzamos su propio ID.
             if (rolUsuarioLogueado === 'alumno') {
-                if (modo === 'alta') {
-                    let msgRestriccion = (idiomaActual === 'hr') ? 
-                        "Učenici nemaju dopuštenje za unos novih korisnika." : 
-                        "Los alumnos no tienen permiso para registrar nuevos usuarios.";
-                    alert(msgRestriccion);
-                    window.location.href = "MS_Index1.html";
-                    return;
+                modoFormulario = 'editar';
+                alumnoIdActual = userIdLogueado;
+            } else {
+                const paramsUrl = new URLSearchParams(window.location.search);
+                const modo = paramsUrl.get('modo'); 
+                const idAlumno = paramsUrl.get('id'); 
+
+                if (!modo || (modo !== 'alta' && modo !== 'editar') || (modo === 'editar' && !idAlumno)) {
+                    let msgAlerta = (idiomaActual === 'hr') ? 
+                        "Pristup nije dopušten. Morate odabrati opciju iz izbornika." : 
+                        "Acceso no permitido. Debe ingresar seleccionando una opción válida desde el menú anterior.";
+                    
+                    alert(msgAlerta);
+                    window.location.href = "MS_Index1.html"; 
+                    return; 
                 }
 
-                // Si intenta editar y el ID en la URL no coincide con su propio ID, lo redirigimos obligatoriamente al suyo
-                if (modo === 'editar' && idAlumno !== userIdLogueado) {
-                    window.location.href = `MS_Usuarios.html?modo=editar&id=${userIdLogueado}`;
-                    return;
+                if (modo === 'editar') {
+                    modoFormulario = 'editar';
+                    alumnoIdActual = idAlumno;
+                } else {
+                    modoFormulario = 'alta';
                 }
-
-                // Si por alguna razón entró sin parámetros o solo solicitó editar sin ID, forzamos su propio ID
-                if (!modo || modo !== 'editar' || !idAlumno) {
-                    window.location.href = `MS_Usuarios.html?modo=editar&id=${userIdLogueado}`;
-                    return;
-                }
-            }
-
-            if (!modo || (modo !== 'alta' && modo !== 'editar') || (modo === 'editar' && !idAlumno)) {
-                let msgAlerta = (idiomaActual === 'hr') ? 
-                    "Pristup nije dopušten. Morate odabrati opciju iz izbornika." : 
-                    "Acceso no permitido. Debe ingresar seleccionando una opción válida desde el menú anterior.";
-                
-                alert(msgAlerta);
-                window.location.href = "MS_Index1.html"; 
-                return; 
             }
 
             detectarModoFormulario();
@@ -682,21 +672,22 @@
         }
 
         function detectarModoFormulario() {
-            const params = new URLSearchParams(window.location.search);
-            const modo = params.get('modo');
             let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+            const btnAccion = document.getElementById('btnAccionFormulario');
             
-            if (modo === 'editar') {
-                modoFormulario = 'editar';
-                alumnoIdActual = params.get('id');
-                document.getElementById('btnAccionFormulario').innerText = (idiomaElegido === 'hr') ? "Spremi promjene 💾" : "Spremi promjene / Guardar Cambios 💾";
+            if (modoFormulario === 'editar') {
+                btnAccion.innerText = (idiomaElegido === 'hr') ? "Spremi promjene 💾" : "Spremi promjene / Guardar Cambios 💾";
                 document.getElementById('subEspanol').innerText = "Modificación de Legajo i Perfil de Alumno";
                 
                 cargarDatosAlumnoParaEditar(alumnoIdActual);
 
             } else {
-                modoFormulario = 'alta';
-                document.getElementById('btnAccionFormulario').innerText = (idiomaElegido === 'hr') ? "Registriraj i pošalji pozivnicu ✉️" : "Registriraj i pošalji pozivnicu / Registrar y Enviar Invitación ✉️";
+                // Si es alumno, nos aseguramos de que no pueda ver de ninguna forma la pantalla de alta
+                if (rolUsuarioLogueado === 'alumno') {
+                    window.location.href = `MS_Usuarios.html?modo=editar&id=${userIdLogueado}`;
+                    return;
+                }
+                btnAccion.innerText = (idiomaElegido === 'hr') ? "Registriraj i pošalji pozivnicu ✉️" : "Registriraj i pošalji pozivnicu / Registrar y Enviar Invitación ✉️";
             }
         }
 
@@ -926,109 +917,15 @@
 
             try {
                 if (modoFormulario === 'alta') {
-                    // Doble validación por seguridad lógica
                     if (rolUsuarioLogueado === 'alumno') {
-                        throw new Error("Acceso denegado. Los alumnos no pueden dar de alta usuarios.");
+                        throw new Error("Acceso denegado.");
                     }
-
-                    msgEstado.innerText = (idiomaElegido === 'hr') ? "Provjera pošte..." : "Provjera pošte... / Verificando disponibilidad del correo...";
-                    
-                    const { data: usuarioExistente, error: errorCheck } = await supabaseClient
-                        .from('perfiles')
-                        .select('email')
-                        .eq('email', email)
-                        .maybeSingle();
-
-                    if (errorCheck) {
-                        console.error(errorCheck);
-                    }
-
-                    if (usuarioExistente) {
-                        msgEstado.innerText = "";
-                        mostrarModal(
-                            "Elektronička pošta već postoji u sustavu.",
-                            "El correo electrónico ya se encuentra registrado en el sistema.",
-                            "⚠️ Pažnja",
-                            "Atención"
-                        );
-                        return;
-                    }
-
-                    msgEstado.innerText = (idiomaElegido === 'hr') ? "Generiranje vjerodajnica..." : "Generiranje vjerodajnica... / Generando credenciales...";
-
-                    const tempPassword = Math.random().toString(36).slice(-8) + 'A1!';
-
-                    const { data: authData, error: authError } = await supabaseClient.auth.signUp({
-                        email: email,
-                        password: tempPassword,
-                        options: {
-                            data: { nombre: nombre, apellido: apellido, role: rol }
-                        }
-                    });
-
-                    if (authError) {
-                        throw new Error(authError.message);
-                    }
-
-                    const nuevoId = authData?.user?.id;
-                    if (!nuevoId) {
-                        throw new Error("No se pudo obtener el ID del usuario.");
-                    }
-
-                    msgEstado.innerText = (idiomaElegido === 'hr') ? "Učitavanje datoteke..." : "Učitavanje datoteke... / Subiendo archivo...";
-
-                    let urlFotoFinal = null;
-                    if (archivoFotoSeleccionado) {
-                        urlFotoFinal = await subirFotoANube(archivoFotoSeleccionado, nuevoId);
-                    }
-
-                    const { error: dbError } = await supabaseClient.from('perfiles').insert([
-                        { 
-                            id: nuevoId, 
-                            email: email, 
-                            nombre: nombre, 
-                            apellido: apellido, 
-                            apellido_materno: apellidoMaterno, 
-                            role: rol, 
-                            fecha_nacimiento: fechaNac || null, 
-                            nivel_idioma: nivel,
-                            vinculo_croacia: vinculo, 
-                            region_croacia: region, 
-                            apellido_original: apOriginal,
-                            motivacion: motivacion,
-                            estado: estado,
-                            foto_url: urlFotoFinal 
-                        }
-                    ]);
-
-                    if (dbError) throw dbError;
-
-                    msgEstado.innerText = (idiomaElegido === 'hr') ? "Slanje pozivnice..." : "Slanje pozivnice... / Enviando invitación...";
-
-                    const { error: resetError } = await supabaseClient.auth.resetPasswordForEmail(email, {
-                        redirectTo: window.location.origin + '/MS_Index1.html'
-                    });
-
-                    if (resetError) {
-                        console.warn("Aviso SMTP: " + resetError.message);
-                    }
-
-                    msgEstado.style.color = "#16a34a";
-                    msgEstado.innerText = (idiomaElegido === 'hr') ? "Uspješno! Korisnik je registriran." : "Uspješno! / ¡Usuario dado de alta con éxito!";
-                    
-                    setTimeout(() => {
-                        window.location.href = "MS_Index1.html";
-                    }, 2500);
-
                 } else {
                     const { data: { session } } = await supabaseClient.auth.getSession();
                     if (!session) throw new Error("Nema aktivne sesije.");
                     
-                    // Si el usuario logueado es alumno, protegemos trayendo sus datos originales de la BD y forzando que solo edite su propio ID
                     if (rolUsuarioLogueado === 'alumno') {
-                        if (alumnoIdActual !== session.user.id) {
-                            throw new Error("No autorizado para editar este perfil.");
-                        }
+                        alumnoIdActual = session.user.id; // Forzamos estrictamente al propio ID del alumno
 
                         const { data: datosOriginales } = await supabaseClient
                             .from('perfiles')
