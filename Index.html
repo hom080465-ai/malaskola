@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mala Škola - Početak</title>
+    <style>
+        :root {
+            --croatia-blue: #0051ba;
+            --croatia-red: #d90f13;
+            --white: #ffffff;
+            --bg-color: #1b264f;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), 
+                        url('imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
+            background-size: cover;
+            background-color: var(--bg-color);
+            color: #222;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(12px);
+            border: 3px solid var(--croatia-blue);
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            margin-top: 40px;
+        }
+
+        /* Botón interactivo de cambio de idioma arriba a la izquierda */
+        .badge-idioma {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: var(--croatia-red);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255,255,255,0.6);
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 20;
+        }
+
+        .badge-idioma:hover {
+            background: #b50b0f;
+            transform: scale(1.05);
+        }
+
+        /* Botón flotante superior derecho para abrir el libro */
+        .btn-abrir-libro {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--croatia-blue);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+            z-index: 1000;
+        }
+
+        .btn-abrir-libro:hover {
+            background: #003380;
+            transform: translateY(-2px);
+        }
+
+        h1 {
+            color: var(--croatia-red);
+            margin: 0 0 12px 0;
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .sub-espanol {
+            color: var(--croatia-blue);
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 0 0 30px 0;
+        }
+
+        .btn-ingresar {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--croatia-blue), #003380);
+            color: white;
+            padding: 14px 30px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 1.05rem;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0, 81, 186, 0.3);
+            transition: all 0.2s;
+        }
+
+        .btn-ingresar:hover {
+            transform: translateY(-2px);
+            background: #003380;
+            box-shadow: 0 6px 20px rgba(0, 81, 186, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Botón flotante superior derecho para abrir el libro -->
+    <button onclick="abrirLibro()" id="btnLibro" class="btn-abrir-libro">
+        📖 Otvori knjigu / Abrir libro
+    </button>
+
+    <div class="container">
+        <!-- Botón interactivo de cambio de idioma arriba a la izquierda -->
+        <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()" title="Hacer clic para cambiar idioma">HR</span>
+
+        <!-- Títulos solicitados -->
+        <h1 id="tituloCroata">Dobrodošli u Malu školu</h1>
+        <p class="sub-espanol" id="subEspanol">Bienvenidos a Mala škola</p>
+
+        <!-- Botón de acceso directo que redirige a MS_Index1.html -->
+        <a href="MS_Index1.html" class="btn-ingresar" id="btnAcceso">Započni / Ingresar</a>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            let idiomaElegido = localStorage.getItem('idiomaApp');
+            if (!idiomaElegido) {
+                idiomaElegido = 'hr-es';
+                localStorage.setItem('idiomaApp', 'hr-es');
+            }
+            idiomaElegido = idiomaElegido.trim().toLowerCase();
+
+            const subEspanol = document.getElementById('subEspanol');
+            const btnAcceso = document.getElementById('btnAcceso');
+            const btnLibro = document.getElementById('btnLibro');
+            const badge = document.getElementById('badgeIdioma');
+
+            if (idiomaElegido === 'hr') {
+                badge.innerText = "HR";
+                subEspanol.style.display = 'none';
+                btnAcceso.innerText = "Započni";
+                btnLibro.innerHTML = "📖 Otvori knjigu";
+            } else {
+                badge.innerText = "HR-ES";
+                subEspanol.style.display = 'block';
+                subEspanol.innerText = "Bienvenidos a Mala škola";
+                btnAcceso.innerText = "Započni / Ingresar";
+                btnLibro.innerHTML = "📖 Otvori knjigu / Abrir libro";
+            }
+        });
+
+        function alternarIdioma() {
+            let idiomaActual = (localStorage.getItem('idiomaApp') || 'hr').trim().toLowerCase();
+            
+            if (idiomaActual === "hr-es" || idiomaActual.includes("es")) {
+                localStorage.setItem('idiomaApp', 'hr');
+            } else {
+                localStorage.setItem('idiomaApp', 'hr-es');
+            }
+            
+            location.reload();
+        }
+
+        function abrirLibro() {
+            sessionStorage.setItem('paginaOrigenLibro', window.location.href);
+            window.location.href = 'MS_Kniga12.html';
+        }
+    </script>
+</body>
+</html>
