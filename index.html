@@ -67,7 +67,7 @@
             transform: scale(1.05);
         }
 
-        /* Botón pequeño de Login ubicado arriba a la derecha */
+        /* Botón inteligente de Login / Logout ubicado arriba a la derecha */
         .btn-login-esquina {
             position: absolute;
             top: 20px;
@@ -153,18 +153,128 @@
         .full-width {
             grid-column: 1 / -1;
         }
+
+        /* --- ESTILOS DEL BANNER FLOTANTE DEL PRÓXIMO EVENTO --- */
+        .evento-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .evento-popup-card {
+            background: #ffffff;
+            width: 90%;
+            max-width: 450px;
+            border-radius: 16px;
+            border: 3px solid var(--croatia-blue);
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            text-align: left;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .btn-cerrar-popup {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .btn-cerrar-popup:hover {
+            background: #dc2626;
+        }
+
+        .popup-badge {
+            background: var(--croatia-red);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .popup-titulo {
+            color: var(--croatia-blue);
+            font-size: 1.25rem;
+            margin: 0 0 10px 0;
+            font-weight: 800;
+        }
+
+        .popup-info {
+            font-size: 0.9rem;
+            color: #475569;
+            margin: 5px 0;
+        }
+
+        .popup-btn-agenda {
+            display: block;
+            width: 100%;
+            background: var(--croatia-blue);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 15px;
+            box-sizing: border-box;
+            transition: background 0.2s;
+        }
+
+        .popup-btn-agenda:hover {
+            background: #003380;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
     </style>
 </head>
 <body>
 
+    <!-- MODAL / BANNER DEL PRÓXIMO EVENTO -->
+    <div class="evento-modal-overlay" id="modalProximoEvento" style="display: none;">
+        <div class="evento-popup-card">
+            <button class="btn-cerrar-popup" onclick="cerrarPopupEvento()" title="Cerrar">✕</button>
+            <span class="popup-badge" id="popupBadgeText">🌟 Próximo Evento / Najbliže događanje</span>
+            <h3 class="popup-titulo" id="popupTitulo">Cargando...</h3>
+            <p class="popup-info">📅 <strong id="popupFecha">--</strong></p>
+            <p class="popup-info">🏛️ <strong id="popupLugar">--</strong></p>
+            <a href="MS_Agenda.html" class="popup-btn-agenda" id="popupBtnVerMas">Ver en la Agenda / Vidi u agendi</a>
+        </div>
+    </div>
+
     <div class="container">
-        <!-- Botón rojo interactivo de cambio de idioma (arriba a la izquierda) -->
+        <!-- Botón rojo interactivo de cambio de idioma -->
         <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()" title="Hacer clic para cambiar idioma">HR</span>
 
-        <!-- Botón pequeño de Login / Conectarse (arriba a la derecha) -->
-        <a href="MS_Login.html" class="btn-login-esquina" id="btnLogin" onclick="sessionStorage.setItem('urlOrigen', window.location.href);">
+        <!-- Botón inteligente de Login / Logout (arriba a la derecha) -->
+        <a href="#" class="btn-login-esquina" id="btnLoginLogout" onclick="manejarAccionLoginLogout(event)">
             🔑 <span id="textLogin">Prijava / Login</span>
         </a>
+
         <!-- Títulos solicitados -->
         <h1 id="tituloCroata">Dobrodošli u Malu školu</h1>
         <p class="sub-espanol" id="subEspanol">Bienvenidos a Malu školu</p>
@@ -172,30 +282,45 @@
         <!-- Bloque de botones central -->
         <div class="menu-grid">
             <!-- Botón de Clases de Idioma -->
-            <button class="btn-menu-item" onclick="window.location.href='MS_Index1.html'" id="btnAgenda">
+            <button class="btn-menu-item" onclick="window.location.href='MS_Index1.html'">
                 📚 <span id="textClases">Započni (Tečaj jezika) / Clases de Idioma</span>
             </button>
 
-            <!-- Botón de Agenda (Apunta correctamente a MS_Agenda.html) -->
-            <button class="btn-menu-item" onclick="window.location.href='MS_Agenda.html'" id="btnAgenda">
+            <!-- Botón de Agenda -->
+            <button class="btn-menu-item" onclick="window.location.href='MS_Agenda.html'">
                 📅 <span id="textAgenda">Agenda / Agenda</span>
             </button>
 
             <!-- Botón de Actividades -->
-            <button class="btn-menu-item" onclick="alert('Sección de Actividades en construcción')" id="btnActividades">
+            <button class="btn-menu-item" onclick="alert('Sección de Actividades en construcción')">
                 🎯 <span id="textActividades">Aktivnosti / Actividades</span>
             </button>
             
             <!-- Botón de Historia -->
-            <button class="btn-menu-item full-width" onclick="alert('Sección de Historia en construcción')" id="btnHistoria">
+            <button class="btn-menu-item full-width" onclick="alert('Sección de Historia en construcción')">
                 🏛️ <span id="textHistoria">Povijest / Historia</span>
             </button>
         </div>
     </div>
 
-    <!-- Script de configuración general -->
+    <!-- Librería de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Script de configuración, sesión y carga del próximo evento -->
     <script>
-        window.addEventListener('DOMContentLoaded', () => {
+        const SUPABASE_URL = 'https://pizswxittpzwwrymougc.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_s9U9C-8dCR3NfP3s6MEuhA_ADfGUXu8';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let usuarioLogueadoActual = false;
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            verificarIdiomaYTextos();
+            await verificarSesionYAdaptarBoton();
+            await cargarProximoEventoPopup();
+        });
+
+        function verificarIdiomaYTextos() {
             let idiomaElegido = localStorage.getItem('idiomaApp');
             if (!idiomaElegido) {
                 idiomaElegido = 'hr-es';
@@ -205,7 +330,6 @@
 
             const subEspanol = document.getElementById('subEspanol');
             const textClases = document.getElementById('textClases');
-            const textLogin = document.getElementById('textLogin');
             const badge = document.getElementById('badgeIdioma');
             const textActividades = document.getElementById('textActividades');
             const textAgenda = document.getElementById('textAgenda');
@@ -215,31 +339,133 @@
                 badge.innerText = "HR";
                 subEspanol.style.display = 'none';
                 textClases.innerText = "Započni (Tečaj jezika)";
-                textLogin.innerText = "Prijava";
                 textActividades.innerText = "Aktivnosti";
                 textAgenda.innerText = "Agenda";
                 textHistoria.innerText = "Povijest";
+                document.getElementById('popupBadgeText').innerText = "🌟 Najbliže događanje";
+                document.getElementById('popupBtnVerMas').innerText = "Vidi u agendi";
             } else {
                 badge.innerText = "HR-ES";
                 subEspanol.style.display = 'block';
                 subEspanol.innerText = "Bienvenidos a Malu školu";
                 textClases.innerText = "Započni (Tečaj jezika) / Clases de Idioma";
-                textLogin.innerText = "Prijava / Login";
                 textActividades.innerText = "Aktivnosti / Actividades";
                 textAgenda.innerText = "Agenda / Agenda";
                 textHistoria.innerText = "Povijest / Historia";
+                document.getElementById('popupBadgeText').innerText = "🌟 Próximo Evento / Najbliže događanje";
+                document.getElementById('popupBtnVerMas').innerText = "Ver en la Agenda / Vidi u agendi";
             }
-        });
+        }
+
+        // Verifica si hay sesión activa para cambiar el texto del botón dinámicamente
+        async function verificarSesionYAdaptarBoton() {
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+                const textLogin = document.getElementById('textLogin');
+
+                if (session && session.user) {
+                    usuarioLogueadoActual = true;
+                    // Intentamos buscar su nombre en perfiles para saludarlo o mostrar Logout
+                    const { data: perfil } = await supabaseClient
+                        .from('perfiles')
+                        .select('nombre')
+                        .eq('id', session.user.id)
+                        .single();
+
+                    const nombreCorto = perfil && perfil.nombre ? perfil.nombre : "User";
+                    
+                    if (idiomaElegido === 'hr') {
+                        textLogin.innerText = `Odjava (${nombreCorto})`; // Logout en croata
+                    } else {
+                        textLogin.innerText = `Odjava / Logout (${nombreCorto})`;
+                    }
+                } else {
+                    usuarioLogueadoActual = false;
+                    if (idiomaElegido === 'hr') {
+                        textLogin.innerText = "Prijava";
+                    } else {
+                        textLogin.innerText = "Prijava / Login";
+                    }
+                }
+            } catch (err) {
+                console.log("Error al verificar sesión:", err);
+            }
+        }
+
+        // Maneja la doble función del botón según el estado de la sesión
+        async function manejarAccionLoginLogout(event) {
+            event.preventDefault();
+            let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+
+            if (usuarioLogueadoActual) {
+                // Si ya está logueado, al hacer clic realiza el LOGOUT
+                let mensaje = idiomaElegido === 'hr' ? "Želite li se odjaviti?" : "¿Deseas cerrar sesión / Odjava?";
+                if (confirm(mensaje)) {
+                    await supabaseClient.auth.signOut();
+                    alert(idiomaElegido === 'hr' ? "Uspješno odjavljeni." : "Sesión cerrada correctamente.");
+                    location.reload();
+                }
+            } else {
+                // Si NO está logueado, lo lleva a la pantalla de login guardando la ruta de origen
+                sessionStorage.setItem('urlOrigen', window.location.href);
+                window.location.href = 'MS_Login.html';
+            }
+        }
+
+        async function cargarProximoEventoPopup() {
+            try {
+                const ahoraISO = new Date().toISOString();
+                const { data, error } = await supabaseClient
+                    .from('eventos')
+                    .select('*')
+                    .gte('fecha_hora', ahoraISO)
+                    .order('fecha_hora', { ascending: true })
+                    .limit(1);
+
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    const ev = data[0];
+                    const idiomaActual = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+                    
+                    let tituloFinal = ev.titulo_hr || "";
+                    if (idiomaActual !== 'hr' && ev.titulo_es) {
+                        tituloFinal = `${ev.titulo_hr} - ${ev.titulo_es}`;
+                    }
+
+                    const fechaLimpia = ev.fecha_hora.replace('Z', '');
+                    const fechaFormateada = new Date(fechaLimpia).toLocaleString('es-ES', { 
+                        day: 'numeric', 
+                        month: 'long', 
+                        year: 'numeric', 
+                        hour: '2-digit', 
+                        minute: '2-digit',
+                        timeZone: 'UTC'
+                    }) + " hs";
+
+                    document.getElementById('popupTitulo').innerText = tituloFinal;
+                    document.getElementById('popupFecha').innerText = fechaFormateada;
+                    document.getElementById('popupLugar').innerText = ev.lugar ? `${ev.lugar} (${ev.asociacion || 'Mala škola'})` : (ev.asociacion || 'Mala škola');
+
+                    document.getElementById('modalProximoEvento').style.display = 'flex';
+                }
+            } catch (err) {
+                console.log("No se pudo cargar el evento para el popup:", err);
+            }
+        }
+
+        function cerrarPopupEvento() {
+            document.getElementById('modalProximoEvento').style.display = 'none';
+        }
 
         function alternarIdioma() {
             let idiomaActual = (localStorage.getItem('idiomaApp') || 'hr').trim().toLowerCase();
-            
             if (idiomaActual === "hr-es" || idiomaActual.includes("es")) {
                 localStorage.setItem('idiomaApp', 'hr');
             } else {
                 localStorage.setItem('idiomaApp', 'hr-es');
             }
-            
             location.reload();
         }
     </script>
