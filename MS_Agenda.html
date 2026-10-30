@@ -67,6 +67,9 @@
             cursor: pointer;
             transition: transform 0.2s, background 0.2s;
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .btn-volver:hover {
@@ -210,7 +213,10 @@
     <div class="agenda-container">
         <div class="agenda-header">
             <h1>📅 Agenda de Eventos / Kalendar Događaja</h1>
-            <button class="btn-volver" onclick="window.location.href='MS_Index1.html'">⬅ Volver</button>
+            <!-- Botón adaptado con soporte bilingüe e inicio -->
+            <button class="btn-volver" onclick="window.location.href='index.html'">
+                ⬅ <span id="btnVolverText">Natrag - Volver al Inicio</span>
+            </button>
         </div>
 
         <!-- Evento Próximo Destacado Automático -->
@@ -240,7 +246,7 @@
     </div>
 
     <script>
-        // Base de datos de eventos de ejemplo (puedes agregar o modificar fechas ISO reales)
+        // Base de datos de eventos de ejemplo
         const eventosData = [
             {
                 id: 1,
@@ -251,7 +257,7 @@
                 asociacion: "Unión Croata",
                 speech: "Dobar dan svima! Celebramos la hermandad a través del canto tradicional croata, uniendo generaciones y corazones en cada melodía.",
                 fotos: ["imagenes/evento1_1.jpg", "imagenes/evento1_2.jpg"],
-                video: "" // Si hay video, poner ruta ej: "videos/evento1.mp4"
+                video: ""
             },
             {
                 id: 2,
@@ -269,21 +275,26 @@
         let intervaloSlideshow = null;
 
         window.addEventListener("DOMContentLoaded", () => {
+            // Verificar idioma guardado para adaptar el botón Volver
+            let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+            const btnVolverText = document.getElementById('btnVolverText');
+
+            if (idiomaElegido === 'hr') {
+                btnVolverText.innerText = "Natrag - Početak";
+            } else {
+                btnVolverText.innerText = "Natrag - Volver al Inicio";
+            }
+
             inicializarAgenda();
         });
 
         function inicializarAgenda() {
-            // Ordenar eventos por fecha próxima
             const ahora = new Date();
             eventosData.sort((a, b) => new Date(a.fechaISO) - new Date(b.fechaISO));
 
-            // Filtrar el evento más próximo (futuro o el más cercano)
             const proximoEvento = eventosData.find(e => new Date(e.fechaISO) >= ahora) || eventosData[0];
-
-            // Mostrar evento principal al inicio
             mostrarDetalleEvento(proximoEvento);
 
-            // Renderizar la grilla de todos los eventos
             const grid = document.getElementById("listaEventosGrid");
             grid.innerHTML = "";
 
@@ -295,7 +306,6 @@
                     <p style="margin:4px 0; font-size:0.85rem; color:#555;">📅 ${ev.fechaTexto}</p>
                     <p style="margin:4px 0; font-size:0.85rem; color:#0051ba;">🏛️ ${ev.asociacion}</p>
                 `;
-                // Al pararse o hacer clic en el evento particular, cambia la vista principal
                 card.onmouseenter = () => mostrarDetalleEvento(ev);
                 card.onclick = () => mostrarDetalleEvento(ev);
                 grid.appendChild(card);
@@ -312,13 +322,11 @@
             const mediaContainer = document.getElementById("feat-media");
             mediaContainer.innerHTML = "";
 
-            // Limpiar intervalo anterior de fotos si existe
             if (intervaloSlideshow) {
                 clearInterval(intervaloSlideshow);
             }
 
             if (ev.video && ev.video !== "") {
-                // Si hay video, se reproduce
                 const videoEl = document.createElement("video");
                 videoEl.src = ev.video;
                 videoEl.controls = true;
@@ -326,7 +334,6 @@
                 videoEl.muted = true;
                 mediaContainer.appendChild(videoEl);
             } else if (ev.fotos && ev.fotos.length > 0) {
-                // Si hay fotos, creamos el efecto de transición una tras otra
                 ev.fotos.forEach((foto, index) => {
                     const img = document.createElement("img");
                     img.src = foto;
@@ -342,7 +349,7 @@
                         imgs[currentIndex].classList.remove("active");
                         currentIndex = (currentIndex + 1) % imgs.length;
                         imgs[currentIndex].classList.add("active");
-                    }, 3500); // Cambia de foto cada 3.5 segundos
+                    }, 3500);
                 }
             } else {
                 mediaContainer.innerHTML = "<span style='color:white; font-size:0.9rem;'>Sin multimedia disponible</span>";
