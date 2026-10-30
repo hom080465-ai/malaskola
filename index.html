@@ -149,12 +149,11 @@
             transform: translateY(-2px);
         }
 
-        /* Ocupa todo el ancho superior de la grilla */
         .full-width {
             grid-column: 1 / -1;
         }
 
-        /* --- ESTILOS DEL BANNER FLOTANTE DEL PRÓXIMO EVENTO --- */
+        /* --- ESTILOS DE LOS MODALES ESTILO CROATA --- */
         .evento-modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -246,6 +245,68 @@
             background: #003380;
         }
 
+        .croatian-modal-card {
+            background: #ffffff;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 16px;
+            border: 3px solid var(--croatia-blue);
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .croatian-modal-title {
+            color: var(--croatia-blue);
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .croatian-modal-text {
+            color: #475569;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
+        .croatian-modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .croatian-btn-primary {
+            background: var(--croatia-red);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .croatian-btn-primary:hover {
+            background: #b50b0f;
+        }
+
+        .croatian-btn-secondary {
+            background: #64748b;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .croatian-btn-secondary:hover {
+            background: #475569;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
@@ -263,6 +324,15 @@
             <p class="popup-info">📅 <strong id="popupFecha">--</strong></p>
             <p class="popup-info">🏛️ <strong id="popupLugar">--</strong></p>
             <a href="MS_Agenda.html" class="popup-btn-agenda" id="popupBtnVerMas">Ver en la Agenda / Vidi u agendi</a>
+        </div>
+    </div>
+
+    <!-- MODAL PERSONALIZADO ESTILO CROATA PARA CONFIRMACIONES Y ALERTAS -->
+    <div class="evento-modal-overlay" id="modalCroataCustom" style="display: none;">
+        <div class="croatian-modal-card">
+            <h3 class="croatian-modal-title" id="croatianModalTitle">Obavijest / Aviso</h3>
+            <p class="croatian-modal-text" id="croatianModalText">Texto del mensaje...</p>
+            <div class="croatian-modal-buttons" id="croatianModalButtons"></div>
         </div>
     </div>
 
@@ -292,12 +362,17 @@
             </button>
 
             <!-- Botón de Actividades -->
-            <button class="btn-menu-item" onclick="alert('Sección de Actividades en construcción')">
+            <button class="btn-menu-item" onclick="mostrarModalCroataCustom('Aktivnosti', 'Sección de Actividades en construcción / Aktivnosti su u izradi')">
                 🎯 <span id="textActividades">Aktivnosti / Actividades</span>
             </button>
             
+            <!-- NUEVO BOTÓN: El alma de Mala škola (en el lugar que marcaste en rojo) -->
+            <button class="btn-menu-item" onclick="window.location.href='MS_Alma.html'">
+                💙 <span id="textAlma">Duša Male škole / El alma de Mala škola</span>
+            </button>
+
             <!-- Botón de Historia -->
-            <button class="btn-menu-item full-width" onclick="alert('Sección de Historia en construcción')">
+            <button class="btn-menu-item full-width" onclick="mostrarModalCroataCustom('Povijest', 'Sección de Historia en construcción / Povijest je u izradi')">
                 🏛️ <span id="textHistoria">Povijest / Historia</span>
             </button>
         </div>
@@ -306,7 +381,7 @@
     <!-- Librería de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Script de configuración, sesión y carga del próximo evento -->
+    <!-- Script de configuración, sesión y modales estilo croata -->
     <script>
         const SUPABASE_URL = 'https://pizswxittpzwwrymougc.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_s9U9C-8dCR3NfP3s6MEuhA_ADfGUXu8';
@@ -317,7 +392,10 @@
         window.addEventListener('DOMContentLoaded', async () => {
             verificarIdiomaYTextos();
             await verificarSesionYAdaptarBoton();
-            await cargarProximoEventoPopup();
+            
+            if (!sessionStorage.getItem('popupEventoVisto')) {
+                await cargarProximoEventoPopup();
+            }
         });
 
         function verificarIdiomaYTextos() {
@@ -333,6 +411,7 @@
             const badge = document.getElementById('badgeIdioma');
             const textActividades = document.getElementById('textActividades');
             const textAgenda = document.getElementById('textAgenda');
+            const textAlma = document.getElementById('textAlma');
             const textHistoria = document.getElementById('textHistoria');
 
             if (idiomaElegido === 'hr') {
@@ -341,6 +420,7 @@
                 textClases.innerText = "Započni (Tečaj jezika)";
                 textActividades.innerText = "Aktivnosti";
                 textAgenda.innerText = "Agenda";
+                textAlma.innerText = "Duša Male škole";
                 textHistoria.innerText = "Povijest";
                 document.getElementById('popupBadgeText').innerText = "🌟 Najbliže događanje";
                 document.getElementById('popupBtnVerMas').innerText = "Vidi u agendi";
@@ -351,13 +431,13 @@
                 textClases.innerText = "Započni (Tečaj jezika) / Clases de Idioma";
                 textActividades.innerText = "Aktivnosti / Actividades";
                 textAgenda.innerText = "Agenda / Agenda";
+                textAlma.innerText = "Duša Male škole / El alma de Mala škola";
                 textHistoria.innerText = "Povijest / Historia";
                 document.getElementById('popupBadgeText').innerText = "🌟 Próximo Evento / Najbliže događanje";
                 document.getElementById('popupBtnVerMas').innerText = "Ver en la Agenda / Vidi u agendi";
             }
         }
 
-        // Verifica si hay sesión activa para cambiar el texto del botón dinámicamente
         async function verificarSesionYAdaptarBoton() {
             try {
                 const { data: { session } } = await supabaseClient.auth.getSession();
@@ -366,7 +446,6 @@
 
                 if (session && session.user) {
                     usuarioLogueadoActual = true;
-                    // Intentamos buscar su nombre en perfiles para saludarlo o mostrar Logout
                     const { data: perfil } = await supabaseClient
                         .from('perfiles')
                         .select('nombre')
@@ -376,7 +455,7 @@
                     const nombreCorto = perfil && perfil.nombre ? perfil.nombre : "User";
                     
                     if (idiomaElegido === 'hr') {
-                        textLogin.innerText = `Odjava (${nombreCorto})`; // Logout en croata
+                        textLogin.innerText = `Odjava (${nombreCorto})`;
                     } else {
                         textLogin.innerText = `Odjava / Logout (${nombreCorto})`;
                     }
@@ -393,24 +472,68 @@
             }
         }
 
-        // Maneja la doble función del botón según el estado de la sesión
         async function manejarAccionLoginLogout(event) {
             event.preventDefault();
             let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
 
             if (usuarioLogueadoActual) {
-                // Si ya está logueado, al hacer clic realiza el LOGOUT
-                let mensaje = idiomaElegido === 'hr' ? "Želite li se odjaviti?" : "¿Deseas cerrar sesión / Odjava?";
-                if (confirm(mensaje)) {
+                let tituloMsg = idiomaElegido === 'hr' ? "Odjava" : "Odjava / Logout";
+                let textoMsg = idiomaElegido === 'hr' ? "Želite li se odjaviti iz sustava?" : "¿Deseas cerrar sesión en el sistema? / Želite li se odjaviti?";
+                
+                mostrarModalCroataConfirm(tituloMsg, textoMsg, async () => {
                     await supabaseClient.auth.signOut();
-                    alert(idiomaElegido === 'hr' ? "Uspješno odjavljeni." : "Sesión cerrada correctamente.");
-                    location.reload();
-                }
+                    mostrarModalCroataCustom(
+                        idiomaElegido === 'hr' ? "Uspjeh" : "Uspjeh / Éxito",
+                        idiomaElegido === 'hr' ? "Uspješno ste se odjavili." : "Sesión cerrada correctamente. / Uspješno ste se odjavili.",
+                        () => location.reload()
+                    );
+                });
             } else {
-                // Si NO está logueado, lo lleva a la pantalla de login guardando la ruta de origen
                 sessionStorage.setItem('urlOrigen', window.location.href);
                 window.location.href = 'MS_Login.html';
             }
+        }
+
+        function mostrarModalCroataCustom(titulo, texto, callbackCierre = null) {
+            let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+            document.getElementById('croatianModalTitle').innerText = titulo;
+            document.getElementById('croatianModalText').innerText = texto;
+            
+            const btnContenedor = document.getElementById('croatianModalButtons');
+            let textoBtn = idiomaElegido === 'hr' ? "U redu" : "U redu / Entendido";
+            
+            btnContenedor.innerHTML = `<button class="croatian-btn-primary" id="btnCerrarModalCustom">${textoBtn}</button>`;
+            document.getElementById('modalCroataCustom').style.display = 'flex';
+            
+            document.getElementById('btnCerrarModalCustom').onclick = () => {
+                document.getElementById('modalCroataCustom').style.display = 'none';
+                if (callbackCierre) callbackCierre();
+            };
+        }
+
+        function mostrarModalCroataConfirm(titulo, texto, callbackSi) {
+            let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+            document.getElementById('croatianModalTitle').innerText = titulo;
+            document.getElementById('croatianModalText').innerText = texto;
+            
+            const btnContenedor = document.getElementById('croatianModalButtons');
+            let txtSi = idiomaElegido === 'hr' ? "Da" : "Da / Sí";
+            let txtNo = idiomaElegido === 'hr' ? "Odustani" : "Odustani / Cancelar";
+            
+            btnContenedor.innerHTML = `
+                <button class="croatian-btn-secondary" id="btnModalNo">${txtNo}</button>
+                <button class="croatian-btn-primary" id="btnModalSi">${txtSi}</button>
+            `;
+            document.getElementById('modalCroataCustom').style.display = 'flex';
+            
+            document.getElementById('btnModalNo').onclick = () => {
+                document.getElementById('modalCroataCustom').style.display = 'none';
+            };
+            
+            document.getElementById('btnModalSi').onclick = () => {
+                document.getElementById('modalCroataCustom').style.display = 'none';
+                if (callbackSi) callbackSi();
+            };
         }
 
         async function cargarProximoEventoPopup() {
@@ -449,10 +572,15 @@
                     document.getElementById('popupLugar').innerText = ev.lugar ? `${ev.lugar} (${ev.asociacion || 'Mala škola'})` : (ev.asociacion || 'Mala škola');
 
                     document.getElementById('modalProximoEvento').style.display = 'flex';
+                    sessionStorage.setItem('popupEventoVisto', 'true');
                 }
             } catch (err) {
                 console.log("No se pudo cargar el evento para el popup:", err);
             }
+        }
+
+        function cerrarPopupEmoji() {
+            document.getElementById('modalProximoEvento').style.display = 'none';
         }
 
         function cerrarPopupEvento() {
