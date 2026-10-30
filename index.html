@@ -169,7 +169,7 @@
 
         <!-- Bloque de botones central -->
         <div class="menu-grid">
-            <!-- Botón de Clases de Idioma -->
+            <!-- Botón de Clases de Idioma (Lleva opcionalmente al login) -->
             <a href="MS_Login.html" class="btn-menu-item full-width" id="btnClases">
                 📚 <span id="textClases">Započni / Ingresar (Clases de Idioma)</span>
             </a>
@@ -191,10 +191,7 @@
         </div>
     </div>
 
-    <!-- Librería de Supabase (opcional en el index, solo por si se requiere chequear perfiles) -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="auth-check.js"></script>
-
+    <!-- Script de configuración general (sin auth-check.js obligatorio) -->
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             let idiomaElegido = localStorage.getItem('idiomaApp');
@@ -242,6 +239,11 @@
             }
             
             location.reload();
+        }
+
+        function abrirLibno() {
+            sessionStorage.setItem('paginaOrigenLibro', window.location.href);
+            window.location.href = 'MS_Kniga12.html';
         }
 
         function abrirLibro() {
