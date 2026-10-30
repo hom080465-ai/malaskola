@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Učenje brojeva - Aprendiendo los números en Croata</title>
+    <!-- Vinculamos tu archivo externo de datos -->
+    <style>
+        :root {
+            --red: #ff1c1c;
+            --white: #ffffff;
+            --blue: #1b264f;
+            --croatia-blue: #0051ba;
+            --croatia-red: #d90f13;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
+                        url('imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
+            background-size: cover;
+            background-color: #1b264f;
+            color: #222;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 1250px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            border: 4px solid var(--croatia-blue);
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .top-control-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #cbd5e1;
+            padding-bottom: 15px;
+        }
+
+        .score-board {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--croatia-blue);
+        }
+
+        .audio-controls {
+            display: flex;
+            gap: 15px;
+            background: #f1f5f9;
+            padding: 8px 15px;
+            border-radius: 30px;
+            border: 2px solid #cbd5e1;
+            align-items: center;
+        }
+
+        .audio-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .game-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .display-number-box {
+            background: #f8fafc;
+            border: 3px dashed var(--croatia-blue);
+            border-radius: 16px;
+            height: 310px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.05);
+            padding: 10px;
+            text-align: center;
+        }
+
+        .display-number-text {
+            font-size: 13.5rem;
+            font-weight: 900;
+            color: var(--croatia-blue);
+            line-height: 1;
+            text-shadow: 0 4px 10px rgba(0,81,186,0.2);
+        }
+
+        /* --- ADAPTACIÓN RESPONSIVA PARA CELULARES --- */
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 15px;
+                gap: 15px;
+                margin-top: 10px;
+            }
+
+            .game-body {
+                grid-template-columns: 1fr; /* Pone el cuadro de número y la ruleta uno arriba del otro en móviles */
+                gap: 15px;
+            }
+
+            .display-number-box {
+                height: 200px; /* Reduce la altura en celulares */
+            }
+
+            .display-number-text {
+                font-size: 7rem; /* Reduce el tamaño gigante para que no rompa el diseño en pantallas chicas */
+            }
+
+            .ruleta-container {
+                width: 210px;
+                height: 210px; /* Achica la ruleta proporcionalmente */
+            }
+
+            .options-grid {
+                grid-template-columns: 1fr; /* Las opciones de respuesta se alinean en columna única para mayor comodidad táctil */
+                gap: 10px;
+            }
+
+            .btn-option {
+                padding: 14px;
+                font-size: 1.4rem;
+            }
+        }
+
+        .display-instruction {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--croatia-red);
+            text-align: center;
+        }
+
+        .ruleta-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .ruleta-container {
+            width: 270px;
+            height: 270px;
+            border-radius: 50%;
+            border: 6px solid var(--croatia-blue);
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            overflow: hidden;
+            background: conic-gradient(
+                #ff1c1c 0deg 36deg, 
+                #0051ba 36deg 72deg, 
+                #22c55e 72deg 108deg, 
+                #eab308 108deg 144deg, 
+                #a855f7 144deg 180deg, 
+                #ec4899 180deg 216deg, 
+                #06b6d4 216deg 252deg, 
+                #f97316 252deg 288deg, 
+                #84cc16 288deg 324deg, 
+                #6366f1 324deg 360deg
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 1.5s cubic-bezier(0.15, 0.85, 0.25, 1);
+        }
+
+        .ruleta-container::after {
+            content: '';
+            position: absolute;
+            width: 55px;
+            height: 55px;
+            background: white;
+            border: 4px solid var(--croatia-blue);
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .ruleta-label {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #475569;
+            text-align: center;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn-option {
+            background: #ffffff;
+            border: 3px solid var(--croatia-blue);
+            color: var(--croatia-blue);
+            padding: 22px;
+            font-size: 1.8rem;
+            font-weight: 800;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+
+        .btn-option.hover:not(:disabled) {
+            background: var(--croatia-blue);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .btn-option.correct {
+            background: #22c55e !important;
+            border-color: #15803d !important;
+            color: white !important;
+        }
+
+        .btn-option.incorrect {
+            background: #ef4444 !important;
+            border-color: #b91c1c !important;
+            color: white !important;
+        }
+
+        .bottom-action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 2px solid #cbd5e1;
+            padding-top: 15px;
+        }
+
+        .action-btn {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            font-size: 1.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .btn-next {
+            background-color: #22c55e;
+            color: white;
+        }
+
+        .btn-exit {
+            background-color: var(--croatia-red);
+            color: white;
+        }
+
+        /* Ventana Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999;
+            display: none;
+        }
+
+        .modal-content-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            background: #ffffff;
+            padding: 35px 45px;
+            border-radius: 20px;
+            border: 4px solid var(--croatia-red);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .modal-card {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .modal-card h2 {
+            color: var(--croatia-red);
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
+        .nota-gigante {
+            font-size: 7rem;
+            font-weight: 900;
+            color: var(--croatia-blue);
+            line-height: 1;
+            margin: 5px 0;
+        }
+
+        .nota-gigante.dorada {
+            color: #d97706;
+            text-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+        }
+
+        .modal-btn {
+            background: var(--croatia-blue);
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,81,186,0.3);
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .modal-btn:hover {
+            background: #003d90;
+            transform: translateY(-2px);
+        }
+
+        .modal-video-container {
+            width: 150px;
+            height: 250px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 3px solid var(--croatia-red);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            background: #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .modal-video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Audios Generales -->
+    <audio id="sound-ruleta" src="sonidos/ruleta.wav" preload="auto"></audio>
+    <audio id="sound-acierto" src="sonidos/vrlodobro.wav" preload="auto"></audio>
+    <audio id="sound-error" src="sonidos/Mario.wav" preload="auto"></audio>
+
+    <!-- Audios de Resultados por Puntuación -->
+    <audio id="sound-katastrofa" src="sonidos/katastrofa.wav" preload="auto"></audio>
+    <audio id="sound-takotako" src="sonidos/takotako.wav" preload="auto"></audio>
+    <audio id="sound-dobro" src="sonidos/dobro.wav" preload="auto"></audio>
+    <audio id="sound-vrlodobro" src="sonidos/vrlodobro.wav" preload="auto"></audio>
+    <audio id="sound-odlicno" src="sonidos/odlicno.wav" preload="auto"></audio>
+
+    <!-- Modal Resultados -->
+    <div id="modalResultado" class="modal-overlay">
+        <div class="modal-content-wrapper">
+            <div class="modal-card">
+                <h2>Kraj igre / Fin del juego</h2>
+                <div class="nota-gigante" id="notaFinalNumero">10</div>
+                <button class="modal-btn" onclick="reiniciarJuegoCompleto()">Nova igra / Jugar de nuevo</button>
+            </div>
+            <!-- Contenedor del video con fondo negro -->
+            <div class="modal-video-container">
+                <video id="videoBaile" src="Imagenes/NenaCroataBaile.mp4" autoplay loop muted playsinline></video>
+            </div>
+        </div>
+    </div>
+
+    <div class="game-container">
+        
+        <!-- Barra superior -->
+        <div class="top-control-bar">
+            <div class="score-board">
+                Pokusaj / Intento: <span id="intentosActuales">1</span> / 4 | Bodovi / Puntos: <span id="puntuacion">0</span>
+            </div>
+            <div class="audio-controls">
+                <label class="audio-option">
+                    <input type="radio" name="audioRuleta" value="on" checked> 🔊
+                </label>
+                <label class="audio-option">
+                    <input type="radio" name="audioRuleta" value="off"> 🔇
+                </label>
+            </div>
+        </div>
+
+        <!-- Cuerpo del juego -->
+        <div class="game-body">
+            <!-- Cuadro izquierdo con número gigantesco -->
+            <div class="display-number-box">
+                <div class="display-instruction" id="mensajeEstado">¡Gira la ruleta! ➔</div>
+                <div class="display-number-text" id="numeroGrandeText" style="display: none;"></div>
+            </div>
+
+            <!-- Sección derecha: Ruleta -->
+            <div class="ruleta-section">
+                <div class="ruleta-container" id="ruletaElemento" onclick="girarRuleta()" title="Kliknite na rulet / Clic u rulet"></div>
+                <div class="ruleta-label">Kliknite na rulet / Clic u rulet</div>
+            </div>
+        </div>
+
+        <!-- Opciones en Croata -->
+        <div class="options-grid" id="opcionesContainer">
+            <button class="btn-option" disabled>-</button>
+            <button class="btn-option" disabled>-</button>
+            <button class="btn-option" disabled>-</button>
+            <button class="btn-option" disabled>-</button>
+        </div>
+
+        <!-- Barra inferior -->
+        <div class="bottom-action-bar">
+            <button class="action-btn btn-next" onclick="reiniciarJuegoCompleto()" title="Nova igra / Nueva partida">✔</button>
+            <button class="action-btn btn-exit" onclick="salirAlMenu()" title="Salir">✕</button>
+        </div>
+
+    </div>
+
+    <!-- Librería de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Scripts externos modulares -->
+    <script src="auth-check.js"></script>
+    <script src="user-profile.js"></script>
+    <script src="inactivity-logout.js"></script>
+
+    <script>
+        const numerosCroata = [
+            { numero: 1, texto: "Jedan" },
+            { numero: 2, texto: "Dva" },
+            { numero: 3, texto: "Tri" },
+            { numero: 4, texto: "Četiri" },
+            { numero: 5, texto: "Pet" },
+            { numero: 6, texto: "Šest" },
+            { numero: 7, texto: "Sedam" },
+            { numero: 8, texto: "Osam" },
+            { numero: 9, texto: "Devet" },
+            { numero: 10, texto: "Deset" }
+        ];
+
+        let numeroActual = null;
+        let respuestaCorrectaIndex = null;
+        let intentoActual = 1;
+        let puntos = 0;
+        let turnoRespondido = false;
+        let gradosTotales = 0;
+
+        // Arreglo para almacenar los 4 números seleccionados sin repetición en cada partida
+        let numerosPartidaActual = [];
+
+        function girarRuleta() {
+            if (!turnoRespondido && intentoActual <= 4 && document.getElementById('numeroGrandeText').style.display === "block") {
+                return;
+            }
+
+            if (intentoActual > 4) return;
+
+            // Si es el primer intento, barajamos la lista completa y seleccionamos 4 números únicos para toda la partida
+            if (intentoActual === 1 && numerosPartidaActual.length === 0) {
+                let copiaNumeros = [...numerosCroata];
+                copiaNumeros.sort(() => Math.random() - 0.5);
+                numerosPartidaActual = copiaNumeros.slice(0, 4);
+            }
+
+            const audioActivo = document.querySelector('input[name="audioRuleta"]:checked').value === 'on';
+            if (audioActivo) {
+                const soundRuleta = document.getElementById('sound-ruleta');
+                soundRuleta.currentTime = 0;
+                soundRuleta.play().catch(e => console.log("Audio de ruleta bloqueado:", e));
+            }
+
+            const ruletaEl = document.getElementById('ruletaElemento');
+            gradosTotales += 1440 + Math.floor(Math.random() * 360);
+            ruletaEl.style.transform = `rotate(${gradosTotales}deg)`;
+
+            setTimeout(() => {
+                // Seleccionamos el número de la serie correspondiente al intento actual sin repetición
+                const seleccionado = numerosPartidaActual[intentoActual - 1];
+                numeroActual = seleccionado.numero;
+
+                document.getElementById('mensajeEstado').style.display = "none";
+                const numText = document.getElementById('numeroGrandeText');
+                numText.innerText = numeroActual;
+                numText.style.display = "block";
+
+                generarOpciones(seleccionado);
+                turnoRespondido = false;
+                habilitarBotonesOpcion(true);
+            }, 1500);
+        }
+
+        function generarOpciones(correctoObj) {
+            let opciones = [correctoObj];
+
+            while (opciones.length < 4) {
+                let randomItem = numerosCroata[Math.floor(Math.random() * numerosCroata.length)];
+                if (!opciones.some(op => op.numero === randomItem.numero)) {
+                    opciones.push(randomItem);
+                }
+            }
+
+            opciones.sort(() => Math.random() - 0.5);
+
+            const container = document.getElementById('opcionesContainer');
+            container.innerHTML = "";
+
+            opciones.forEach((op, index) => {
+                if (op.numero === correctoObj.numero) {
+                    respuestaCorrectaIndex = index;
+                }
+                const btn = document.createElement('button');
+                btn.className = "btn-option";
+                btn.innerText = op.texto;
+                btn.onclick = () => verificarRespuesta(index, op.texto, op.numero === correctoObj.numero);
+                container.appendChild(btn);
+            });
+        }
+
+        function habilitarBotonesOpcion(habilitar) {
+            const botones = document.querySelectorAll('.btn-option');
+            botones.forEach(btn => {
+                if (habilitar) {
+                    btn.removeAttribute('disabled');
+                } else {
+                    btn.setAttribute('disabled', 'true');
+                }
+            });
+        }
+
+        function verificarRespuesta(indexElegido, textoCroata, esCorrecto) {
+            if (turnoRespondido) return;
+            turnoRespondido = true;
+            habilitarBotonesOpcion(false);
+            const botones = document.querySelectorAll('.btn-option');
+
+            const audioActivo = document.querySelector('input[name="audioRuleta"]:checked').value === 'on';
+
+            const reproducirSecuenciaAudios = () => {
+                if (audioActivo) {
+                    const audioNumero = new Audio(`numeros/sonidos/${textoCroata}.wav`);
+                    audioNumero.play().then(() => {
+                        audioNumero.onended = () => {
+                            const audioFeedback = esCorrecto ? document.getElementById('sound-acierto') : document.getElementById('sound-error');
+                            if (audioFeedback) {
+                                audioFeedback.currentTime = 0;
+                                audioFeedback.play().catch(e => console.log(e));
+                            }
+                        };
+                    }).catch(e => {
+                        console.log("No se pudo reproducir el audio del número:", e);
+                        const audioFeedback = esCorrecto ? document.getElementById('sound-acierto') : document.getElementById('sound-error');
+                        if (audioFeedback) {
+                            audioFeedback.currentTime = 0;
+                            audioFeedback.play().catch(e => console.log(e));
+                        }
+                    });
+                }
+            };
+
+            if (esCorrecto) {
+                botones[indexElegido].classList.add('correct');
+                puntos++;
+                document.getElementById('puntuacion').innerText = puntos;
+            } else {
+                botones[indexElegido].classList.add('incorrect');
+                botones[respuestaCorrectaIndex].classList.add('correct');
+            }
+
+            reproducirSecuenciaAudios();
+
+            setTimeout(() => {
+                if (intentoActual < 4) {
+                    intentoActual++;
+                    document.getElementById('intentosActuales').innerText = intentoActual;
+                    resetearTurno();
+                } else {
+                    mostrarNotaFinal();
+                }
+            }, 2200);
+        }
+
+        function resetearTurno() {
+            turnoRespondido = false;
+            
+            const numText = document.getElementById('numeroGrandeText');
+            numText.style.display = "none";
+            numText.innerText = "";
+            
+            const msg = document.getElementById('mensajeEstado');
+            msg.style.display = "block";
+            msg.innerText = "¡Gira la ruleta! ➔";
+
+            const container = document.getElementById('opcionesContainer');
+            container.innerHTML = `
+                <button class="btn-option" disabled>-</button>
+                <button class="btn-option" disabled>-</button>
+                <button class="btn-option" disabled>-</button>
+                <button class="btn-option" disabled>-</button>
+            `;
+        }
+
+        function mostrarNotaFinal() {
+            let notaEscala10 = (puntos / 4) * 10;
+            
+            const divNota = document.getElementById('notaFinalNumero');
+            divNota.innerText = Number.isInteger(notaEscala10) ? notaEscala10 : notaEscala10.toFixed(1);
+
+            if (notaEscala10 === 10) {
+                divNota.classList.add('dorada');
+            } else {
+                divNota.classList.remove('dorada');
+            }
+
+            const audioActivo = document.querySelector('input[name="audioRuleta"]:checked').value === 'on';
+            if (audioActivo) {
+                let audioId = 'sound-katastrofa'; 
+                if (puntos === 1) {
+                    audioId = 'sound-takotako';   
+                } else if (puntos === 2) {
+                    audioId = 'sound-dobro';      
+                } else if (puntos === 3) {
+                    audioId = 'sound-vrlodobro';  
+                } else if (puntos === 4) {
+                    audioId = 'sound-odlicno';    
+                }
+
+                const soundFinal = document.getElementById(audioId);
+                if (soundFinal) {
+                    soundFinal.currentTime = 0;
+                    soundFinal.play().catch(e => console.log("Audio final bloqueado:", e));
+                }
+            }
+
+            setTimeout(() => {
+                const modal = document.getElementById('modalResultado');
+                const video = document.getElementById('videoBaile');
+                video.currentTime = 0;
+                video.play().catch(e => console.log("Reproducción de video automática bloqueada:", e));
+                modal.style.display = 'flex';
+            }, 500);
+        }
+
+        function reiniciarJuegoCompleto() {
+            document.getElementById('modalResultado').style.display = 'none';
+            intentoActual = 1;
+            puntos = 0;
+            numerosPartidaActual = []; // Limpiamos la serie para que se genere una nueva combinación sin repetir en la siguiente partida
+            document.getElementById('intentosActuales').innerText = 1;
+            document.getElementById('puntuacion').innerText = 0;
+            resetearTurno();
+        }
+
+        function salirAlMenu() {
+            window.location.href = "MS1.html";
+        }
+    </script>
+</body>
+</html>
