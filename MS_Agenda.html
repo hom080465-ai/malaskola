@@ -130,17 +130,21 @@
             align-items: center;
         }
 
+        /* Botón de Alta reubicado (Oculto por defecto hasta validar sesión) */
         .btn-admin {
             background: #10b981;
             color: var(--white);
-            border: 2px solid var(--white);
-            padding: 8px 15px;
+            border: 2px solid #059669;
+            padding: 8px 16px;
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
             transition: transform 0.2s, background 0.2s;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             display: none; 
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
         }
 
         .btn-admin:hover {
@@ -244,7 +248,6 @@
             color: var(--croatia-blue);
         }
 
-        /* Recuadros separados para los speech */
         .event-speech-hr {
             background: #f8fafc;
             border-left: 4px solid var(--croatia-blue);
@@ -267,7 +270,7 @@
             margin-top: 8px;
             color: #475569;
             box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-            display: none; /* Oculto por defecto en modo HR */
+            display: none;
         }
 
         .media-container {
@@ -302,11 +305,21 @@
             object-fit: cover;
         }
 
-        .events-list-section h3 {
-            color: var(--croatia-blue);
-            margin-bottom: 10px;
+        /* Encabezado de la sección Todos los Eventos con diseño flexible para el botón reubicado */
+        .events-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 5px;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .events-section-header h3 {
+            color: var(--croatia-blue);
+            margin: 0;
         }
 
         .events-grid {
@@ -407,9 +420,6 @@
             <h1 id="tituloAgenda">📅 Agenda de Eventos</h1>
 
             <div class="header-actions">
-                <button id="btnNuevoEvento" class="btn-admin" onclick="abrirModalNuevo()">
-                    ➕ <span id="textBtnNuevo">Nuevo Evento / Novi događaj</span>
-                </button>
                 <button class="btn-volver" onclick="window.location.href='index.html'">
                     ⬅ <span id="btnVolverText">Natrag - Volver al Inicio</span>
                 </button>
@@ -425,7 +435,6 @@
                     <p class="event-info-item"><strong id="lblLugar">Lugar / Mjesto:</strong> <span id="feat-lugar">--</span></p>
                     <p class="event-info-item"><strong id="lblAsociacion">Asociación / Udruga:</strong> <span id="feat-asociacion">--</span></p>
                     
-                    <!-- Recuadros separados para los discursos -->
                     <div class="event-speech-hr" id="feat-speech-hr">--</div>
                     <div class="event-speech-es" id="feat-speech-es">--</div>
                 </div>
@@ -433,8 +442,15 @@
             </div>
         </div>
 
+        <!-- Sección de Todos los Eventos con el botón reubicado arriba a la izquierda donde indicaba la flecha -->
         <div class="events-list-section">
-            <h3 id="tituloTodos">Todos los Eventos / Sva događanja</h3>
+            <div class="events-section-header">
+                <h3 id="tituloTodos">Todos los Eventos / Sva događanja</h3>
+                <!-- Botón de Alta reubicado justo encima de la lista de eventos -->
+                <button id="btnNuevoEvento" class="btn-admin" onclick="abrirModalNuevo()">
+                    ➕ <span id="textBtnNuevo">Nuevo Evento / Novi događaj</span>
+                </button>
+            </div>
             <div class="events-grid" id="listaEventosGrid"></div>
         </div>
     </div>
@@ -541,7 +557,6 @@
                         const tHr = ev.titulo_hr || "";
                         const tEs = ev.titulo_es || "";
                         
-                        // Título según el idioma activo
                         let tituloFinal = tHr;
                         if (idiomaActual !== 'hr' && tEs) {
                             tituloFinal = tHr ? `${tHr} - ${tEs}` : tEs;
@@ -615,7 +630,7 @@
                 lblLugar.innerText = "Mjesto:";
                 lblAsociacion.innerText = "Udruga:";
                 tituloTodos.innerText = "Sva događanja";
-                if(speechEsBox) speechEsBox.style.display = 'none'; // Oculta español en modo HR puro
+                if(speechEsBox) speechEsBox.style.display = 'none';
             } else {
                 badge.innerText = "HR-ES";
                 tituloAgenda.innerText = "📅 Agenda de Eventos / Kalendar Događaja";
@@ -626,7 +641,7 @@
                 lblLugar.innerText = "Lugar / Mjesto:";
                 lblAsociacion.innerText = "Asociación / Udruga:";
                 tituloTodos.innerText = "Todos los Eventos / Sva događanja";
-                if(speechEsBox) speechEsBox.style.display = 'block'; // Muestra español en modo bilingüe
+                if(speechEsBox) speechEsBox.style.display = 'block';
             }
         }
 
@@ -684,11 +699,9 @@
             document.getElementById("feat-lugar").innerText = ev.lugar || "--";
             document.getElementById("feat-asociacion").innerText = ev.asociacion || "--";
             
-            // Recuadro Speech Croata
             const speechHrEl = document.getElementById("feat-speech-hr");
             speechHrEl.innerText = ev.speechHr ? `"${ev.speechHr}"` : "--";
 
-            // Recuadro Speech Español (visible solo si hay texto y el idioma es bilingüe)
             const speechEsEl = document.getElementById("feat-speech-es");
             if (idiomaElegido !== 'hr' && ev.speechEs) {
                 speechEsEl.innerText = `"${ev.speechEs}"`;
