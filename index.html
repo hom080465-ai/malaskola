@@ -122,6 +122,19 @@
             transform: translateY(-2px);
         }
 
+        /* Estilo especial destacado para el botón de login/conectarse */
+        .btn-login {
+            background: var(--croatia-blue);
+            color: white;
+            border: 2px solid var(--croatia-blue);
+        }
+
+        .btn-login:hover {
+            background: #003380;
+            color: white;
+            border-color: var(--croatia-red);
+        }
+
         /* Ocupa todo el ancho superior de la grilla */
         .full-width {
             grid-column: 1 / -1;
@@ -140,23 +153,28 @@
 
         <!-- Bloque de botones central -->
         <div class="menu-grid">
-            <!-- Botón de Clases de Idioma / Login opcional -->
-            <a href="MS_Login.html" class="btn-menu-item full-width" id="btnClases">
-                📚 <span id="textClases">Započni / Ingresar (Clases de Idioma)</span>
+            <!-- Botón de Clases de Idioma -->
+            <button class="btn-menu-item full-width" onclick="alert('Sección de Clases en construcción')" id="btnClases">
+                📚 <span id="textClases">Započni (Tečaj jezika) / Clases de Idioma</span>
+            </button>
+
+            <!-- Botón exclusivo para Conectarse / Loguearse -->
+            <a href="MS_Login.html" class="btn-menu-item btn-login" id="btnLogin">
+                🔑 <span id="textLogin">Prijava / Iniciar Sesión</span>
             </a>
+
+            <!-- Botón de Agenda (Libre para todos) -->
+            <button class="btn-menu-item" onclick="window.location.href='MS_Agenda.html'" id="btnAgenda">
+                📅 <span id="textAgenda">Agenda / Agenda</span>
+            </button>
 
             <!-- Botón de Actividades -->
             <button class="btn-menu-item" onclick="alert('Sección de Actividades en construcción')" id="btnActividades">
                 🎯 <span id="textActividades">Aktivnosti / Actividades</span>
             </button>
             
-            <!-- Botón de Agenda (Libre para todos) -->
-            <button class="btn-menu-item" onclick="window.location.href='MS_Agenda.html'" id="btnAgenda">
-                📅 <span id="textAgenda">Agenda / Agenda</span>
-            </button>
-            
             <!-- Botón de Historia -->
-            <button class="btn-menu-item full-width" onclick="alert('Sección de Historia en construcción')" id="btnHistoria">
+            <button class="btn-menu-item" onclick="alert('Sección de Historia en construcción')" id="btnHistoria">
                 🏛️ <span id="textHistoria">Povijest / Historia</span>
             </button>
         </div>
@@ -174,6 +192,7 @@
 
             const subEspanol = document.getElementById('subEspanol');
             const textClases = document.getElementById('textClases');
+            const textLogin = document.getElementById('textLogin');
             const badge = document.getElementById('badgeIdioma');
             const textActividades = document.getElementById('textActividades');
             const textAgenda = document.getElementById('textAgenda');
@@ -183,6 +202,7 @@
                 badge.innerText = "HR";
                 subEspanol.style.display = 'none';
                 textClases.innerText = "Započni (Tečaj jezika)";
+                textLogin.innerText = "Prijava";
                 textActividades.innerText = "Aktivnosti";
                 textAgenda.innerText = "Agenda";
                 textHistoria.innerText = "Povijest";
@@ -190,7 +210,8 @@
                 badge.innerText = "HR-ES";
                 subEspanol.style.display = 'block';
                 subEspanol.innerText = "Bienvenidos a Malu školu";
-                textClases.innerText = "Započni / Ingresar (Clases de Idioma)";
+                textClases.innerText = "Započni (Tečaj jezika) / Clases de Idioma";
+                textLogin.innerText = "Prijava / Iniciar Sesión";
                 textActividades.innerText = "Aktivnosti / Actividades";
                 textAgenda.innerText = "Agenda / Agenda";
                 textHistoria.innerText = "Povijest / Historia";
