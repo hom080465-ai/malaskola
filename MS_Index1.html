@@ -517,6 +517,59 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0,81,186,0.4);
         }
+
+        /* --- ESTILOS PARA MODAL CROATA CUSTOM (ALERTAS) --- */
+        .evento-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        .croatian-modal-card {
+            background: #ffffff;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 16px;
+            border: 3px solid var(--croatia-blue);
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .croatian-modal-title {
+            color: var(--croatia-blue);
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        .croatian-modal-text {
+            color: #475569;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+        .croatian-modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .croatian-btn-primary {
+            background: var(--croatia-red);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .croatian-btn-primary:hover {
+            background: #b50b0f;
+        }
     </style>
 </head>
 <body>
@@ -554,6 +607,15 @@
             </div>
             <h2>Doviđenja!</h2>
             <p>Vidimo se...</p>
+        </div>
+    </div>
+
+    <!-- MODAL PERSONALIZADO ESTILO CROATA PARA ALERTAS -->
+    <div class="evento-modal-overlay" id="modalCroataCustom" style="display: none;">
+        <div class="croatian-modal-card">
+            <h3 class="croatian-modal-title" id="croatianModalTitle">Obavijest / Aviso</h3>
+            <p class="croatian-modal-text" id="croatianModalText">Texto del mensaje...</p>
+            <div class="croatian-modal-buttons" id="croatianModalButtons"></div>
         </div>
     </div>
 
@@ -910,6 +972,23 @@
             window.location.href = "MS_Config.html";
         }
 
+        function mostrarModalCroataCustom(titulo, texto, callbackCierre = null) {
+            let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+            document.getElementById('croatianModalTitle').innerText = titulo;
+            document.getElementById('croatianModalText').innerText = texto;
+            
+            const btnContenedor = document.getElementById('croatianModalButtons');
+            let textoBtn = idiomaElegido === 'hr' ? "U redu" : "U redu / Entendido";
+            
+            btnContenedor.innerHTML = `<button class="croatian-btn-primary" id="btnCerrarModalCustom">${textoBtn}</button>`;
+            document.getElementById('modalCroataCustom').style.display = 'flex';
+            
+            document.getElementById('btnCerrarModalCustom').onclick = () => {
+                document.getElementById('modalCroataCustom').style.display = 'none';
+                if (callbackCierre) callbackCierre();
+            };
+        }
+
         function seleccionarNivel(nivelInput) {
             const idioma = document.querySelector('input[name="lang"]:checked').value;
             localStorage.setItem('idiomaApp', idioma);
@@ -924,7 +1003,12 @@
                 window.location.href = "MSN1.html";
             }
             else {
-                alert(`¡Cargando lección para Adultos - ${nivelInput.value}!\nIdioma: ${idioma}`);
+                let titulo = idioma === 'hr' ? "Obavijest" : "Obavijest / Aviso";
+                let mensaje = idioma === 'hr' ? 
+                    `Učitavanje lekcije za Odrasle - ${nivelInput.value}` : 
+                    `Cargando lección para Adultos - ${nivelInput.value} / Učitavanje lekcije`;
+                
+                mostrarModalCroataCustom(titulo, mensaje);
             }
         }
     </script>
