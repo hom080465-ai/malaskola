@@ -251,7 +251,6 @@
             color: var(--croatia-blue);
         }
 
-        /* Dos recuadros independientes para los speeches */
         .event-speech-hr {
             background: #f8fafc;
             border-left: 4px solid var(--croatia-blue);
@@ -285,16 +284,22 @@
             border-radius: 10px;
             overflow: hidden;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            gap: 10px;
+            padding: 10px;
+            box-sizing: border-box;
         }
 
         .media-container img {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
             opacity: 0;
             transition: opacity 1s ease-in-out;
         }
@@ -304,9 +309,31 @@
         }
 
         .media-container video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            position: absolute;
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .pdf-download-link {
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--croatia-blue);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 0.85rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            z-index: 10;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pdf-download-link:hover {
+            background: #ffffff;
         }
 
         .events-section-header {
@@ -411,7 +438,7 @@
 </head>
 <body id="appBody">
 
-    <!-- Insignia de perfil flotante -->
+    <!-- Perfil flotante -->
     <div class="user-floating-badge" id="userFloatingBadge" style="display: none;">
         <img id="userAvatarMini" src="imagenes/default-avatar.png" alt="Avatar" class="user-avatar-mini">
         <span id="userNameMini" class="user-name-mini">Usuario</span>
@@ -419,9 +446,9 @@
 
     <div class="agenda-container">
         <div class="agenda-header">
-            <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()" title="Cambiar idioma / Promijeni jezik">HR-ES</span>
+            <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()" title="Promijeni jezik / Cambiar idioma">HR-ES</span>
 
-            <h1 id="tituloAgenda">📅 Agenda de Eventos</h1>
+            <h1 id="tituloAgenda">📅 Kalendar Događaja / Agenda de Eventos</h1>
 
             <div class="header-actions">
                 <button class="btn-volver" onclick="window.location.href='index.html'">
@@ -431,27 +458,34 @@
         </div>
 
         <div class="featured-event-box">
-            <span class="featured-badge" id="badgeProximo">🌟 Próximo Evento / Najbliže događanje</span>
-            <div class="event-main-content">
+            <span class="featured-badge" id="badgeProximo">🌟 Najbliže događanje / Próximo Evento</span>
+            <div class="event-main-content" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; align-items: center;">
                 <div class="event-details">
                     <h2 id="feat-titulo">Cargando evento...</h2>
-                    <p class="event-info-item"><strong id="lblFecha">Fecha y Hora / Datum i vrijeme:</strong> <span id="feat-fecha">--</span></p>
-                    <p class="event-info-item"><strong id="lblLugar">Lugar / Mjesto:</strong> <span id="feat-lugar">--</span></p>
-                    <p class="event-info-item"><strong id="lblAsociacion">Asociación / Udruga:</strong> <span id="feat-asociacion">--</span></p>
+                    <p class="event-info-item"><strong id="lblFecha">Datum i vrijeme / Fecha y Hora:</strong> <span id="feat-fecha">--</span></p>
+                    <p class="event-info-item"><strong id="lblLugar">Mjesto / Lugar:</strong> <span id="feat-lugar">--</span></p>
+                    <p class="event-info-item"><strong id="lblAsociacion">Udruga / Asociación:</strong> <span id="feat-asociacion">--</span></p>
                     
-                    <!-- Dos recuadros independientes para los speeches -->
                     <div class="event-speech-hr" id="feat-speech-hr">--</div>
                     <div class="event-speech-es" id="feat-speech-es">--</div>
                 </div>
-                <div class="media-container" id="feat-media"></div>
+
+                <!-- Columna derecha: Video a la izquierda e Imágenes a la derecha -->
+                <div style="display: flex; gap: 10px; width: 100%; justify-content: flex-end; flex-wrap: wrap;">
+                    <!-- Pantalla para el Video -->
+                    <div class="media-container" id="feat-media-video" style="display: none; width: 48%; height: 200px;"></div>
+                    
+                    <!-- Pantalla para Fotos e Imágenes -->
+                    <div class="media-container" id="feat-media-fotos" style="display: none; width: 48%; height: 200px;"></div>
+                </div>
             </div>
         </div>
 
         <div class="events-list-section">
             <div class="events-section-header">
-                <h3 id="tituloTodos">Todos los Eventos / Sva događanja</h3>
+                <h3 id="tituloTodos">Sva događanja / Todos los Eventos</h3>
                 <button id="btnNuevoEvento" class="btn-admin" onclick="abrirModalNuevo()">
-                    ➕ <span id="textBtnNuevo">Nuevo Evento / Novi događaj</span>
+                    ➕ <span id="textBtnNuevo">Novi događaj / Nuevo Evento</span>
                 </button>
             </div>
             <div class="events-grid" id="listaEventosGrid"></div>
@@ -461,57 +495,54 @@
     <!-- Modal para Agregar/Modificar Evento -->
     <div class="modal-overlay" id="modalEvento">
         <div class="modal-content">
-            <h3 id="modalTitulo">Registrar Nuevo Evento</h3>
+            <h3 id="modalTitulo">Registriraj novi događaj</h3>
             <input type="hidden" id="eventoId">
             
             <div class="form-group">
-                <label>Título (Croata) *:</label>
+                <label id="lblModTitleHr">Naslov (Hrvatski) *:</label>
                 <input type="text" id="inputTituloHr" placeholder="Ej. Proslava Dana državnosti">
             </div>
             <div class="form-group">
-                <label>Título (Español):</label>
+                <label id="lblModTitleEs">Naslov (Španjolski / Español):</label>
                 <input type="text" id="inputTituloEs" placeholder="Ej. Celebración del Día Nacional">
             </div>
             <div class="form-group">
-                <label>Fecha y Hora *:</label>
+                <label id="lblModDate">Datum i vrijeme / Fecha y Hora *:</label>
                 <input type="datetime-local" id="inputFechaHora">
             </div>
             <div class="form-group">
-                <label>Lugar / Mjesto:</label>
+                <label id="lblModPlace">Mjesto / Lugar:</label>
                 <input type="text" id="inputLugar" placeholder="Ej. Teatro Municipal">
             </div>
             <div class="form-group">
-                <label>Asociación / Udruga:</label>
+                <label id="lblModAssoc">Udruga / Asociación:</label>
                 <input type="text" id="inputAsociacion" placeholder="Ej. Domovina">
             </div>
             <div class="form-group">
-                <label>Speech (Croata):</label>
+                <label id="lblModSpeechHr">Govor (Hrvatski):</label>
                 <textarea id="inputSpeechHr" rows="2"></textarea>
             </div>
             <div class="form-group">
-                <label>Speech (Español):</label>
+                <label id="lblModSpeechEs">Govor (Španjolski / Español):</label>
                 <textarea id="inputSpeechEs" rows="2"></textarea>
             </div>
             <div class="form-group">
-                <label>URLs de Fotos (opcional, separadas por coma):</label>
-                <input type="text" id="inputFotos" placeholder="imagenes/foto1.jpg, imagenes/foto2.jpg">
+                <label id="lblModFiles">Slike, grafike ili PDF dokumenti (možete odabrati više):</label>
+                <input type="file" id="inputArchivosMultimedia" accept="image/*,.pdf" multiple>
             </div>
             <div class="form-group">
-                <label>URL de Video (opcional):</label>
-                <input type="text" id="inputVideo" placeholder="videos/video.mp4">
+                <label id="lblModVideo">Video zapis (opcionalno / opcional):</label>
+                <input type="file" id="inputArchivoVideo" accept="video/*">
             </div>
 
             <div class="modal-buttons">
-                <button type="button" onclick="cerrarModal()" style="padding: 8px 15px; border-radius: 6px; border:1px solid #ccc; background:#fff; cursor:pointer;">Cancelar</button>
-                <button type="button" onclick="guardarEvento()" style="padding: 8px 15px; border-radius: 6px; background:var(--croatia-blue); color:white; border:none; font-weight:bold; cursor:pointer;">Guardar Evento</button>
+                <button type="button" onclick="cerrarModal()" id="btnModCancel" style="padding: 8px 15px; border-radius: 6px; border:1px solid #ccc; background:#fff; cursor:pointer;">Odustani / Cancelar</button>
+                <button type="button" onclick="guardarEvento()" id="btnModSave" style="padding: 8px 15px; border-radius: 6px; background:var(--croatia-blue); color:white; border:none; font-weight:bold; cursor:pointer;">Spremi / Guardar</button>
             </div>
         </div>
     </div>
 
-    <!-- Librería de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <!-- Script de inactividad -->
     <script src="inactivity-logout.js"></script>
 
     <script>
@@ -529,13 +560,11 @@
             await cargarEventosDesdeSupabase();
         });
 
-        // Carga segura del perfil flotante y activación automática de botones de administración
         async function cargarPerfilYValidarRol() {
             try {
                 const { data: { session } } = await supabaseClient.auth.getSession();
                 if (session && session.user) {
                     const userId = session.user.id;
-                    
                     const { data: perfil } = await supabaseClient
                         .from('perfiles')
                         .select('nombre, apellido, foto_url, role')
@@ -545,14 +574,11 @@
                     if (perfil) {
                         const nombreCompleto = `${perfil.nombre || ''} ${perfil.apellido || ''}`.trim();
                         document.getElementById('userNameMini').innerText = nombreCompleto || "Usuario";
-                        
                         if (perfil.foto_url) {
                             document.getElementById('userAvatarMini').src = perfil.foto_url;
                         }
-
                         document.getElementById('userFloatingBadge').style.display = 'flex';
 
-                        // Activamos la bandera y mostramos el botón de Nuevo Evento si es profesor o administrador
                         if (perfil.role === 'profesor' || perfil.role === 'administrador') {
                             esProfesorAdmin = true;
                             const btnAdmin = document.getElementById('btnNuevoEvento');
@@ -613,20 +639,18 @@
         }
 
         function formatearFechaTexto(fechaIsoStr) {
-                if (!fechaIsoStr) return "--";
+            if (!fechaIsoStr) return "--";
+            const fechaLimpia = fechaIsoStr.replace('Z', '');
+            const fecha = new Date(fechaLimpia);
             
-                // Reemplazamos o tratamos el string para que el navegador no lo convierta a la hora local restando las 3 horas
-                const fechaLimpia = fechaIsoStr.replace('Z', '');
-                const fecha = new Date(fechaLimpia);
-            
-                return fecha.toLocaleString('es-ES', { 
-                    day: 'numeric', 
-                    month: 'long', 
-                    year: 'numeric', 
-                    hour: '2-digit', 
-                    minute: '2-digit',
-                    timeZone: 'UTC' // <--- Esto evita que el navegador mueva las 14:00 a las 11:00
-                }) + " hs";
+            return fecha.toLocaleString('es-ES', { 
+                day: 'numeric', 
+                month: 'long', 
+                year: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit',
+                timeZone: 'UTC'
+            }) + " hs";
         }
 
         function verificarIdiomaYAplicar() {
@@ -644,35 +668,57 @@
             if (idiomaElegido === 'hr') {
                 badge.innerText = "HR";
                 tituloAgenda.innerText = "📅 Kalendar Događaja";
-                btnVolverText.innerText = "Natrag - Početak";
+                btnVolverText.innerText = "Natrag";
                 textBtnNuevo.innerText = "Novi događaj";
                 badgeProximo.innerText = "🌟 Najbliže događanje";
                 lblFecha.innerText = "Datum i vrijeme:";
                 lblLugar.innerText = "Mjesto:";
                 lblAsociacion.innerText = "Udruga:";
                 tituloTodos.innerText = "Sva događanja";
+
+                document.getElementById('lblModTitleHr').innerText = "Naslov (Hrvatski) *:";
+                document.getElementById('lblModTitleEs').innerText = "Naslov (Španjolski):";
+                document.getElementById('lblModDate').innerText = "Datum i vrijeme *:";
+                document.getElementById('lblModPlace').innerText = "Mjesto:";
+                document.getElementById('lblModAssoc').innerText = "Udruga:";
+                document.getElementById('lblModSpeechHr').innerText = "Govor (Hrvatski):";
+                document.getElementById('lblModSpeechEs').innerText = "Govor (Španjolski):";
+                document.getElementById('lblModFiles').innerText = "Slike, grafike ili PDF dokumenti:";
+                document.getElementById('lblModVideo').innerText = "Video zapis:";
+                document.getElementById('btnModCancel').innerText = "Odustani";
+                document.getElementById('btnModSave').innerText = "Spremi";
             } else {
                 badge.innerText = "HR-ES";
-                tituloAgenda.innerText = "📅 Agenda de Eventos / Kalendar Događaja";
+                tituloAgenda.innerText = "📅 Kalendar Događaja / Agenda de Eventos";
                 btnVolverText.innerText = "Natrag - Volver al Inicio";
-                textBtnNuevo.innerText = "Nuevo Evento / Novi događaj";
-                badgeProximo.innerText = "🌟 Próximo Evento / Najbliže događanje";
-                lblFecha.innerText = "Fecha y Hora / Datum i vrijeme:";
-                lblLugar.innerText = "Lugar / Mjesto:";
-                lblAsociacion.innerText = "Asociación / Udruga:";
-                tituloTodos.innerText = "Todos los Eventos / Sva događanja";
+                textBtnNuevo.innerText = "Novi događaj / Nuevo Evento";
+                badgeProximo.innerText = "🌟 Najbliže događanje / Próximo Evento";
+                lblFecha.innerText = "Datum i vrijeme / Fecha y Hora:";
+                lblLugar.innerText = "Mjesto / Lugar:";
+                lblAsociacion.innerText = "Udruga / Asociación:";
+                tituloTodos.innerText = "Sva događanja / Todos los Eventos";
+
+                document.getElementById('lblModTitleHr').innerText = "Naslov (Hrvatski) / Título (Croata) *:";
+                document.getElementById('lblModTitleEs').innerText = "Naslov (Španjolski) / Título (Español):";
+                document.getElementById('lblModDate').innerText = "Datum i vrijeme / Fecha y Hora *:";
+                document.getElementById('lblModPlace').innerText = "Mjesto / Lugar:";
+                document.getElementById('lblModAssoc').innerText = "Udruga / Asociación:";
+                document.getElementById('lblModSpeechHr').innerText = "Govor (Hrvatski) / Speech (Croata):";
+                document.getElementById('lblModSpeechEs').innerText = "Govor (Španjolski) / Speech (Español):";
+                document.getElementById('lblModFiles').innerText = "Slike, grafike ili PDF / Fotos, gráficos o PDF:";
+                document.getElementById('lblModVideo').innerText = "Video zapis / Video:";
+                document.getElementById('btnModCancel').innerText = "Odustani / Cancelar";
+                document.getElementById('btnModSave').innerText = "Spremi / Guardar";
             }
         }
 
         function alternarIdioma() {
             let idiomaActual = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
-            
-            if (idiomaActual === "hr-es" || idiomaActual.includes("es")) {
+            if (idiomaActual.includes("es")) {
                 localStorage.setItem('idiomaApp', 'hr');
             } else {
                 localStorage.setItem('idiomaApp', 'hr-es');
             }
-            
             location.reload();
         }
 
@@ -694,7 +740,6 @@
                     <p style="margin:4px 0; font-size:0.85rem; color:#0051ba;">🏛️ ${ev.asociacion || 'N/D'}</p>
                 `;
 
-                // Si es profesor o administrador, renderizamos los botones de modificar y eliminar en cada tarjeta
                 if (esProfesorAdmin) {
                     htmlCard += `
                         <div class="admin-controls-card" style="display: block; margin-top: 8px;">
@@ -730,45 +775,76 @@
                 speechEsEl.style.display = 'none';
             }
 
-            const mediaContainer = document.getElementById("feat-media");
-            mediaContainer.innerHTML = "";
-
             if (intervaloSlideshow) {
                 clearInterval(intervaloSlideshow);
             }
 
+            // --- GESTIÓN DE LA PANTALLA DE VIDEO ---
+            const contenedorVideo = document.getElementById("feat-media-video");
+            contenedorVideo.innerHTML = "";
             if (ev.video && ev.video.trim() !== "") {
+                contenedorVideo.style.display = "flex";
                 const videoEl = document.createElement("video");
                 videoEl.src = ev.video.trim();
-                videoEl.controls = true;
-                videoEl.autoplay = true;
-                videoEl.muted = true;
-                mediaContainer.appendChild(videoEl);
-            } else if (ev.fotos && ev.fotos.length > 0) {
-                ev.fotos.forEach((foto, index) => {
+                videoEl.controls = false; // Lo dejamos sin controles para que actúe como un elemento animado limpio
+                videoEl.autoplay = true;  // <--- Esto hace que se mueva solo automáticamente
+                videoEl.muted = true;     // <--- Obligatorio para que los navegadores permitan el autoplay
+                videoEl.loop = true;      // <--- Se repite infinitamente
+                videoEl.playsInline = true;
+                contenedorVideo.appendChild(videoEl);
+            } else {
+                contenedorVideo.style.display = "none";
+            }
+
+            // --- GESTIÓN DE LA PANTALLA DE FOTOS Y PDFS ---
+            const contenedorFotos = document.getElementById("feat-media-fotos");
+            contenedorFotos.innerHTML = "";
+            
+            if (ev.fotos && ev.fotos.length > 0) {
+                contenedorFotos.style.display = "flex";
+                const imagenes = ev.fotos.filter(f => !f.toLowerCase().endsWith('.pdf'));
+                const pdfs = ev.fotos.filter(f => f.toLowerCase().endsWith('.pdf'));
+
+                // Renderizar imágenes en carrusel
+                imagenes.forEach((foto, index) => {
                     const img = document.createElement("img");
                     img.src = foto;
                     if (index === 0) img.classList.add("active");
-                    mediaContainer.appendChild(img);
+                    contenedorFotos.appendChild(img);
                 });
 
-                if (ev.fotos.length > 1) {
+                if (imagenes.length > 1) {
                     let currentIndex = 0;
                     intervaloSlideshow = setInterval(() => {
-                        const imgs = mediaContainer.querySelectorAll("img");
+                        const imgs = contenedorFotos.querySelectorAll("img");
                         if(imgs.length === 0) return;
                         imgs[currentIndex].classList.remove("active");
                         currentIndex = (currentIndex + 1) % imgs.length;
                         imgs[currentIndex].classList.add("active");
                     }, 3500);
                 }
+
+                // Renderizar enlaces de PDF
+                pdfs.forEach((pdfUrl, idx) => {
+                    const a = document.createElement("a");
+                    a.href = pdfUrl;
+                    a.target = "_blank";
+                    a.className = "pdf-download-link";
+                    a.innerHTML = `📄 ${idiomaElegido === 'hr' ? 'Preuzmi PDF dokument ' + (idx + 1) : 'Ver / Descargar PDF ' + (idx + 1)}`;
+                    contenedorFotos.appendChild(a);
+                });
+
+                if (imagenes.length === 0 && pdfs.length === 0) {
+                    contenedorFotos.style.display = "none";
+                }
             } else {
-                mediaContainer.innerHTML = "<span style='color:white; font-size:0.9rem;'>Sin multimedia disponible</span>";
+                contenedorFotos.style.display = "none";
             }
         }
 
         function abrirModalNuevo() {
-            document.getElementById("modalTitulo").innerText = "Registrar Nuevo Evento";
+            let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+            document.getElementById("modalTitulo").innerText = (idiomaElegido === 'hr') ? "Registriraj novi događaj" : "Registrar Nuevo Evento / Registriraj novi događaj";
             document.getElementById("eventoId").value = "";
             document.getElementById("inputTituloHr").value = "";
             document.getElementById("inputTituloEs").value = "";
@@ -777,8 +853,8 @@
             document.getElementById("inputAsociacion").value = "";
             document.getElementById("inputSpeechHr").value = "";
             document.getElementById("inputSpeechEs").value = "";
-            document.getElementById("inputFotos").value = "";
-            document.getElementById("inputVideo").value = "";
+            document.getElementById("inputArchivosMultimedia").value = "";
+            document.getElementById("inputArchivoVideo").value = "";
             document.getElementById("modalEvento").style.display = "flex";
         }
 
@@ -786,17 +862,18 @@
             const ev = eventosData.find(e => e.id === id);
             if (!ev) return;
 
-            document.getElementById("modalTitulo").innerText = "Modificar Evento";
+            let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+            document.getElementById("modalTitulo").innerText = (idiomaElegido === 'hr') ? "Izmijeni događaj" : "Modificar Evento / Izmijeni događaj";
             document.getElementById("eventoId").value = ev.id;
             document.getElementById("inputTituloHr").value = ev.tituloOriginalHr || "";
             document.getElementById("inputTituloEs").value = ev.tituloOriginalEs || "";
-            document.getElementById("inputFechaHora").value = ev.fechaISO ? ev.fechaISO.slice(0, 16) : "";
+            document.getElementById("inputFechaHora").value = ev.fechaISO ? ev.fechaISO.replace('Z', '').slice(0, 16) : "";
             document.getElementById("inputLugar").value = ev.lugar || "";
             document.getElementById("inputAsociacion").value = ev.asociacion || "";
             document.getElementById("inputSpeechHr").value = ev.speechHr || "";
             document.getElementById("inputSpeechEs").value = ev.speechEs || "";
-            document.getElementById("inputFotos").value = ev.fotos ? ev.fotos.join(", ") : "";
-            document.getElementById("inputVideo").value = ev.video || "";
+            document.getElementById("inputArchivosMultimedia").value = "";
+            document.getElementById("inputArchivoVideo").value = "";
             document.getElementById("modalEvento").style.display = "flex";
         }
 
@@ -804,71 +881,160 @@
             document.getElementById("modalEvento").style.display = "none";
         }
 
+        // --- LÓGICA DE ALTA, MODIFICACIÓN Y SUBIDA DE ARCHIVOS (IMÁGENES Y PDF) ---
         async function guardarEvento() {
+            let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
             const id = document.getElementById("eventoId").value;
             const titulo_hr = document.getElementById("inputTituloHr").value.trim();
             const titulo_es = document.getElementById("inputTituloEs").value.trim();
-            const fecha_hora = document.getElementById("inputFechaHora").value;
+            const fechaHoraInput = document.getElementById("inputFechaHora").value;
             const lugar = document.getElementById("inputLugar").value.trim();
             const asociacion = document.getElementById("inputAsociacion").value.trim();
             const speech_hr = document.getElementById("inputSpeechHr").value.trim();
             const speech_es = document.getElementById("inputSpeechEs").value.trim();
             
-            const fotosStr = document.getElementById("inputFotos").value.trim();
-            const fotos = (fotosStr && !fotosStr.includes("imagenes/foto1.jpg")) 
-                ? fotosStr.split(",").map(s => s.trim()).filter(s => s) 
-                : [];
-            
-            const videoInput = document.getElementById("inputVideo").value.trim();
-            const video = (videoInput && !videoInput.includes("videos/video.mp4")) ? videoInput : null;
+            const inputArchivos = document.getElementById("inputArchivosMultimedia").files;
+            const inputVideoFile = document.getElementById("inputArchivoVideo").files[0];
 
-            if (!titulo_hr || !fecha_hora) {
-                alert("Por favor completa el Título en croata y selecciona una Fecha y Hora válidas.");
+            if (!titulo_hr || !fechaHoraInput) {
+                alert(idiomaElegido === 'hr' ? "Molimo unesite hrvatski naslov i valjani datum." : "Por favor completa el Título en croata y selecciona una Fecha y Hora válidas.");
                 return;
             }
 
-            const objetoEvento = {
-                titulo_hr,
-                titulo_es: titulo_es || null,
-                fecha_hora,
-                lugar: lugar || null,
-                asociacion: asociacion || null,
-                speech_hr: speech_hr || null,
-                speech_es: speech_es || null,
-                fotos,
-                video
-            };
+            const btnGuardar = document.getElementById('btnModSave');
+            const textoOriginalBoton = btnGuardar.innerText;
+            btnGuardar.disabled = true;
+            btnGuardar.innerText = idiomaElegido === 'hr' ? "Učitavanje datoteka..." : "Subiendo archivos y guardando...";
+
+            const fechaLocalExacta = new Date(fechaHoraInput).toISOString();
 
             try {
-                if (id) {
-                    const { error } = await supabaseClient
-                        .from('eventos')
-                        .update(objetoEvento)
-                        .eq('id', id);
+                let eventoIdActual = id;
+                const objetoEventoBase = {
+                    titulo_hr,
+                    titulo_es: titulo_es || null,
+                    fecha_hora: fechaLocalExacta,
+                    lugar: lugar || null,
+                    asociacion: asociacion || null,
+                    speech_hr: speech_hr || null,
+                    speech_es: speech_es || null
+                };
 
-                    if (error) throw error;
-                    alert("¡Evento modificado con éxito!");
+                // PASO 1: Guardar o actualizar datos básicos para asegurar el ID exacto
+                if (eventoIdActual) {
+                    const { error: errUpd } = await supabaseClient
+                        .from('eventos')
+                        .update(objetoEventoBase)
+                        .eq('id', eventoIdActual);
+                    if (errUpd) throw errUpd;
                 } else {
-                    const { error } = await supabaseClient
+                    const { data: nuevoReg, error: errIns } = await supabaseClient
                         .from('eventos')
-                        .insert([objetoEvento]);
-
-                    if (error) throw error;
-                    alert("¡Nuevo evento creado con éxito!");
+                        .insert([objetoEventoBase])
+                        .select()
+                        .single();
+                    if (errIns) throw errIns;
+                    eventoIdActual = nuevoReg.id;
                 }
 
+                let updatesMultimedia = {};
+
+                // PASO 2: Subir y renombrar fotos y PDFs uno por uno
+                if (inputArchivos.length > 0) {
+                    let rutasArchivos = [];
+                    for (let i = 0; i < inputArchivos.length; i++) {
+                        const archivo = inputArchivos[i];
+                        const extension = archivo.name.split('.').pop().toLowerCase();
+                        const tipoNombre = extension === 'pdf' ? 'pdf' : 'foto';
+                        const nombrePersonalizado = `evento_${eventoIdActual}_${tipoNombre}_${Date.now()}_${i + 1}.${extension}`;
+                        
+                        const urlSubida = await subirArchivoLocalASupabase(archivo, nombrePersonalizado);
+                        if (urlSubida) rutasArchivos.push(urlSubida);
+                    }
+                    updatesMultimedia.fotos = rutasArchivos;
+                }
+
+                // PASO 3: Subir video si existe
+                if (inputVideoFile) {
+                    const extensionVid = inputVideoFile.name.split('.').pop();
+                    const nombreVideoPersonalizado = `evento_${eventoIdActual}_video_${Date.now()}.${extensionVid}`;
+                    
+                    const urlVideoSubido = await subirArchivoLocalASupabase(inputVideoFile, nombreVideoPersonalizado);
+                    if (urlVideoSubido) updatesMultimedia.video = urlVideoSubido;
+                }
+
+                // PASO 4: Actualizar las rutas multimedia en Supabase
+                if (Object.keys(updatesMultimedia).length > 0) {
+                    const { error: errMedia } = await supabaseClient
+                        .from('eventos')
+                        .update(updatesMultimedia)
+                        .eq('id', eventoIdActual);
+                    if (errMedia) throw errMedia;
+                }
+
+                alert(idiomaElegido === 'hr' ? "Uspješno spremljeno!" : (id ? "¡Evento modificado con éxito!" : "¡Nuevo evento creado con éxito!"));
                 cerrarModal();
                 await cargarEventosDesdeSupabase();
             } catch (err) {
                 console.error("Error al guardar el evento:", err);
-                alert("Hubo un error al guardar el evento en la base de datos.");
+                alert(idiomaElegido === 'hr' ? "Došlo je do pogreške pri prijenosu." : "Hubo un error al guardar el evento o los archivos. Revisa el tamaño de los archivos.");
+            } finally {
+                btnGuardar.disabled = false;
+                btnGuardar.innerText = textoOriginalBoton;
             }
         }
 
+        async function subirArchivoLocalASupabase(archivo, nombrePersonalizado) {
+            const { error } = await supabaseClient.storage
+                .from('Alumnos_fotos')
+                .upload(nombrePersonalizado, archivo, { upsert: true });
+
+            if (error) {
+                console.error("Error al subir archivo al Storage:", error);
+                return null;
+            }
+
+            const { data: urlData } = supabaseClient.storage
+                .from('Alumnos_fotos')
+                .getPublicUrl(nombrePersonalizado);
+
+            return urlData.publicUrl;
+        }
+
+        // --- LÓGICA DE BAJA Y LIMPIEZA DE ARCHIVOS ---
         async function eliminarEvento(id) {
-            if (!confirm("¿Estás seguro de que deseas eliminar este evento?")) return;
+            let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+            let mensajeConfirm = idiomaElegido === 'hr' ? "Jeste li sigurni da želite izbrisati ovaj događaj?" : "¿Estás seguro de que deseas eliminar este evento? Se borrarán también los archivos asociados.";
+            
+            if (!confirm(mensajeConfirm)) return;
 
             try {
+                const eventoAEliminar = eventosData.find(e => e.id === id);
+
+                if (eventoAEliminar) {
+                    let archivosABorrar = [];
+
+                    if (eventoAEliminar.fotos && eventoAEliminar.fotos.length > 0) {
+                        eventoAEliminar.fotos.forEach(urlFoto => {
+                            const partes = urlFoto.split('/');
+                            const nombreArchivo = partes[partes.length - 1];
+                            if (nombreArchivo) archivosABorrar.push(nombreArchivo);
+                        });
+                    }
+
+                    if (eventoAEliminar.video) {
+                        const partesVideo = eventoAEliminar.video.split('/');
+                        const nombreVideo = partesVideo[partesVideo.length - 1];
+                        if (nombreVideo) archivosABorrar.push(nombreVideo);
+                    }
+
+                    if (archivosABorrar.length > 0) {
+                        await supabaseClient.storage
+                            .from('Alumnos_fotos')
+                            .remove(archivosABorrar);
+                    }
+                }
+
                 const { error } = await supabaseClient
                     .from('eventos')
                     .delete()
@@ -876,11 +1042,11 @@
 
                 if (error) throw error;
 
-                alert("¡Evento eliminado correctamente!");
+                alert(idiomaElegido === 'hr' ? "Događaj je izbrisan." : "¡Evento y sus archivos eliminados correctamente!");
                 await cargarEventosDesdeSupabase();
             } catch (err) {
                 console.error("Error al eliminar el evento:", err);
-                alert("Hubo un error al intentar eliminar el evento.");
+                alert(idiomaElegido === 'hr' ? "Greška pri brisanju." : "Hubo un error al intentar eliminar el evento.");
             }
         }
     </script>
