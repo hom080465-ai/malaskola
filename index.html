@@ -67,6 +67,33 @@
             transform: scale(1.05);
         }
 
+        /* Botón pequeño de Login ubicado exactamente donde indica la flecha */
+        .btn-login-esquina {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--croatia-blue);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.6);
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-login-esquina:hover {
+            background: #003380;
+            transform: scale(1.05);
+        }
+
         h1 {
             color: var(--croatia-red);
             margin: 0 0 10px 0;
@@ -122,19 +149,6 @@
             transform: translateY(-2px);
         }
 
-        /* Estilo especial destacado para el botón de login/conectarse */
-        .btn-login {
-            background: var(--croatia-blue);
-            color: white;
-            border: 2px solid var(--croatia-blue);
-        }
-
-        .btn-login:hover {
-            background: #003380;
-            color: white;
-            border-color: var(--croatia-red);
-        }
-
         /* Ocupa todo el ancho superior de la grilla */
         .full-width {
             grid-column: 1 / -1;
@@ -147,6 +161,11 @@
         <!-- Botón rojo interactivo de cambio de idioma (arriba a la izquierda) -->
         <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()" title="Hacer clic para cambiar idioma">HR</span>
 
+        <!-- Botón pequeño de Login / Conectarse (arriba a la derecha, donde indica la flecha) -->
+        <a href="MS_Login.html" class="btn-login-esquina" id="btnLogin">
+            🔑 <span id="textLogin">Prijava / Login</span>
+        </a>
+
         <!-- Títulos solicitados -->
         <h1 id="tituloCroata">Dobrodošli u Malu školu</h1>
         <p class="sub-espanol" id="subEspanol">Bienvenidos a Malu školu</p>
@@ -157,11 +176,6 @@
             <button class="btn-menu-item full-width" onclick="alert('Sección de Clases en construcción')" id="btnClases">
                 📚 <span id="textClases">Započni (Tečaj jezika) / Clases de Idioma</span>
             </button>
-
-            <!-- Botón exclusivo para Conectarse / Loguearse -->
-            <a href="MS_Login.html" class="btn-menu-item btn-login" id="btnLogin">
-                🔑 <span id="textLogin">Prijava / Iniciar Sesión</span>
-            </a>
 
             <!-- Botón de Agenda (Libre para todos) -->
             <button class="btn-menu-item" onclick="window.location.href='MS_Agenda.html'" id="btnAgenda">
@@ -174,7 +188,7 @@
             </button>
             
             <!-- Botón de Historia -->
-            <button class="btn-menu-item" onclick="alert('Sección de Historia en construcción')" id="btnHistoria">
+            <button class="btn-menu-item full-width" onclick="alert('Sección de Historia en construcción')" id="btnHistoria">
                 🏛️ <span id="textHistoria">Povijest / Historia</span>
             </button>
         </div>
@@ -211,7 +225,7 @@
                 subEspanol.style.display = 'block';
                 subEspanol.innerText = "Bienvenidos a Malu školu";
                 textClases.innerText = "Započni (Tečaj jezika) / Clases de Idioma";
-                textLogin.innerText = "Prijava / Iniciar Sesión";
+                textLogin.innerText = "Prijava / Login";
                 textActividades.innerText = "Aktivnosti / Actividades";
                 textAgenda.innerText = "Agenda / Agenda";
                 textHistoria.innerText = "Povijest / Historia";
