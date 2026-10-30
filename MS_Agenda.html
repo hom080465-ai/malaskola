@@ -613,15 +613,20 @@
         }
 
         function formatearFechaTexto(fechaIsoStr) {
-            if (!fechaIsoStr) return "--";
-            const fecha = new Date(fechaIsoStr);
-            return fecha.toLocaleString('es-ES', { 
-                day: 'numeric', 
-                month: 'long', 
-                year: 'numeric', 
-                hour: '2-digit', 
-                minute: '2-digit' 
-            }) + " hs";
+                if (!fechaIsoStr) return "--";
+            
+                // Reemplazamos o tratamos el string para que el navegador no lo convierta a la hora local restando las 3 horas
+                const fechaLimpia = fechaIsoStr.replace('Z', '');
+                const fecha = new Date(fechaLimpia);
+            
+                return fecha.toLocaleString('es-ES', { 
+                    day: 'numeric', 
+                    month: 'long', 
+                    year: 'numeric', 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    timeZone: 'UTC' // <--- Esto evita que el navegador mueva las 14:00 a las 11:00
+                }) + " hs";
         }
 
         function verificarIdiomaYAplicar() {
