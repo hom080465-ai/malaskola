@@ -67,7 +67,7 @@
             transform: scale(1.05);
         }
 
-        /* Botón pequeño de Login ubicado exactamente donde indica la flecha */
+        /* Botón pequeño de Login ubicado arriba a la derecha */
         .btn-login-esquina {
             position: absolute;
             top: 20px;
@@ -161,7 +161,7 @@
         <!-- Botón rojo interactivo de cambio de idioma (arriba a la izquierda) -->
         <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()" title="Hacer clic para cambiar idioma">HR</span>
 
-        <!-- Botón pequeño de Login / Conectarse (arriba a la derecha, donde indica la flecha) -->
+        <!-- Botón pequeño de Login / Conectarse (arriba a la derecha) -->
         <a href="MS_Login.html" class="btn-login-esquina" id="btnLogin">
             🔑 <span id="textLogin">Prijava / Login</span>
         </a>
@@ -177,7 +177,7 @@
                 📚 <span id="textClases">Započni (Tečaj jezika) / Clases de Idioma</span>
             </button>
 
-            <!-- Botón de Agenda (Libre para todos) -->
+            <!-- Botón de Agenda (Lleva a MS_Agenda.html de forma libre) -->
             <button class="btn-menu-item" onclick="window.location.href='MS_Agenda.html'" id="btnAgenda">
                 📅 <span id="textAgenda">Agenda / Agenda</span>
             </button>
@@ -194,7 +194,7 @@
         </div>
     </div>
 
-    <!-- Script de configuración general -->
+    <!-- Script de configuración general (Sin auth-check.js bloqueante) -->
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             let idiomaElegido = localStorage.getItem('idiomaApp');
