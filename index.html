@@ -41,7 +41,6 @@
             text-align: center;
             position: relative;
             z-index: 10;
-            margin-top: 40px;
         }
 
         /* Botón rojo interactivo de cambio de idioma arriba a la izquierda */
@@ -66,29 +65,6 @@
         .badge-idioma:hover {
             background: #b50b0f;
             transform: scale(1.05);
-        }
-
-        /* Botón flotante superior derecho para abrir el libro */
-        .btn-abrir-libro {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--croatia-blue);
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            transition: all 0.2s;
-            z-index: 1000;
-        }
-
-        .btn-abrir-libro:hover {
-            background: #003380;
-            transform: translateY(-2px);
         }
 
         h1 {
@@ -154,11 +130,6 @@
 </head>
 <body>
 
-    <!-- Botón flotante superior derecho para abrir el libro -->
-    <button onclick="abrirLibro()" id="btnLibro" class="btn-abrir-libro">
-        📖 Otvori knjigu / Abrir libro
-    </button>
-
     <div class="container">
         <!-- Botón rojo interactivo de cambio de idioma (arriba a la izquierda) -->
         <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()" title="Hacer clic para cambiar idioma">HR</span>
@@ -169,7 +140,7 @@
 
         <!-- Bloque de botones central -->
         <div class="menu-grid">
-            <!-- Botón de Clases de Idioma (Lleva opcionalmente al login) -->
+            <!-- Botón de Clases de Idioma / Login opcional -->
             <a href="MS_Login.html" class="btn-menu-item full-width" id="btnClases">
                 📚 <span id="textClases">Započni / Ingresar (Clases de Idioma)</span>
             </a>
@@ -191,7 +162,7 @@
         </div>
     </div>
 
-    <!-- Script de configuración general (sin auth-check.js obligatorio) -->
+    <!-- Script de configuración general -->
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             let idiomaElegido = localStorage.getItem('idiomaApp');
@@ -203,7 +174,6 @@
 
             const subEspanol = document.getElementById('subEspanol');
             const textClases = document.getElementById('textClases');
-            const btnLibro = document.getElementById('btnLibro');
             const badge = document.getElementById('badgeIdioma');
             const textActividades = document.getElementById('textActividades');
             const textAgenda = document.getElementById('textAgenda');
@@ -213,7 +183,6 @@
                 badge.innerText = "HR";
                 subEspanol.style.display = 'none';
                 textClases.innerText = "Započni (Tečaj jezika)";
-                btnLibro.innerHTML = "📖 Otvori knjigu";
                 textActividades.innerText = "Aktivnosti";
                 textAgenda.innerText = "Agenda";
                 textHistoria.innerText = "Povijest";
@@ -222,7 +191,6 @@
                 subEspanol.style.display = 'block';
                 subEspanol.innerText = "Bienvenidos a Malu školu";
                 textClases.innerText = "Započni / Ingresar (Clases de Idioma)";
-                btnLibro.innerHTML = "📖 Otvori knjigu / Abrir libro";
                 textActividades.innerText = "Aktivnosti / Actividades";
                 textAgenda.innerText = "Agenda / Agenda";
                 textHistoria.innerText = "Povijest / Historia";
@@ -239,16 +207,6 @@
             }
             
             location.reload();
-        }
-
-        function abrirLibno() {
-            sessionStorage.setItem('paginaOrigenLibro', window.location.href);
-            window.location.href = 'MS_Kniga12.html';
-        }
-
-        function abrirLibro() {
-            sessionStorage.setItem('paginaOrigenLibro', window.location.href);
-            window.location.href = 'MS_Kniga12.html';
         }
     </script>
 </body>
