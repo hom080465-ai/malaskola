@@ -61,7 +61,6 @@
             gap: 15px;
         }
 
-        /* Botón interactivo de cambio de idioma arriba a la izquierda del header */
         .badge-idioma {
             position: absolute;
             top: 15px;
@@ -85,7 +84,6 @@
             transform: scale(1.05);
         }
 
-        /* Insignia idéntica a la imagen para mostrar usuario conectado arriba a la izquierda */
         .user-profile-badge {
             position: fixed;
             top: 15px;
@@ -100,7 +98,7 @@
             gap: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.4);
             z-index: 1000;
-            display: none; /* Oculto por defecto si no hay sesión */
+            display: none;
         }
 
         .user-profile-badge img {
@@ -132,7 +130,6 @@
             align-items: center;
         }
 
-        /* Botón de Alta exclusivo para profesores logueados */
         .btn-admin {
             background: #10b981;
             color: var(--white);
@@ -199,7 +196,6 @@
             transform: translateY(-2px);
         }
 
-        /* Sección del Próximo Evento Destacado */
         .featured-event-box {
             background: linear-gradient(135deg, rgba(0, 81, 186, 0.08), rgba(217, 15, 19, 0.08));
             border: 2px dashed var(--croatia-blue);
@@ -248,7 +244,6 @@
             color: var(--croatia-blue);
         }
 
-        /* Speech desplegable */
         .event-speech {
             background: #f1f5f9;
             border-left: 4px solid var(--croatia-red);
@@ -260,7 +255,6 @@
             color: #475569;
         }
 
-        /* Contenedor Multimedia */
         .media-container {
             position: relative;
             width: 100%;
@@ -293,7 +287,6 @@
             object-fit: cover;
         }
 
-        /* Listado completo de eventos */
         .events-list-section h3 {
             color: var(--croatia-blue);
             margin-bottom: 10px;
@@ -329,7 +322,6 @@
             font-size: 1.1rem;
         }
 
-        /* Modal para Alta y Modificación */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -388,7 +380,6 @@
 </head>
 <body>
 
-    <!-- Insignia flotante superior izquierda con foto y nombre del usuario conectado -->
     <div id="userProfileBadge" class="user-profile-badge">
         <img id="userAvatarImg" src="imagenes/default-avatar.png" alt="Avatar">
         <span id="userNameSpan">Usuario</span>
@@ -396,13 +387,11 @@
 
     <div class="agenda-container">
         <div class="agenda-header">
-            <!-- Botón interactivo de cambio de idioma arriba a la izquierda -->
             <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()" title="Cambiar idioma / Promijeni jezik">HR-ES</span>
 
             <h1 id="tituloAgenda">📅 Agenda de Eventos</h1>
 
             <div class="header-actions">
-                <!-- Botón de Alta exclusivo para profesores logueados de forma opcional -->
                 <button id="btnNuevoEvento" class="btn-admin" onclick="abrirModalNuevo()">
                     ➕ <span id="textBtnNuevo">Nuevo Evento / Novi događaj</span>
                 </button>
@@ -412,7 +401,6 @@
             </div>
         </div>
 
-        <!-- Evento Próximo Destacado Automático -->
         <div class="featured-event-box">
             <span class="featured-badge" id="badgeProximo">🌟 Próximo Evento / Najbliže događanje</span>
             <div class="event-main-content">
@@ -423,29 +411,23 @@
                     <p class="event-info-item"><strong id="lblAsociacion">Asociación / Udruga:</strong> <span id="feat-asociacion">--</span></p>
                     <div class="event-speech" id="feat-speech">--</div>
                 </div>
-                <div class="media-container" id="feat-media">
-                    <!-- Las fotos o videos se cargan dinámicamente aquí -->
-                </div>
+                <div class="media-container" id="feat-media"></div>
             </div>
         </div>
 
-        <!-- Listado de Todos los Eventos -->
         <div class="events-list-section">
             <h3 id="tituloTodos">Todos los Eventos / Sva događanja</h3>
-            <div class="events-grid" id="listaEventosGrid">
-                <!-- Se generan mediante JavaScript -->
-            </div>
+            <div class="events-grid" id="listaEventosGrid"></div>
         </div>
     </div>
 
-    <!-- Modal de Alta / Modificación de Evento -->
     <div class="modal-overlay" id="modalEvento">
         <div class="modal-content">
             <h3 id="modalTitulo">Registrar Nuevo Evento</h3>
             <input type="hidden" id="eventoId">
             
             <div class="form-group">
-                <label>Título (Croata):</label>
+                <label>Título (Croata) *:</label>
                 <input type="text" id="inputTituloHr" placeholder="Ej. Proslava Dana državnosti">
             </div>
             <div class="form-group">
@@ -453,7 +435,7 @@
                 <input type="text" id="inputTituloEs" placeholder="Ej. Celebración del Día Nacional">
             </div>
             <div class="form-group">
-                <label>Fecha y Hora:</label>
+                <label>Fecha y Hora *:</label>
                 <input type="datetime-local" id="inputFechaHora">
             </div>
             <div class="form-group">
@@ -473,7 +455,7 @@
                 <textarea id="inputSpeechEs" rows="2"></textarea>
             </div>
             <div class="form-group">
-                <label>URLs de Fotos (separadas por coma):</label>
+                <label>URLs de Fotos (opcional, separadas por coma):</label>
                 <input type="text" id="inputFotos" placeholder="imagenes/foto1.jpg, imagenes/foto2.jpg">
             </div>
             <div class="form-group">
@@ -488,7 +470,6 @@
         </div>
     </div>
 
-    <!-- Librería de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
@@ -506,7 +487,6 @@
             await cargarEventosDesdeSupabase();
         });
 
-        // Valida la sesión activa y carga los datos del usuario en la insignia superior izquierda estilo tarjeta
         async function validarRolProfesorOpcional() {
             try {
                 const { data: { session } } = await supabaseClient.auth.getSession();
@@ -514,7 +494,6 @@
                     esProfesorAdmin = true;
                     document.getElementById('btnNuevoEvento').style.display = 'inline-flex';
 
-                    // Extraer metadatos del usuario logueado (nombre y avatar)
                     const userMeta = session.user.user_metadata || {};
                     const nombreUsuario = userMeta.full_name || userMeta.nombre || session.user.email.split('@')[0];
                     const avatarUrl = userMeta.avatar_url || userMeta.foto || 'imagenes/default-avatar.png';
@@ -540,21 +519,39 @@
                 if (data && data.length > 0) {
                     const idiomaActual = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
                     
-                    eventosData = data.map(ev => ({
-                        id: ev.id,
-                        tituloOriginalHr: ev.titulo_hr,
-                        tituloOriginalEs: ev.titulo_es,
-                        titulo: idiomaActual === 'hr' ? ev.titulo_hr : `${ev.titulo_hr} - ${ev.titulo_es}`,
-                        fechaISO: ev.fecha_hora,
-                        fechaTexto: formatearFechaTexto(ev.fecha_hora),
-                        lugar: ev.lugar,
-                        asociacion: ev.asociacion,
-                        speechHr: ev.speech_hr,
-                        speechEs: ev.speech_es,
-                        speech: idiomaActual === 'hr' ? ev.speech_hr : (ev.speech_es || ev.speech_hr),
-                        fotos: ev.fotos || [],
-                        video: ev.video || ""
-                    }));
+                    eventosData = data.map(ev => {
+                        const tHr = ev.titulo_hr || "";
+                        const tEs = ev.titulo_es || "";
+                        
+                        // Formato de título según el idioma elegido
+                        let tituloFinal = tHr;
+                        if (idiomaActual !== 'hr' && tEs) {
+                            tituloFinal = `${tHr} - ${tEs}`;
+                        }
+
+                        const sHr = ev.speech_hr || "";
+                        const sEs = ev.speech_es || "";
+                        let speechFinal = sHr;
+                        if (idiomaActual !== 'hr' && sEs) {
+                            speechFinal = sEs;
+                        }
+
+                        return {
+                            id: ev.id,
+                            tituloOriginalHr: tHr,
+                            tituloOriginalEs: tEs,
+                            titulo: tituloFinal,
+                            fechaISO: ev.fecha_hora,
+                            fechaTexto: formatearFechaTexto(ev.fecha_hora),
+                            lugar: ev.lugar || "",
+                            asociacion: ev.asociacion || "",
+                            speechHr: sHr,
+                            speechEs: sEs,
+                            speech: speechFinal,
+                            fotos: ev.fotos || [],
+                            video: ev.video || ""
+                        };
+                    });
 
                     inicializarAgenda();
                 } else {
@@ -567,6 +564,7 @@
         }
 
         function formatearFechaTexto(fechaIsoStr) {
+            if (!fechaIsoStr) return "--";
             const fecha = new Date(fechaIsoStr);
             return fecha.toLocaleString('es-ES', { 
                 day: 'numeric', 
@@ -639,7 +637,7 @@
                 let htmlCard = `
                     <h4>${ev.titulo}</h4>
                     <p style="margin:4px 0; font-size:0.85rem; color:#555;">📅 ${ev.fechaTexto}</p>
-                    <p style="margin:4px 0; font-size:0.85rem; color:#0051ba;">🏛️ ${ev.asociacion}</p>
+                    <p style="margin:4px 0; font-size:0.85rem; color:#0051ba;">🏛️ ${ev.asociacion || 'N/D'}</p>
                 `;
 
                 if (esProfesorAdmin) {
@@ -661,9 +659,9 @@
         function mostrarDetalleEvento(ev) {
             document.getElementById("feat-titulo").innerText = ev.titulo;
             document.getElementById("feat-fecha").innerText = ev.fechaTexto;
-            document.getElementById("feat-lugar").innerText = ev.lugar;
-            document.getElementById("feat-asociacion").innerText = ev.asociacion;
-            document.getElementById("feat-speech").innerText = `"${ev.speech}"`;
+            document.getElementById("feat-lugar").innerText = ev.lugar || "--";
+            document.getElementById("feat-asociacion").innerText = ev.asociacion || "--";
+            document.getElementById("feat-speech").innerText = ev.speech ? `"${ev.speech}"` : "--";
 
             const mediaContainer = document.getElementById("feat-media");
             mediaContainer.innerHTML = "";
@@ -672,9 +670,9 @@
                 clearInterval(intervaloSlideshow);
             }
 
-            if (ev.video && ev.video !== "") {
+            if (ev.video && ev.video.trim() !== "") {
                 const videoEl = document.createElement("video");
-                videoEl.src = ev.video;
+                videoEl.src = ev.video.trim();
                 videoEl.controls = true;
                 videoEl.autoplay = true;
                 videoEl.muted = true;
@@ -741,30 +739,35 @@
 
         async function guardarEvento() {
             const id = document.getElementById("eventoId").value;
-            const titulo_hr = document.getElementById("inputTituloHr").value;
-            const titulo_es = document.getElementById("inputTituloEs").value;
+            const titulo_hr = document.getElementById("inputTituloHr").value.trim();
+            const titulo_es = document.getElementById("inputTituloEs").value.trim();
             const fecha_hora = document.getElementById("inputFechaHora").value;
-            const lugar = document.getElementById("inputLugar").value;
-            const asociacion = document.getElementById("inputAsociacion").value;
-            const speech_hr = document.getElementById("inputSpeechHr").value;
-            const speech_es = document.getElementById("inputSpeechEs").value;
-            const fotosStr = document.getElementById("inputFotos").value;
-            const fotos = fotosStr ? fotosStr.split(",").map(s => s.trim()).filter(s => s) : [];
-            const video = document.getElementById("inputVideo").value;
+            const lugar = document.getElementById("inputLugar").value.trim();
+            const asociacion = document.getElementById("inputAsociacion").value.trim();
+            const speech_hr = document.getElementById("inputSpeechHr").value.trim();
+            const speech_es = document.getElementById("inputSpeechEs").value.trim();
+            
+            const fotosStr = document.getElementById("inputFotos").value.trim();
+            const fotos = (fotosStr && !fotosStr.includes("imagenes/foto1.jpg")) 
+                ? fotosStr.split(",").map(s => s.trim()).filter(s => s) 
+                : [];
+            
+            const videoInput = document.getElementById("inputVideo").value.trim();
+            const video = (videoInput && !videoInput.includes("videos/video.mp4")) ? videoInput : null;
 
             if (!titulo_hr || !fecha_hora) {
-                alert("Por favor completa al menos el título en croata y la fecha.");
+                alert("Por favor completa el Título en croata y selecciona una Fecha y Hora válidas.");
                 return;
             }
 
             const objetoEvento = {
                 titulo_hr,
-                titulo_es,
+                titulo_es: titulo_es || null,
                 fecha_hora,
-                lugar,
-                asociacion,
-                speech_hr,
-                speech_es,
+                lugar: lugar || null,
+                asociacion: asociacion || null,
+                speech_hr: speech_hr || null,
+                speech_es: speech_es || null,
                 fotos,
                 video
             };
