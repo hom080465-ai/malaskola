@@ -254,46 +254,58 @@
         .actions-left {
             display: flex;
             align-items: center;
-            gap: 10px;
             flex-shrink: 0;
         }
 
-        .btn-close {
+        /* Botón combinado que incluye la "X" y el texto de descripción */
+        .btn-close-combined {
             background: #ffffff;
             border: 2px solid var(--croatia-blue);
-            width: 40px;
-            height: 40px;
-            min-width: 40px;
-            min-height: 40px;
-            border-radius: 50%;
-            font-size: 1rem;
-            font-weight: bold;
-            color: var(--croatia-blue);
+            padding: 4px 16px 4px 4px;
+            height: 44px;
+            border-radius: 30px;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             display: flex;
-            justify-content: center;
             align-items: center;
+            gap: 10px;
             transition: all 0.2s;
             flex-shrink: 0;
+            text-decoration: none;
         }
 
-        .btn-close:hover {
+        .btn-close-combined:hover {
             background: #f1f5f9;
-            transform: scale(1.05);
+            transform: scale(1.03);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.4);
         }
 
-        /* Estilo para la etiqueta de descripción del botón de salida */
-        .close-text-label {
-            background: rgba(27, 38, 79, 0.85);
-            backdrop-filter: blur(6px);
+        /* El círculo interno que contiene la X */
+        .close-icon-circle {
+            background: var(--croatia-blue);
             color: white;
-            padding: 6px 14px;
-            border-radius: 8px;
-            font-size: 0.9rem;
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            min-height: 36px;
+            border-radius: 50%;
+            font-size: 1rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .btn-close-combined:hover .close-icon-circle {
+            background: #00429c;
+        }
+
+        /* Texto descriptivo al lado de la X dentro del botón */
+        .close-text-label {
+            font-size: 0.92rem;
             font-weight: 700;
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            color: var(--croatia-blue);
             white-space: nowrap;
         }
 
@@ -650,8 +662,11 @@
 
         <div class="bottom-row">
             <div class="actions-left">
-                <button class="btn-close" onclick="cerrarPagina(event)" title="Salir">✕</button>
-                <span id="btnCloseText" class="close-text-label">Izlaz - Salir</span>
+                <!-- Único botón integrado que contiene la X y la descripción -->
+                <button class="btn-close-combined" onclick="cerrarPagina(event)" title="Salir">
+                    <span class="close-icon-circle">✕</span>
+                    <span id="btnCloseText" class="close-text-label">Izlaz - Salir</span>
+                </button>
             </div>
 
             <div class="professors-card">
