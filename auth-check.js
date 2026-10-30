@@ -10,8 +10,16 @@ if (typeof supabase !== 'undefined') {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // Si no estamos en la página de login, validamos la sesión obligatoriamente
-    if (!window.location.pathname.includes('MS_Login.html') && supabaseClient) {
+    const rutaActual = window.location.pathname;
+
+    // 1. Páginas donde el login es OPCIONAL (Libres para todos)
+    const esPaginaLibre = rutaActual.includes('index.html') || 
+                           rutaActual.endsWith('/') || 
+                           rutaActual.includes('MS_Agenda.html') || 
+                           rutaActual.includes('MS_Login.html');
+
+    // 2. Si NO es una página libre, exigimos sesión obligatoria (ej: MS_index1.html)
+    if (!esPaginaLibre && supabaseClient) {
         const hash = window.location.hash;
         const esTokenRecuperacion = hash && (hash.includes('type=recovery') || hash.includes('type=invite') || hash.includes('access_token'));
 
