@@ -17,7 +17,7 @@ function iniciarSesionYVolver() {
     window.location.href = 'MS_Login.html';
 }
 
-// Función auxiliar para inyectar y mostrar el modal croata personalizado de aviso
+// Función auxiliar para inyectar y mostrar el modal croata personalizado de aviso con opción de cancelar
 function mostrarModalAccesoDenegado(mensajeCroataEsp) {
     // Si ya existe el contenedor en la página, lo eliminamos para evitar duplicados
     let modalExistente = document.getElementById('modalCroataGlobalCustom');
@@ -25,16 +25,18 @@ function mostrarModalAccesoDenegado(mensajeCroataEsp) {
 
     let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
     let tituloModal = (idiomaElegido === 'hr') ? "Pristup odbijen" : "Pristup odbijen / Acceso denegado";
-    let textoBoton = (idiomaElegido === 'hr') ? "U redu" : "U redu / Entendido";
+    let textoBotonSi = (idiomaElegido === 'hr') ? "Prijava" : "Prijava / Login";
+    let textoBotonNo = (idiomaElegido === 'hr') ? "Odustani" : "Odustani / Cancelar";
 
-    // Creamos el HTML del modal con la misma estructura y estilos del resto del sitio
+    // Creamos el HTML del modal incorporando ambos botones (Aceptar/Login y Cancelar/Volver)
     const modalHTML = `
         <div id="modalCroataGlobalCustom" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 99999; animation: fadeIn 0.3s ease-in-out;">
             <div style="background: #ffffff; width: 90%; max-width: 400px; border-radius: 16px; border: 3px solid #0051ba; padding: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); text-align: center; box-sizing: border-box;">
                 <h3 style="color: #0051ba; font-size: 1.3rem; font-weight: 800; margin-top: 0; margin-bottom: 10px;">${tituloModal}</h3>
                 <p style="color: #475569; font-size: 0.95rem; margin-bottom: 20px;">${mensajeCroataEsp}</p>
                 <div style="display: flex; gap: 10px; justify-content: center;">
-                    <button id="btnCerrarModalGlobal" style="background: #d90f13; color: white; border: none; padding: 8px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;">${textoBoton}</button>
+                    <button id="btnCancelarModalGlobal" style="background: #64748b; color: white; border: none; padding: 8px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;">${textoBotonNo}</button>
+                    <button id="btnLoginModalGlobal" style="background: #d90f13; color: white; border: none; padding: 8px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;">${textoBotonSi}</button>
                 </div>
             </div>
         </div>
@@ -42,7 +44,14 @@ function mostrarModalAccesoDenegado(mensajeCroataEsp) {
 
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 
-    document.getElementById('btnCerrarModalGlobal').onclick = () => {
+    // Botón de Cancelar: Cierra el modal y lo devuelve al inicio
+    document.getElementById('btnCancelarModalGlobal').onclick = () => {
+        document.getElementById('modalCroataGlobalCustom').remove();
+        window.location.href = "index.html";
+    };
+
+    // Botón de Login: Lo lleva directo a la pantalla de acceso
+    document.getElementById('btnLoginModalGlobal').onclick = () => {
         document.getElementById('modalCroataGlobalCustom').remove();
         window.location.href = "MS_Login.html";
     };
@@ -70,7 +79,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 "Morate se prijaviti za pristup ovom dijelu sustava." : 
                 "Pristup odbijen. Morate se prijaviti za pristup sustavu. / Debes iniciar sesión para ingresar.";
             
-            // Reemplazamos el alert feo de Windows por tu modal institucional croata
+            // Muestra el modal con las dos opciones (Ir al login o Cancelar/Volver)
             mostrarModalAccesoDenegado(msgAcceso);
         }
     }
