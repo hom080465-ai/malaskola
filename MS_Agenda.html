@@ -40,6 +40,27 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
+            position: relative;
+        }
+
+        /* Botón rojo interactivo de cambio de idioma */
+        .badge-idioma {
+            background: var(--croatia-red);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255,255,255,0.6);
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .badge-idioma:hover {
+            background: #b50b0f;
+            transform: scale(1.05);
         }
 
         .agenda-header {
@@ -48,6 +69,14 @@
             align-items: center;
             border-bottom: 3px solid var(--croatia-blue);
             padding-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         .agenda-header h1 {
@@ -212,8 +241,11 @@
 
     <div class="agenda-container">
         <div class="agenda-header">
-            <h1>📅 Agenda de Eventos / Kalendar Događaja</h1>
-            <!-- Botón adaptado con soporte bilingüe e inicio -->
+            <div class="header-left">
+                <!-- Botón rojo interactivo de cambio de idioma -->
+                <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()" title="Cambiar idioma / Promijeni jezik">HR-ES</span>
+                <h1 id="tituloAgenda">📅 Agenda de Eventos</h1>
+            </div>
             <button class="btn-volver" onclick="window.location.href='index.html'">
                 ⬅ <span id="btnVolverText">Natrag - Volver al Inicio</span>
             </button>
@@ -221,13 +253,13 @@
 
         <!-- Evento Próximo Destacado Automático -->
         <div class="featured-event-box">
-            <span class="featured-badge">🌟 Próximo Evento / Najbliže događanje</span>
+            <span class="featured-badge" id="badgeProximo">🌟 Próximo Evento / Najbliže događanje</span>
             <div class="event-main-content">
                 <div class="event-details">
                     <h2 id="feat-titulo">Cargando evento...</h2>
-                    <p class="event-info-item"><strong>Fecha y Hora / Datum i vrijeme:</strong> <span id="feat-fecha">--</span></p>
-                    <p class="event-info-item"><strong>Lugar / Mjesto:</strong> <span id="feat-lugar">--</span></p>
-                    <p class="event-info-item"><strong>Asociación / Udruga:</strong> <span id="feat-asociacion">--</span></p>
+                    <p class="event-info-item"><strong id="lblFecha">Fecha y Hora / Datum i vrijeme:</strong> <span id="feat-fecha">--</span></p>
+                    <p class="event-info-item"><strong id="lblLugar">Lugar / Mjesto:</strong> <span id="feat-lugar">--</span></p>
+                    <p class="event-info-item"><strong id="lblAsociacion">Asociación / Udruga:</strong> <span id="feat-asociacion">--</span></p>
                     <div class="event-speech" id="feat-speech">--</div>
                 </div>
                 <div class="media-container" id="feat-media">
@@ -238,7 +270,7 @@
 
         <!-- Listado de Todos los Eventos -->
         <div class="events-list-section">
-            <h3>Todos los Eventos / Sva događanja</h3>
+            <h3 id="tituloTodos">Todos los Eventos / Sva događanja</h3>
             <div class="events-grid" id="listaEventosGrid">
                 <!-- Se generan mediante JavaScript -->
             </div>
@@ -275,18 +307,53 @@
         let intervaloSlideshow = null;
 
         window.addEventListener("DOMContentLoaded", () => {
-            // Verificar idioma guardado para adaptar el botón Volver
-            let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
-            const btnVolverText = document.getElementById('btnVolverText');
-
-            if (idiomaElegido === 'hr') {
-                btnVolverText.innerText = "Natrag - Početak";
-            } else {
-                btnVolverText.innerText = "Natrag - Volver al Inicio";
-            }
-
+            verificarIdiomaYAplicar();
             inicializarAgenda();
         });
+
+        function verificarIdiomaYAplicar() {
+            let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+            const badge = document.getElementById('badgeIdioma');
+            const btnVolverText = document.getElementById('btnVolverText');
+            const tituloAgenda = document.getElementById('tituloAgenda');
+            const badgeProximo = document.getElementById('badgeProximo');
+            const lblFecha = document.getElementById('lblFecha');
+            const lblLugar = document.getElementById('lblLugar');
+            const lblAsociacion = document.getElementById('lblAsociacion');
+            const tituloTodos = document.getElementById('tituloTodos');
+
+            if (idiomaElegido === 'hr') {
+                badge.innerText = "HR";
+                tituloAgenda.innerText = "📅 Kalendar Događaja";
+                btnVolverText.innerText = "Natrag - Početak";
+                badgeProximo.innerText = "🌟 Najbliže događanje";
+                lblFecha.innerText = "Datum i vrijeme:";
+                lblLugar.innerText = "Mjesto:";
+                lblAsociacion.innerText = "Udruga:";
+                tituloTodos.innerText = "Sva događanja";
+            } else {
+                badge.innerText = "HR-ES";
+                tituloAgenda.innerText = "📅 Agenda de Eventos / Kalendar Događaja";
+                btnVolverText.innerText = "Natrag - Volver al Inicio";
+                badgeProximo.innerText = "🌟 Próximo Evento / Najbliže događanje";
+                lblFecha.innerText = "Fecha y Hora / Datum i vrijeme:";
+                lblLugar.innerText = "Lugar / Mjesto:";
+                lblAsociacion.innerText = "Asociación / Udruga:";
+                tituloTodos.innerText = "Todos los Eventos / Sva događanja";
+            }
+        }
+
+        function alternarIdioma() {
+            let idiomaActual = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+            
+            if (idiomaActual === "hr-es" || idiomaActual.includes("es")) {
+                localStorage.setItem('idiomaApp', 'hr');
+            } else {
+                localStorage.setItem('idiomaApp', 'hr-es');
+            }
+            
+            verificarIdiomaYAplicar();
+        }
 
         function inicializarAgenda() {
             const ahora = new Date();
