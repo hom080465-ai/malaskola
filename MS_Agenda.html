@@ -27,6 +27,41 @@
             align-items: center;
         }
 
+        /* Perfil flotante idéntico al de tus otras páginas */
+        .user-floating-badge {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(27, 38, 79, 0.85);
+            padding: 4px 10px 4px 4px;
+            border-radius: 30px;
+            border: 2px solid var(--croatia-blue);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            z-index: 1000;
+            display: none;
+        }
+
+        .user-avatar-mini {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ffffff;
+            background: #cbd5e1;
+        }
+
+        .user-name-mini {
+            color: #ffffff;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            padding-right: 4px;
+        }
+
         .agenda-container {
             width: 100%;
             max-width: 1300px;
@@ -41,6 +76,7 @@
             flex-direction: column;
             gap: 20px;
             position: relative;
+            margin-top: 30px;
         }
 
         .agenda-header {
@@ -98,7 +134,6 @@
             align-items: center;
         }
 
-        /* Botón de Alta exclusivo para profesores (manejado por auth-check / user-profile) */
         .btn-admin {
             background: #10b981;
             color: var(--white);
@@ -216,6 +251,7 @@
             color: var(--croatia-blue);
         }
 
+        /* Dos recuadros independientes para los speeches */
         .event-speech-hr {
             background: #f8fafc;
             border-left: 4px solid var(--croatia-blue);
@@ -375,10 +411,15 @@
 </head>
 <body id="appBody">
 
+    <!-- Insignia de perfil flotante -->
+    <div class="user-floating-badge" id="userFloatingBadge" style="display: none;">
+        <img id="userAvatarMini" src="imagenes/default-avatar.png" alt="Avatar" class="user-avatar-mini">
+        <span id="userNameMini" class="user-name-mini">Usuario</span>
+    </div>
+
     <div class="agenda-container">
         <div class="agenda-header">
-            <!-- Botón interactivo de idioma -->
-            <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()" title="Hacer clic para cambiar idioma">HR-ES</span>
+            <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()" title="Cambiar idioma / Promijeni jezik">HR-ES</span>
 
             <h1 id="tituloAgenda">📅 Agenda de Eventos</h1>
 
@@ -398,6 +439,7 @@
                     <p class="event-info-item"><strong id="lblLugar">Lugar / Mjesto:</strong> <span id="feat-lugar">--</span></p>
                     <p class="event-info-item"><strong id="lblAsociacion">Asociación / Udruga:</strong> <span id="feat-asociacion">--</span></p>
                     
+                    <!-- Dos recuadros independientes para los speeches -->
                     <div class="event-speech-hr" id="feat-speech-hr">--</div>
                     <div class="event-speech-es" id="feat-speech-es">--</div>
                 </div>
@@ -408,7 +450,6 @@
         <div class="events-list-section">
             <div class="events-section-header">
                 <h3 id="tituloTodos">Todos los Eventos / Sva događanja</h3>
-                <!-- Botón de Alta administrado por los scripts externos -->
                 <button id="btnNuevoEvento" class="btn-admin" onclick="abrirModalNuevo()">
                     ➕ <span id="textBtnNuevo">Nuevo Evento / Novi događaj</span>
                 </button>
@@ -417,7 +458,7 @@
         </div>
     </div>
 
-    <!-- Modal de Alta / Modificación -->
+    <!-- Modal para Agregar/Modificar Evento -->
     <div class="modal-overlay" id="modalEvento">
         <div class="modal-content">
             <h3 id="modalTitulo">Registrar Nuevo Evento</h3>
@@ -469,10 +510,8 @@
 
     <!-- Librería de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <!-- Scripts externos modulares idénticos al resto de la app -->
-    <script src="auth-check.js"></script>
-    <script src="user-profile.js"></script>
+
+    <!-- Script de inactividad -->
     <script src="inactivity-logout.js"></script>
 
     <script>
@@ -485,80 +524,45 @@
         let esProfesorAdmin = false;
 
         window.addEventListener("DOMContentLoaded", async () => {
-            actualizarEstadoIdioma();
-            await verificarRolProfesorModular();
+            verificarIdiomaYAplicar();
+            await cargarPerfilYValidarRol();
             await cargarEventosDesdeSupabase();
         });
 
-        // Verificación integrada con tu script user-profile.js para mostrar el botón de administración
-        async function verificarRolProfesorModular() {
+        // Carga segura del perfil flotante y activación automática de botones de administración
+        async function cargarPerfilYValidarRol() {
             try {
                 const { data: { session } } = await supabaseClient.auth.getSession();
                 if (session && session.user) {
-                    esProfesorAdmin = true;
-                    const btnAdmin = document.getElementById('btnNuevoEvento');
-                    if (btnAdmin) btnAdmin.style.display = 'inline-flex';
+                    const userId = session.user.id;
+                    
+                    const { data: perfil } = await supabaseClient
+                        .from('perfiles')
+                        .select('nombre, apellido, foto_url, role')
+                        .eq('id', userId)
+                        .single();
+
+                    if (perfil) {
+                        const nombreCompleto = `${perfil.nombre || ''} ${perfil.apellido || ''}`.trim();
+                        document.getElementById('userNameMini').innerText = nombreCompleto || "Usuario";
+                        
+                        if (perfil.foto_url) {
+                            document.getElementById('userAvatarMini').src = perfil.foto_url;
+                        }
+
+                        document.getElementById('userFloatingBadge').style.display = 'flex';
+
+                        // Activamos la bandera y mostramos el botón de Nuevo Evento si es profesor o administrador
+                        if (perfil.role === 'profesor' || perfil.role === 'administrador') {
+                            esProfesorAdmin = true;
+                            const btnAdmin = document.getElementById('btnNuevoEvento');
+                            if (btnAdmin) btnAdmin.style.display = 'inline-flex';
+                        }
+                    }
                 }
             } catch (err) {
-                console.log("Visitante o alumno navegando.");
+                console.log("Visitante o error al cargar perfil:", err);
             }
-        }
-
-        function actualizarEstadoIdioma() {
-            let idiomaGuardado = localStorage.getItem('idiomaApp');
-            if (!idiomaGuardado) {
-                idiomaGuardado = 'hr-es';
-                localStorage.setItem('idiomaApp', 'hr-es');
-            }
-            idiomaGuardado = idiomaGuardado.trim().toLowerCase();
-
-            const body = document.getElementById('appBody');
-            const badge = document.getElementById('badgeIdioma');
-            const btnVolverText = document.getElementById('btnVolverText');
-            const textBtnNuevo = document.getElementById('textBtnNuevo');
-            const tituloAgenda = document.getElementById('tituloAgenda');
-            const badgeProximo = document.getElementById('badgeProximo');
-            const lblFecha = document.getElementById('lblFecha');
-            const lblLugar = document.getElementById('lblLugar');
-            const lblAsociacion = document.getElementById('lblAsociacion');
-            const tituloTodos = document.getElementById('tituloTodos');
-            const speechEsBox = document.getElementById('feat-speech-es');
-
-            if (idiomaGuardado === "hr") {
-                badge.innerText = "HR";
-                body.classList.remove('modo-bilingue');
-                tituloAgenda.innerText = "📅 Kalendar Događaja";
-                btnVolverText.innerText = "Natrag - Početak";
-                textBtnNuevo.innerText = "Novi događaj";
-                badgeProximo.innerText = "🌟 Najbliže događanje";
-                lblFecha.innerText = "Datum i vrijeme:";
-                lblLugar.innerText = "Mjesto:";
-                lblAsociacion.innerText = "Udruga:";
-                tituloTodos.innerText = "Sva događanja";
-                if(speechEsBox) speechEsBox.style.display = 'none';
-            } else {
-                badge.innerText = "HR-ES";
-                body.classList.add('modo-bilingue');
-                tituloAgenda.innerText = "📅 Agenda de Eventos / Kalendar Događaja";
-                btnVolverText.innerText = "Natrag - Volver al Inicio";
-                textBtnNuevo.innerText = "Nuevo Evento / Novi događaj";
-                badgeProximo.innerText = "🌟 Próximo Evento / Najbliže događanje";
-                lblFecha.innerText = "Fecha y Hora / Datum i vrijeme:";
-                lblLugar.innerText = "Lugar / Mjesto:";
-                lblAsociacion.innerText = "Asociación / Udruga:";
-                tituloTodos.innerText = "Todos los Eventos / Sva događanja";
-                if(speechEsBox) speechEsBox.style.display = 'block';
-            }
-        }
-
-        function alternarIdioma() {
-            let idiomaActual = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
-            if (idiomaActual === "hr-es" || idiomaActual.includes("es")) {
-                localStorage.setItem('idiomaApp', 'hr');
-            } else {
-                localStorage.setItem('idiomaApp', 'hr-es');
-            }
-            location.reload();
         }
 
         async function cargarEventosDesdeSupabase() {
@@ -579,9 +583,7 @@
                         
                         let tituloFinal = tHr;
                         if (idiomaActual !== 'hr' && tEs) {
-                            tituloFinal = tHr ? `${tHr} - ${tEs}` : tEs;
-                        } else if (!tHr && tEs) {
-                            tituloFinal = tEs;
+                            tituloFinal = `${tHr} - ${tEs}`;
                         }
 
                         return {
@@ -612,19 +614,61 @@
 
         function formatearFechaTexto(fechaIsoStr) {
             if (!fechaIsoStr) return "--";
-            const partes = fechaIsoStr.split('T');
-            const fechaPart = partes[0];
-            const horaPart = partes[1] ? partes[1].slice(0, 5) : '';
-            if (!fechaPart) return fechaIsoStr;
-            const [anio, mes, dia] = fechaPart.split('-');
+            const fecha = new Date(fechaIsoStr);
+            return fecha.toLocaleString('es-ES', { 
+                day: 'numeric', 
+                month: 'long', 
+                year: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            }) + " hs";
+        }
 
-            const meses = [
-                'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
-                'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
-            ];
-            const nombreMes = meses[parseInt(mes, 10) - 1] || mes;
+        function verificarIdiomaYAplicar() {
+            let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+            const badge = document.getElementById('badgeIdioma');
+            const btnVolverText = document.getElementById('btnVolverText');
+            const textBtnNuevo = document.getElementById('textBtnNuevo');
+            const tituloAgenda = document.getElementById('tituloAgenda');
+            const badgeProximo = document.getElementById('badgeProximo');
+            const lblFecha = document.getElementById('lblFecha');
+            const lblLugar = document.getElementById('lblLugar');
+            const lblAsociacion = document.getElementById('lblAsociacion');
+            const tituloTodos = document.getElementById('tituloTodos');
 
-            return `${parseInt(dia, 10)} de ${nombreMes} de ${anio}, ${horaPart} hs`;
+            if (idiomaElegido === 'hr') {
+                badge.innerText = "HR";
+                tituloAgenda.innerText = "📅 Kalendar Događaja";
+                btnVolverText.innerText = "Natrag - Početak";
+                textBtnNuevo.innerText = "Novi događaj";
+                badgeProximo.innerText = "🌟 Najbliže događanje";
+                lblFecha.innerText = "Datum i vrijeme:";
+                lblLugar.innerText = "Mjesto:";
+                lblAsociacion.innerText = "Udruga:";
+                tituloTodos.innerText = "Sva događanja";
+            } else {
+                badge.innerText = "HR-ES";
+                tituloAgenda.innerText = "📅 Agenda de Eventos / Kalendar Događaja";
+                btnVolverText.innerText = "Natrag - Volver al Inicio";
+                textBtnNuevo.innerText = "Nuevo Evento / Novi događaj";
+                badgeProximo.innerText = "🌟 Próximo Evento / Najbliže događanje";
+                lblFecha.innerText = "Fecha y Hora / Datum i vrijeme:";
+                lblLugar.innerText = "Lugar / Mjesto:";
+                lblAsociacion.innerText = "Asociación / Udruga:";
+                tituloTodos.innerText = "Todos los Eventos / Sva događanja";
+            }
+        }
+
+        function alternarIdioma() {
+            let idiomaActual = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+            
+            if (idiomaActual === "hr-es" || idiomaActual.includes("es")) {
+                localStorage.setItem('idiomaApp', 'hr');
+            } else {
+                localStorage.setItem('idiomaApp', 'hr-es');
+            }
+            
+            location.reload();
         }
 
         function inicializarAgenda() {
@@ -645,6 +689,7 @@
                     <p style="margin:4px 0; font-size:0.85rem; color:#0051ba;">🏛️ ${ev.asociacion || 'N/D'}</p>
                 `;
 
+                // Si es profesor o administrador, renderizamos los botones de modificar y eliminar en cada tarjeta
                 if (esProfesorAdmin) {
                     htmlCard += `
                         <div class="admin-controls-card" style="display: block; margin-top: 8px;">
@@ -738,15 +783,15 @@
 
             document.getElementById("modalTitulo").innerText = "Modificar Evento";
             document.getElementById("eventoId").value = ev.id;
-            document.getElementById("inputTituloHr").value = ev.tituloOriginalHr;
-            document.getElementById("inputTituloEs").value = ev.tituloOriginalEs;
+            document.getElementById("inputTituloHr").value = ev.tituloOriginalHr || "";
+            document.getElementById("inputTituloEs").value = ev.tituloOriginalEs || "";
             document.getElementById("inputFechaHora").value = ev.fechaISO ? ev.fechaISO.slice(0, 16) : "";
-            document.getElementById("inputLugar").value = ev.lugar;
-            document.getElementById("inputAsociacion").value = ev.asociacion;
-            document.getElementById("inputSpeechHr").value = ev.speechHr;
-            document.getElementById("inputSpeechEs").value = ev.speechEs;
+            document.getElementById("inputLugar").value = ev.lugar || "";
+            document.getElementById("inputAsociacion").value = ev.asociacion || "";
+            document.getElementById("inputSpeechHr").value = ev.speechHr || "";
+            document.getElementById("inputSpeechEs").value = ev.speechEs || "";
             document.getElementById("inputFotos").value = ev.fotos ? ev.fotos.join(", ") : "";
-            document.getElementById("inputVideo").value = ev.video;
+            document.getElementById("inputVideo").value = ev.video || "";
             document.getElementById("modalEvento").style.display = "flex";
         }
 
@@ -758,7 +803,7 @@
             const id = document.getElementById("eventoId").value;
             const titulo_hr = document.getElementById("inputTituloHr").value.trim();
             const titulo_es = document.getElementById("inputTituloEs").value.trim();
-            const fechaHoraInput = document.getElementById("inputFechaHora").value;
+            const fecha_hora = document.getElementById("inputFechaHora").value;
             const lugar = document.getElementById("inputLugar").value.trim();
             const asociacion = document.getElementById("inputAsociacion").value.trim();
             const speech_hr = document.getElementById("inputSpeechHr").value.trim();
@@ -772,12 +817,10 @@
             const videoInput = document.getElementById("inputVideo").value.trim();
             const video = (videoInput && !videoInput.includes("videos/video.mp4")) ? videoInput : null;
 
-            if (!titulo_hr || !fechaHoraInput) {
+            if (!titulo_hr || !fecha_hora) {
                 alert("Por favor completa el Título en croata y selecciona una Fecha y Hora válidas.");
                 return;
             }
-
-            const fecha_hora = fechaHoraInput.length === 16 ? fechaHoraInput + ":00" : fechaHoraInput;
 
             const objetoEvento = {
                 titulo_hr,
