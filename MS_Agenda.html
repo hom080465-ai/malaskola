@@ -244,15 +244,30 @@
             color: var(--croatia-blue);
         }
 
-        .event-speech {
+        /* Recuadros separados para los speech */
+        .event-speech-hr {
+            background: #f8fafc;
+            border-left: 4px solid var(--croatia-blue);
+            padding: 10px 15px;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            color: #1e293b;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        .event-speech-es {
             background: #f1f5f9;
             border-left: 4px solid var(--croatia-red);
             padding: 10px 15px;
             border-radius: 0 8px 8px 0;
             font-style: italic;
             font-size: 0.9rem;
-            margin-top: 10px;
+            margin-top: 8px;
             color: #475569;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            display: none; /* Oculto por defecto en modo HR */
         }
 
         .media-container {
@@ -409,7 +424,10 @@
                     <p class="event-info-item"><strong id="lblFecha">Fecha y Hora / Datum i vrijeme:</strong> <span id="feat-fecha">--</span></p>
                     <p class="event-info-item"><strong id="lblLugar">Lugar / Mjesto:</strong> <span id="feat-lugar">--</span></p>
                     <p class="event-info-item"><strong id="lblAsociacion">Asociación / Udruga:</strong> <span id="feat-asociacion">--</span></p>
-                    <div class="event-speech" id="feat-speech">--</div>
+                    
+                    <!-- Recuadros separados para los discursos -->
+                    <div class="event-speech-hr" id="feat-speech-hr">--</div>
+                    <div class="event-speech-es" id="feat-speech-es">--</div>
                 </div>
                 <div class="media-container" id="feat-media"></div>
             </div>
@@ -523,21 +541,12 @@
                         const tHr = ev.titulo_hr || "";
                         const tEs = ev.titulo_es || "";
                         
-                        // Construcción inteligente según el idioma activo
+                        // Título según el idioma activo
                         let tituloFinal = tHr;
                         if (idiomaActual !== 'hr' && tEs) {
                             tituloFinal = tHr ? `${tHr} - ${tEs}` : tEs;
                         } else if (!tHr && tEs) {
                             tituloFinal = tEs;
-                        }
-
-                        const sHr = ev.speech_hr || "";
-                        const sEs = ev.speech_es || "";
-                        let speechFinal = sHr;
-                        if (idiomaActual !== 'hr' && sEs) {
-                            speechFinal = sHr ? `${sHr} / ${sEs}` : sEs;
-                        } else if (!sHr && sEs) {
-                            speechFinal = sEs;
                         }
 
                         return {
@@ -549,9 +558,8 @@
                             fechaTexto: formatearFechaTexto(ev.fecha_hora),
                             lugar: ev.lugar || "",
                             asociacion: ev.asociacion || "",
-                            speechHr: sHr,
-                            speechEs: sEs,
-                            speech: speechFinal,
+                            speechHr: ev.speech_hr || "",
+                            speechEs: ev.speech_es || "",
                             fotos: ev.fotos || [],
                             video: ev.video || ""
                         };
@@ -569,7 +577,6 @@
 
         function formatearFechaTexto(fechaIsoStr) {
             if (!fechaIsoStr) return "--";
-            // Extraemos los componentes de la fecha sin alterar la zona horaria UTC
             const partes = fechaIsoStr.split('T');
             const fechaPart = partes[0];
             const horaPart = partes[1] ? partes[1].slice(0, 5) : '';
@@ -596,6 +603,7 @@
             const lblLugar = document.getElementById('lblLugar');
             const lblAsociacion = document.getElementById('lblAsociacion');
             const tituloTodos = document.getElementById('tituloTodos');
+            const speechEsBox = document.getElementById('feat-speech-es');
 
             if (idiomaElegido === 'hr') {
                 badge.innerText = "HR";
@@ -607,6 +615,7 @@
                 lblLugar.innerText = "Mjesto:";
                 lblAsociacion.innerText = "Udruga:";
                 tituloTodos.innerText = "Sva događanja";
+                if(speechEsBox) speechEsBox.style.display = 'none'; // Oculta español en modo HR puro
             } else {
                 badge.innerText = "HR-ES";
                 tituloAgenda.innerText = "📅 Agenda de Eventos / Kalendar Događaja";
@@ -617,6 +626,7 @@
                 lblLugar.innerText = "Lugar / Mjesto:";
                 lblAsociacion.innerText = "Asociación / Udruga:";
                 tituloTodos.innerText = "Todos los Eventos / Sva događanja";
+                if(speechEsBox) speechEsBox.style.display = 'block'; // Muestra español en modo bilingüe
             }
         }
 
@@ -667,11 +677,25 @@
         }
 
         function mostrarDetalleEvento(ev) {
+            let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+
             document.getElementById("feat-titulo").innerText = ev.titulo;
             document.getElementById("feat-fecha").innerText = ev.fechaTexto;
             document.getElementById("feat-lugar").innerText = ev.lugar || "--";
             document.getElementById("feat-asociacion").innerText = ev.asociacion || "--";
-            document.getElementById("feat-speech").innerText = ev.speech ? `"${ev.speech}"` : "--";
+            
+            // Recuadro Speech Croata
+            const speechHrEl = document.getElementById("feat-speech-hr");
+            speechHrEl.innerText = ev.speechHr ? `"${ev.speechHr}"` : "--";
+
+            // Recuadro Speech Español (visible solo si hay texto y el idioma es bilingüe)
+            const speechEsEl = document.getElementById("feat-speech-es");
+            if (idiomaElegido !== 'hr' && ev.speechEs) {
+                speechEsEl.innerText = `"${ev.speechEs}"`;
+                speechEsEl.style.display = 'block';
+            } else {
+                speechEsEl.style.display = 'none';
+            }
 
             const mediaContainer = document.getElementById("feat-media");
             mediaContainer.innerHTML = "";
