@@ -523,16 +523,20 @@
                         const tHr = ev.titulo_hr || "";
                         const tEs = ev.titulo_es || "";
                         
-                        // Formato de título según el idioma elegido
+                        // Construcción inteligente según el idioma activo
                         let tituloFinal = tHr;
                         if (idiomaActual !== 'hr' && tEs) {
-                            tituloFinal = `${tHr} - ${tEs}`;
+                            tituloFinal = tHr ? `${tHr} - ${tEs}` : tEs;
+                        } else if (!tHr && tEs) {
+                            tituloFinal = tEs;
                         }
 
                         const sHr = ev.speech_hr || "";
                         const sEs = ev.speech_es || "";
                         let speechFinal = sHr;
                         if (idiomaActual !== 'hr' && sEs) {
+                            speechFinal = sHr ? `${sHr} / ${sEs}` : sEs;
+                        } else if (!sHr && sEs) {
                             speechFinal = sEs;
                         }
 
@@ -565,14 +569,20 @@
 
         function formatearFechaTexto(fechaIsoStr) {
             if (!fechaIsoStr) return "--";
-            const fecha = new Date(fechaIsoStr);
-            return fecha.toLocaleString('es-ES', { 
-                day: 'numeric', 
-                month: 'long', 
-                year: 'numeric', 
-                hour: '2-digit', 
-                minute: '2-digit' 
-            }) + " hs";
+            // Extraemos los componentes de la fecha sin alterar la zona horaria UTC
+            const partes = fechaIsoStr.split('T');
+            const fechaPart = partes[0];
+            const horaPart = partes[1] ? partes[1].slice(0, 5) : '';
+            if (!fechaPart) return fechaIsoStr;
+            const [anio, mes, dia] = fechaPart.split('-');
+
+            const meses = [
+                'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
+                'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+            ];
+            const nombreMes = meses[parseInt(mes, 10) - 1] || mes;
+
+            return `${parseInt(dia, 10)} de ${nombreMes} de ${anio}, ${horaPart} hs`;
         }
 
         function verificarIdiomaYAplicar() {
@@ -721,15 +731,15 @@
 
             document.getElementById("modalTitulo").innerText = "Modificar Evento";
             document.getElementById("eventoId").value = ev.id;
-            document.getElementById("inputTituloHr").value = ev.tituloOriginalHr || "";
-            document.getElementById("inputTituloEs").value = ev.tituloOriginalEs || "";
+            document.getElementById("inputTituloHr").value = ev.tituloOriginalHr;
+            document.getElementById("inputTituloEs").value = ev.tituloOriginalEs;
             document.getElementById("inputFechaHora").value = ev.fechaISO ? ev.fechaISO.slice(0, 16) : "";
-            document.getElementById("inputLugar").value = ev.lugar || "";
-            document.getElementById("inputAsociacion").value = ev.asociacion || "";
-            document.getElementById("inputSpeechHr").value = ev.speechHr || "";
-            document.getElementById("inputSpeechEs").value = ev.speechEs || "";
+            document.getElementById("inputLugar").value = ev.lugar;
+            document.getElementById("inputAsociacion").value = ev.asociacion;
+            document.getElementById("inputSpeechHr").value = ev.speechHr;
+            document.getElementById("inputSpeechEs").value = ev.speechEs;
             document.getElementById("inputFotos").value = ev.fotos ? ev.fotos.join(", ") : "";
-            document.getElementById("inputVideo").value = ev.video || "";
+            document.getElementById("inputVideo").value = ev.video;
             document.getElementById("modalEvento").style.display = "flex";
         }
 
@@ -741,7 +751,7 @@
             const id = document.getElementById("eventoId").value;
             const titulo_hr = document.getElementById("inputTituloHr").value.trim();
             const titulo_es = document.getElementById("inputTituloEs").value.trim();
-            const fecha_hora = document.getElementById("inputFechaHora").value;
+            const fechaHoraInput = document.getElementById("inputFechaHora").value;
             const lugar = document.getElementById("inputLugar").value.trim();
             const asociacion = document.getElementById("inputAsociacion").value.trim();
             const speech_hr = document.getElementById("inputSpeechHr").value.trim();
@@ -755,10 +765,12 @@
             const videoInput = document.getElementById("inputVideo").value.trim();
             const video = (videoInput && !videoInput.includes("videos/video.mp4")) ? videoInput : null;
 
-            if (!titulo_hr || !fecha_hora) {
+            if (!titulo_hr || !fechaHoraInput) {
                 alert("Por favor completa el Título en croata y selecciona una Fecha y Hora válidas.");
                 return;
             }
+
+            const fecha_hora = fechaHoraInput.length === 16 ? fechaHoraInput + ":00" : fechaHoraInput;
 
             const objetoEvento = {
                 titulo_hr,
