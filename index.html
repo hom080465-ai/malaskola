@@ -162,10 +162,9 @@
         <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()" title="Hacer clic para cambiar idioma">HR</span>
 
         <!-- Botón pequeño de Login / Conectarse (arriba a la derecha) -->
-        <a href="#" class="btn-login-esquina" id="btnLogin" onclick="iniciarSesionYVolver()">
+        <a href="MS_Login.html" class="btn-login-esquina" id="btnLogin" onclick="sessionStorage.setItem('urlOrigen', window.location.href);">
             🔑 <span id="textLogin">Prijava / Login</span>
         </a>
-
         <!-- Títulos solicitados -->
         <h1 id="tituloCroata">Dobrodošli u Malu školu</h1>
         <p class="sub-espanol" id="subEspanol">Bienvenidos a Malu školu</p>
@@ -173,7 +172,7 @@
         <!-- Bloque de botones central -->
         <div class="menu-grid">
             <!-- Botón de Clases de Idioma -->
-            <button class="btn-menu-item full-width" onclick="alert('Sección de Clases en construcción')" id="btnClases">
+            <button class="btn-menu-item" onclick="window.location.href='MS_Index1.html'" id="btnAgenda">
                 📚 <span id="textClases">Započni (Tečaj jezika) / Clases de Idioma</span>
             </button>
 
