@@ -84,38 +84,6 @@
             transform: scale(1.05);
         }
 
-        .user-profile-badge {
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            background: rgba(27, 38, 79, 0.95);
-            backdrop-filter: blur(8px);
-            border: 2px solid var(--white);
-            border-radius: 30px;
-            padding: 4px 12px 4px 4px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            z-index: 1000;
-            display: none;
-        }
-
-        .user-profile-badge img {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--white);
-        }
-
-        .user-profile-badge span {
-            color: var(--white);
-            font-size: 0.82rem;
-            font-weight: 700;
-            letter-spacing: 0.3px;
-        }
-
         .agenda-header h1 {
             margin: 0 auto;
             color: var(--white);
@@ -130,7 +98,7 @@
             align-items: center;
         }
 
-        /* Botón de Alta reubicado (Oculto por defecto hasta validar sesión) */
+        /* Botón de Alta exclusivo para profesores (manejado por auth-check / user-profile) */
         .btn-admin {
             background: #10b981;
             color: var(--white);
@@ -305,7 +273,6 @@
             object-fit: cover;
         }
 
-        /* Encabezado de la sección Todos los Eventos con diseño flexible para el botón reubicado */
         .events-section-header {
             display: flex;
             justify-content: space-between;
@@ -406,16 +373,12 @@
         }
     </style>
 </head>
-<body>
-
-    <div id="userProfileBadge" class="user-profile-badge">
-        <img id="userAvatarImg" src="imagenes/default-avatar.png" alt="Avatar">
-        <span id="userNameSpan">Usuario</span>
-    </div>
+<body id="appBody">
 
     <div class="agenda-container">
         <div class="agenda-header">
-            <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()" title="Cambiar idioma / Promijeni jezik">HR-ES</span>
+            <!-- Botón interactivo de idioma -->
+            <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()" title="Hacer clic para cambiar idioma">HR-ES</span>
 
             <h1 id="tituloAgenda">📅 Agenda de Eventos</h1>
 
@@ -442,11 +405,10 @@
             </div>
         </div>
 
-        <!-- Sección de Todos los Eventos con el botón reubicado arriba a la izquierda donde indicaba la flecha -->
         <div class="events-list-section">
             <div class="events-section-header">
                 <h3 id="tituloTodos">Todos los Eventos / Sva događanja</h3>
-                <!-- Botón de Alta reubicado justo encima de la lista de eventos -->
+                <!-- Botón de Alta administrado por los scripts externos -->
                 <button id="btnNuevoEvento" class="btn-admin" onclick="abrirModalNuevo()">
                     ➕ <span id="textBtnNuevo">Nuevo Evento / Novi događaj</span>
                 </button>
@@ -455,6 +417,7 @@
         </div>
     </div>
 
+    <!-- Modal de Alta / Modificación -->
     <div class="modal-overlay" id="modalEvento">
         <div class="modal-content">
             <h3 id="modalTitulo">Registrar Nuevo Evento</h3>
@@ -504,7 +467,13 @@
         </div>
     </div>
 
+    <!-- Librería de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Scripts externos modulares idénticos al resto de la app -->
+    <script src="auth-check.js"></script>
+    <script src="user-profile.js"></script>
+    <script src="inactivity-logout.js"></script>
 
     <script>
         const SUPABASE_URL = 'https://pizswxittpzwwrymougc.supabase.co';
@@ -516,29 +485,80 @@
         let esProfesorAdmin = false;
 
         window.addEventListener("DOMContentLoaded", async () => {
-            verificarIdiomaYAplicar();
-            await validarRolProfesorOpcional();
+            actualizarEstadoIdioma();
+            await verificarRolProfesorModular();
             await cargarEventosDesdeSupabase();
         });
 
-        async function validarRolProfesorOpcional() {
+        // Verificación integrada con tu script user-profile.js para mostrar el botón de administración
+        async function verificarRolProfesorModular() {
             try {
                 const { data: { session } } = await supabaseClient.auth.getSession();
                 if (session && session.user) {
                     esProfesorAdmin = true;
-                    document.getElementById('btnNuevoEvento').style.display = 'inline-flex';
-
-                    const userMeta = session.user.user_metadata || {};
-                    const nombreUsuario = userMeta.full_name || userMeta.nombre || session.user.email.split('@')[0];
-                    const avatarUrl = userMeta.avatar_url || userMeta.foto || 'imagenes/default-avatar.png';
-
-                    document.getElementById('userNameSpan').innerText = nombreUsuario;
-                    document.getElementById('userAvatarImg').src = avatarUrl;
-                    document.getElementById('userProfileBadge').style.display = 'flex';
+                    const btnAdmin = document.getElementById('btnNuevoEvento');
+                    if (btnAdmin) btnAdmin.style.display = 'inline-flex';
                 }
             } catch (err) {
-                console.log("Visitante o alumno navegando libremente (sin sesión activa).");
+                console.log("Visitante o alumno navegando.");
             }
+        }
+
+        function actualizarEstadoIdioma() {
+            let idiomaGuardado = localStorage.getItem('idiomaApp');
+            if (!idiomaGuardado) {
+                idiomaGuardado = 'hr-es';
+                localStorage.setItem('idiomaApp', 'hr-es');
+            }
+            idiomaGuardado = idiomaGuardado.trim().toLowerCase();
+
+            const body = document.getElementById('appBody');
+            const badge = document.getElementById('badgeIdioma');
+            const btnVolverText = document.getElementById('btnVolverText');
+            const textBtnNuevo = document.getElementById('textBtnNuevo');
+            const tituloAgenda = document.getElementById('tituloAgenda');
+            const badgeProximo = document.getElementById('badgeProximo');
+            const lblFecha = document.getElementById('lblFecha');
+            const lblLugar = document.getElementById('lblLugar');
+            const lblAsociacion = document.getElementById('lblAsociacion');
+            const tituloTodos = document.getElementById('tituloTodos');
+            const speechEsBox = document.getElementById('feat-speech-es');
+
+            if (idiomaGuardado === "hr") {
+                badge.innerText = "HR";
+                body.classList.remove('modo-bilingue');
+                tituloAgenda.innerText = "📅 Kalendar Događaja";
+                btnVolverText.innerText = "Natrag - Početak";
+                textBtnNuevo.innerText = "Novi događaj";
+                badgeProximo.innerText = "🌟 Najbliže događanje";
+                lblFecha.innerText = "Datum i vrijeme:";
+                lblLugar.innerText = "Mjesto:";
+                lblAsociacion.innerText = "Udruga:";
+                tituloTodos.innerText = "Sva događanja";
+                if(speechEsBox) speechEsBox.style.display = 'none';
+            } else {
+                badge.innerText = "HR-ES";
+                body.classList.add('modo-bilingue');
+                tituloAgenda.innerText = "📅 Agenda de Eventos / Kalendar Događaja";
+                btnVolverText.innerText = "Natrag - Volver al Inicio";
+                textBtnNuevo.innerText = "Nuevo Evento / Novi događaj";
+                badgeProximo.innerText = "🌟 Próximo Evento / Najbliže događanje";
+                lblFecha.innerText = "Fecha y Hora / Datum i vrijeme:";
+                lblLugar.innerText = "Lugar / Mjesto:";
+                lblAsociacion.innerText = "Asociación / Udruga:";
+                tituloTodos.innerText = "Todos los Eventos / Sva događanja";
+                if(speechEsBox) speechEsBox.style.display = 'block';
+            }
+        }
+
+        function alternarIdioma() {
+            let idiomaActual = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+            if (idiomaActual === "hr-es" || idiomaActual.includes("es")) {
+                localStorage.setItem('idiomaApp', 'hr');
+            } else {
+                localStorage.setItem('idiomaApp', 'hr-es');
+            }
+            location.reload();
         }
 
         async function cargarEventosDesdeSupabase() {
@@ -605,56 +625,6 @@
             const nombreMes = meses[parseInt(mes, 10) - 1] || mes;
 
             return `${parseInt(dia, 10)} de ${nombreMes} de ${anio}, ${horaPart} hs`;
-        }
-
-        function verificarIdiomaYAplicar() {
-            let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
-            const badge = document.getElementById('badgeIdioma');
-            const btnVolverText = document.getElementById('btnVolverText');
-            const textBtnNuevo = document.getElementById('textBtnNuevo');
-            const tituloAgenda = document.getElementById('tituloAgenda');
-            const badgeProximo = document.getElementById('badgeProximo');
-            const lblFecha = document.getElementById('lblFecha');
-            const lblLugar = document.getElementById('lblLugar');
-            const lblAsociacion = document.getElementById('lblAsociacion');
-            const tituloTodos = document.getElementById('tituloTodos');
-            const speechEsBox = document.getElementById('feat-speech-es');
-
-            if (idiomaElegido === 'hr') {
-                badge.innerText = "HR";
-                tituloAgenda.innerText = "📅 Kalendar Događaja";
-                btnVolverText.innerText = "Natrag - Početak";
-                textBtnNuevo.innerText = "Novi događaj";
-                badgeProximo.innerText = "🌟 Najbliže događanje";
-                lblFecha.innerText = "Datum i vrijeme:";
-                lblLugar.innerText = "Mjesto:";
-                lblAsociacion.innerText = "Udruga:";
-                tituloTodos.innerText = "Sva događanja";
-                if(speechEsBox) speechEsBox.style.display = 'none';
-            } else {
-                badge.innerText = "HR-ES";
-                tituloAgenda.innerText = "📅 Agenda de Eventos / Kalendar Događaja";
-                btnVolverText.innerText = "Natrag - Volver al Inicio";
-                textBtnNuevo.innerText = "Nuevo Evento / Novi događaj";
-                badgeProximo.innerText = "🌟 Próximo Evento / Najbliže događanje";
-                lblFecha.innerText = "Fecha y Hora / Datum i vrijeme:";
-                lblLugar.innerText = "Lugar / Mjesto:";
-                lblAsociacion.innerText = "Asociación / Udruga:";
-                tituloTodos.innerText = "Todos los Eventos / Sva događanja";
-                if(speechEsBox) speechEsBox.style.display = 'block';
-            }
-        }
-
-        function alternarIdioma() {
-            let idiomaActual = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
-            
-            if (idiomaActual === "hr-es" || idiomaActual.includes("es")) {
-                localStorage.setItem('idiomaApp', 'hr');
-            } else {
-                localStorage.setItem('idiomaApp', 'hr-es');
-            }
-            
-            location.reload();
         }
 
         function inicializarAgenda() {
