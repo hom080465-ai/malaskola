@@ -254,6 +254,7 @@
         .actions-left {
             display: flex;
             align-items: center;
+            gap: 10px;
             flex-shrink: 0;
         }
 
@@ -280,6 +281,20 @@
         .btn-close:hover {
             background: #f1f5f9;
             transform: scale(1.05);
+        }
+
+        /* Estilo para la etiqueta de descripción del botón de salida */
+        .close-text-label {
+            background: rgba(27, 38, 79, 0.85);
+            backdrop-filter: blur(6px);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            white-space: nowrap;
         }
 
         .central-buttons-wrapper {
@@ -636,6 +651,7 @@
         <div class="bottom-row">
             <div class="actions-left">
                 <button class="btn-close" onclick="cerrarPagina(event)" title="Salir">✕</button>
+                <span id="btnCloseText" class="close-text-label">Izlaz - Salir</span>
             </div>
 
             <div class="professors-card">
@@ -693,6 +709,7 @@
             const colMalaSkola = document.getElementById('colMalaSkola');
             const colAdultos = document.getElementById('colAdultos');
             const btnConfigText = document.getElementById('btnConfigText');
+            const btnCloseText = document.getElementById('btnCloseText');
             const profTitle = document.getElementById('profTitle');
 
             if (idiomaSeleccionado === 'hr') {
@@ -702,6 +719,7 @@
                 colMalaSkola.innerText = "Mala Škola";
                 colAdultos.innerText = "Odrasli";
                 btnConfigText.innerText = "⚙️ Postaviti";
+                btnCloseText.innerText = "Izlaz";
                 profTitle.innerText = "Profesorice";
             } else {
                 mainTitleText.innerText = "Učenici hrvatskog jezika - Estudiantes de Croata";
@@ -710,6 +728,7 @@
                 colMalaSkola.innerText = "Mala Škola";
                 colAdultos.innerText = "Adultos - Odrasli";
                 btnConfigText.innerText = "⚙️ Postaviti - Configuración";
+                btnCloseText.innerText = "Izlaz - Salir";
                 profTitle.innerText = "Profesorice - Profesoras";
             }
         }
