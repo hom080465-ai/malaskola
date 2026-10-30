@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duša Male škole - El Alma de Mala Škola</title>
+    <style>
+        :root {
+            --croatia-blue: #0051ba;
+            --croatia-red: #d90f13;
+            --white: #ffffff;
+            --bg-color: #1b264f;
+        }
+
+        body {
+            margin: 0;
+            padding: 10px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
+                        url('imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
+            background-size: cover;
+            background-color: var(--bg-color);
+            color: #222;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        /* Perfil flotante */
+        .user-floating-badge {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(27, 38, 79, 0.85);
+            padding: 4px 10px 4px 4px;
+            border-radius: 30px;
+            border: 2px solid var(--croatia-blue);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            z-index: 1000;
+            display: none;
+        }
+
+        .user-avatar-mini {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ffffff;
+            background: #cbd5e1;
+        }
+
+        .user-name-mini {
+            color: #ffffff;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            padding-right: 4px;
+        }
+
+        .alma-container {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 4px solid var(--croatia-blue);
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            margin-top: 30px;
+        }
+
+        .alma-header {
+            position: relative;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(0, 81, 186, 0.95), rgba(27, 38, 79, 0.95));
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            padding: 18px 30px;
+            width: 100%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .badge-idioma {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            background: var(--croatia-red);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255,255,255,0.6);
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 20;
+        }
+
+        .badge-idioma:hover {
+            background: #b50b0f;
+            transform: scale(1.05);
+        }
+
+        .alma-header h1 {
+            margin: 0 auto;
+            color: var(--white);
+            font-size: 1.6rem;
+            font-weight: 800;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.6);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-volver, .btn-subir-admin, .btn-gestionar {
+            background: #64748b;
+            color: var(--white);
+            border: 2px solid var(--white);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+
+        .btn-subir-admin { background: #10b981; display: none; }
+        .btn-gestionar { background: #f59e0b; display: none; }
+
+        .btn-volver:hover { background: #475569; transform: translateY(-2px); }
+        .btn-subir-admin:hover { background: #059669; transform: translateY(-2px); }
+        .btn-gestionar:hover { background: #d97706; transform: translateY(-2px); }
+
+        .video-display-box {
+            background: #000000;
+            border-radius: 12px;
+            overflow: hidden;
+            width: 100%;
+            height: 450px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .video-display-box video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .alma-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .alumno-nombre-tag {
+            background: rgba(0, 81, 186, 0.1);
+            border: 2px solid var(--croatia-blue);
+            color: var(--croatia-blue);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .btn-siguiente-video {
+            background: var(--croatia-red);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: background 0.2s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-siguiente-video:hover {
+            background: #b50b0f;
+            transform: translateY(-2px);
+        }
+
+        .sin-videos-msg {
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+        }
+
+        /* Tarjeta Modal Estilo Croacia (Con dos botones) */
+        .croatian-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 4000;
+        }
+
+        .croatian-modal-card {
+            background: #ffffff;
+            width: 90%;
+            max-width: 450px;
+            border-radius: 20px;
+            border: 4px solid var(--croatia-blue);
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            animation: scaleUp 0.25s ease-out;
+        }
+
+        @keyframes scaleUp {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .croatian-modal-badge {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--croatia-blue);
+            object-fit: cover;
+            box-shadow: 0 5px 15px rgba(0,81,186,0.3);
+            background: #fff;
+        }
+
+        .croatian-modal-title {
+            color: var(--croatia-blue);
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .croatian-modal-subtitle {
+            color: var(--croatia-red);
+            font-size: 0.95rem;
+            font-weight: bold;
+            margin: 0 0 10px 0;
+            line-height: 1.4;
+        }
+
+        .croatian-modal-buttons {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .croatian-btn-cancelar {
+            flex: 1;
+            background: #64748b;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .croatian-btn-cancelar:hover { background: #475569; transform: translateY(-2px); }
+
+        .croatian-btn-aceptar {
+            flex: 1;
+            background: var(--croatia-blue);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,81,186,0.3);
+            transition: background 0.2s, transform 0.1s;
+        }
+        .croatian-btn-aceptar:hover { background: #003d91; transform: translateY(-2px); }
+
+        /* Modal del Panel de Gestión */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 650px;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 3px solid var(--croatia-blue);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .video-admin-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: #f8fafc;
+            gap: 10px;
+        }
+
+        .video-admin-item.inactivo {
+            background: #f1f5f9;
+            opacity: 0.7;
+            border-style: dashed;
+        }
+
+        .admin-actions-group {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-accion-inactivar { background: #f59e0b; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
+        .btn-accion-activar { background: #10b981; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
+        .btn-accion-eliminar { background: #ef4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
+        .btn-accion-inactivar:hover { background: #d97706; }
+        .btn-accion-activar:hover { background: #059669; }
+        .btn-accion-eliminar:hover { background: #dc2626; }
+    </style>
+</head>
+<body>
+
+    <!-- Perfil flotante -->
+    <div class="user-floating-badge" id="userFloatingBadge" style="display: none;">
+        <img id="userAvatarMini" src="imagenes/default-avatar.png" alt="Avatar" class="user-avatar-mini">
+        <span id="userNameMini" class="user-name-mini">Usuario</span>
+    </div>
+
+    <!-- Tarjeta Modal Estilo Croacia (Con dos botones) -->
+    <div class="croatian-modal-overlay" id="croatianModalConfirm">
+        <div class="croatian-modal-card">
+            <img src="imagenes/Grb-Hrvatske.svg" alt="Escudo Croacia" class="croatian-modal-badge" onerror="this.src='imagenes/default-avatar.png'">
+            <h2 class="croatian-modal-title" id="croatianModalTitle">Potvrda</h2>
+            <p class="croatian-modal-subtitle" id="croatianModalText">¿Estás seguro?</p>
+            <div class="croatian-modal-buttons" id="croatianModalButtonsContainer">
+                <button class="croatian-btn-cancelar" id="croatianBtnCancel">Odustani / Cancelar</button>
+                <button class="croatian-btn-aceptar" id="croatianBtnAccept">Prihvati / Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="alma-container">
+        <div class="alma-header">
+            <span id="badgeIdioma" class="badge-idioma" onclick="alternarIdioma()" title="Promijeni jezik / Cambiar idioma">HR-ES</span>
+
+            <h1 id="tituloAlma">💙 Duša Male škole / El Alma de Mala Škola</h1>
+
+            <div class="header-actions">
+                <input type="file" id="inputSubirVideo" accept="video/mp4" style="display: none;" onchange="subirVideoAlma(this)">
+                <button id="btnContenedorSubir" class="btn-subir-admin" onclick="document.getElementById('inputSubirVideo').click()" title="Subir nuevo video">
+                    ➕ <span id="btnSubirText">Ažuriraj / Subir</span>
+                </button>
+
+                <button id="btnContenedorGestion" class="btn-gestionar" onclick="abrirModalGestion()" title="Gestionar videos">
+                    ⚙️ <span id="btnGestionText">Upravljaj / Gestionar</span>
+                </button>
+
+                <a href="index.html" class="btn-volver">
+                    ⬅ <span id="btnVolverText">Natrag - Volver</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Pantalla principal del video -->
+        <div class="video-display-box" id="videoBox">
+            <video id="reproductorAlma" controls autoplay playsinline></video>
+        </div>
+
+        <!-- Controles inferiores -->
+        <div class="alma-controls">
+            <div class="alumno-nombre-tag" id="nombreAlumnoTag">Učitavanje... / Cargando...</div>
+            <button class="btn-siguiente-video" onclick="reproducirVideoAleatorio()">
+                🔄 <span id="btnSiguienteText">Sljedeći / Siguiente</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de Gestión de Videos -->
+    <div class="modal-overlay" id="modalGestion">
+        <div class="modal-content">
+            <h3 id="modalGestionTitulo" style="color: var(--croatia-blue); margin-top:0;">Upravljanje video zapisima / Gestión de Videos</h3>
+            <div id="listaVideosAdminContainer" style="display: flex; flex-direction: column; gap: 10px; max-height: 50vh; overflow-y: auto;">
+                <!-- Aquí se cargan dinámicamente todos los videos -->
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+                <button type="button" onclick="cerrarModalGestion()" style="padding: 8px 16px; border-radius: 6px; border:1px solid #ccc; background:#fff; cursor:pointer; font-weight:bold;">Zatvori / Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Librería de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="inactivity-logout.js"></script>
+
+    <script>
+        const SUPABASE_URL = 'https://pizswxittpzwwrymougc.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_s9U9C-8dCR3NfP3s6MEuhA_ADfGUXu8';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let listaVideosAlma = [];
+        let todosLosVideosStorage = []; 
+        let esProfesorAdmin = false;
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            verificarIdiomaYAplicar();
+            await cargarPerfilYValidarRol();
+            await cargarVideosDesdeSupabaseStorage();
+        });
+
+        function mostrarConfirmacionCroata(titulo, texto, callbackAceptar, soloAceptar = false) {
+            const modal = document.getElementById('croatianModalConfirm');
+            document.getElementById('croatianModalTitle').innerText = titulo;
+            document.getElementById('croatianModalText').innerText = texto;
+            
+            const btnAccept = document.getElementById('croatianBtnAccept');
+            const btnCancel = document.getElementById('croatianBtnCancel');
+
+            if (soloAceptar) {
+                btnCancel.style.display = 'none';
+                btnAccept.style.flex = '1';
+                btnAccept.innerText = "U redu / OK";
+            } else {
+                btnCancel.style.display = 'block';
+                btnAccept.style.flex = '1';
+                btnCancel.innerText = "Odustani / Cancelar";
+                btnAccept.innerText = "Prihvati / Aceptar";
+            }
+
+            modal.style.display = 'flex';
+
+            const newBtnAccept = btnAccept.cloneNode(true);
+            const newBtnCancel = btnCancel.cloneNode(true);
+            btnAccept.parentNode.replaceChild(newBtnAccept, btnAccept);
+            btnCancel.parentNode.replaceChild(newBtnCancel, btnCancel);
+
+            newBtnAccept.onclick = () => {
+                modal.style.display = 'none';
+                if (callbackAceptar) callbackAceptar();
+            };
+
+            newBtnCancel.onclick = () => {
+                modal.style.display = 'none';
+            };
+        }
+
+        function verificarIdiomaYAplicar() {
+            let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+            const badge = document.getElementById('badgeIdioma');
+            const tituloAlma = document.getElementById('tituloAlma');
+            const btnSubirText = document.getElementById('btnSubirText');
+            const btnGestionText = document.getElementById('btnGestionText');
+            const btnVolverText = document.getElementById('btnVolverText');
+            const btnSiguienteText = document.getElementById('btnSiguienteText');
+
+            if (idiomaElegido === 'hr') {
+                badge.innerText = "HR";
+                tituloAlma.innerText = "💙 Duša Male škole";
+                btnSubirText.innerText = "Subir";
+                btnGestionText.innerText = "Upravljaj";
+                btnVolverText.innerText = "Natrag";
+                btnSiguienteText.innerText = "Sljedeći video";
+            } else {
+                badge.innerText = "HR-ES";
+                tituloAlma.innerText = "💙 Duša Male škole / El Alma de Mala Škola";
+                btnSubirText.innerText = "Ažuriraj / Subir";
+                btnGestionText.innerText = "Upravljaj / Gestionar";
+                btnVolverText.innerText = "Natrag - Volver";
+                btnSiguienteText.innerText = "Sljedeći / Siguiente";
+            }
+        }
+
+        async function cargarPerfilYValidarRol() {
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session && session.user) {
+                    const userId = session.user.id;
+                    const { data: perfil } = await supabaseClient
+                        .from('perfiles')
+                        .select('nombre, apellido, foto_url, role')
+                        .eq('id', userId)
+                        .single();
+
+                    if (perfil) {
+                        const nombreCompleto = `${perfil.nombre || ''} ${perfil.apellido || ''}`.trim();
+                        const rolTexto = perfil.role ? ` (${perfil.role.charAt(0).toUpperCase() + perfil.role.slice(1)})` : '';
+                        document.getElementById('userNameMini').innerText = (nombreCompleto ? nombreCompleto + rolTexto : "Usuario");
+                        
+                        if (perfil.foto_url) {
+                            document.getElementById('userAvatarMini').src = perfil.foto_url;
+                        }
+                        document.getElementById('userFloatingBadge').style.display = 'flex';
+
+                        if (perfil.role === 'profesor' || perfil.role === 'administrador') {
+                            esProfesorAdmin = true;
+                            document.getElementById('btnContenedorSubir').style.display = 'flex';
+                            document.getElementById('btnContenedorGestion').style.display = 'flex';
+                        }
+                    }
+                }
+            } catch (err) {
+                console.log("Visitante o error al cargar perfil:", err);
+            }
+        }
+
+        function alternarIdioma() {
+            let idiomaActual = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+            if (idiomaActual.includes("es")) {
+                localStorage.setItem('idiomaApp', 'hr');
+            } else {
+                localStorage.setItem('idiomaApp', 'hr-es');
+            }
+            location.reload();
+        }
+
+        async function subirVideoAlma(input) {
+            const archivo = input.files[0];
+            if (!archivo) return;
+
+            if (!archivo.name.toLowerCase().endsWith('.mp4')) {
+                mostrarConfirmacionCroata("Greška / Error", "Molimo odaberite .mp4 video / Por favor seleccione un archivo .mp4", null, true);
+                return;
+            }
+
+            mostrarConfirmacionCroata(
+                "Novi video / Alta", 
+                `Želite li dati u rad (dodati) video:\n"${archivo.name}"?\n\n¿Deseas dar de alta este video en el sistema?`, 
+                async () => {
+                    const nombreLimpio = archivo.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
+                    const rutaEnStorage = `alma_${nombreLimpio}`;
+                    const tagNombre = document.getElementById('nombreAlumnoTag');
+                    tagNombre.innerText = "Slanje u oblak... / Subiendo a la nube...";
+
+                    try {
+                        const { error } = await supabaseClient.storage
+                            .from('Alumnos_fotos')
+                            .upload(rutaEnStorage, archivo, { cacheControl: '3600', upsert: true });
+
+                        if (error) throw error;
+
+                        mostrarConfirmacionCroata("Uspjeh / Éxito", "Video je uspješno dan u rad (dodan)! / ¡Video dado de alta con éxito!", async () => {
+                            await cargarVideosDesdeSupabaseStorage();
+                        }, true);
+
+                    } catch (err) {
+                        console.error("Error al subir el video:", err);
+                        mostrarConfirmacionCroata("Greška / Error", "Došlo je do pogreške pri prijenosu. / Error al subir el archivo.", null, true);
+                        tagNombre.innerText = "Greška / Error";
+                    }
+                },
+                false
+            );
+            input.value = '';
+        }
+
+        async function cargarVideosDesdeSupabaseStorage() {
+            try {
+                const { data, error } = await supabaseClient.storage
+                    .from('Alumnos_fotos')
+                    .list('', { limit: 200, sortBy: { column: 'name', order: 'asc' } });
+
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    todosLosVideosStorage = data.filter(archivo => {
+                        const n = archivo.name.toLowerCase();
+                        return n.endsWith('.mp4') && !n.startsWith('evento_');
+                    });
+
+                    listaVideosAlma = todosLosVideosStorage.filter(archivo => archivo.name.toLowerCase().startsWith('alma_'));
+
+                    if (listaVideosAlma.length > 0) {
+                        const videoEl = document.getElementById('reproductorAlma');
+                        reproducirVideoAleatorio();
+                        videoEl.onended = () => reproducirVideoAleatorio();
+                    } else {
+                        mostrarMensajeSinVideos();
+                    }
+                } else {
+                    mostrarMensajeSinVideos();
+                }
+            } catch (err) {
+                console.error("Error al conectar con Supabase Storage:", err);
+                mostrarMensajeSinVideos();
+            }
+        }
+
+        function mostrarMensajeSinVideos() {
+            document.getElementById('videoBox').innerHTML = `<div class="sin-videos-msg">Uskoro video zapisi naših učenika u mapi alma! / ¡Próximamente videos en la carpeta alma!</div>`;
+            document.getElementById('nombreAlumnoTag').innerText = "Mala škola";
+        }
+
+        function reproducirVideoAleatorio() {
+            if (listaVideosAlma.length === 0) return;
+
+            const videoEl = document.getElementById('reproductorAlma');
+            const tagNombre = document.getElementById('nombreAlumnoTag');
+
+            const indiceAleatorio = Math.floor(Math.random() * listaVideosAlma.length);
+            const archivoSeleccionado = listaVideosAlma[indiceAleatorio];
+
+            const { data: urlData } = supabaseClient.storage
+                .from('Alumnos_fotos')
+                .getPublicUrl(archivoSeleccionado.name);
+
+            if (urlData && urlData.publicUrl) {
+                videoEl.src = urlData.publicUrl;
+                videoEl.play().catch(err => console.log("Autoplay bloqueado:", err));
+
+                let nombreAlumno = archivoSeleccionado.name.substring(0, archivoSeleccionado.name.lastIndexOf('.'));
+                nombreAlumno = nombreAlumno.replace(/^alma[_-]*/i, '');
+                nombreAlumno = nombreAlumno.replace(/[_.-]/g, ' ');
+
+                let idiomaElegido = (localStorage.getItem('idiomaApp') || 'hr-es').trim().toLowerCase();
+                if (idiomaElegido === 'hr') {
+                    tagNombre.innerText = `Učenik/ca: ${nombreAlumno}`;
+                } else {
+                    tagNombre.innerText = `Alumno / Učenik: ${nombreAlumno}`;
+                }
+            }
+        }
+
+        function abrirModalGestion() {
+            const container = document.getElementById('listaVideosAdminContainer');
+            container.innerHTML = "";
+
+            if (todosLosVideosStorage.length === 0) {
+                container.innerHTML = "<p style='text-align:center; color:#666;'>Nema pronađenih video zapisa. / No hay videos en el sistema.</p>";
+                document.getElementById('modalGestion').style.display = 'flex';
+                return;
+            }
+
+            const mapaUnico = {};
+
+            todosLosVideosStorage.forEach(archivo => {
+                const nombreLower = archivo.name.toLowerCase();
+                const esInactivo = nombreLower.startsWith('inactivo_');
+                
+                const nombreBase = archivo.name
+                    .replace(/^inactivo_[_-]*/i, '')
+                    .replace(/^alma[_-]*/i, '')
+                    .toLowerCase();
+
+                if (!mapaUnico[nombreBase]) {
+                    mapaUnico[nombreBase] = {
+                        nombreVisible: archivo.name
+                            .replace(/^inactivo_[_-]*/i, '')
+                            .replace(/^alma[_-]*/i, '')
+                            .replace(/\.mp4$/i, '')
+                            .replace(/[_.-]/g, ' '),
+                        archivoActual: archivo.name,
+                        esInactivo: esInactivo
+                    };
+                } else {
+                    if (!esInactivo) {
+                        mapaUnico[nombreBase].archivoActual = archivo.name;
+                        mapaUnico[nombreBase].esInactivo = false;
+                    }
+                }
+            });
+
+            const listaFiltrada = Object.values(mapaUnico);
+
+            listaFiltrada.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = `video-admin-item ${item.esInactivo ? 'inactivo' : ''}`;
+                
+                itemDiv.innerHTML = `
+                    <div>
+                        <strong>${item.nombreVisible}</strong><br>
+                        <small style="color: ${item.esInactivo ? '#d90f13' : '#0051ba'};">${item.esInactivo ? '⚪ Neaktivno / Suspendirano (Oculto)' : '🟢 Aktivno / Dano u rad (Visible)'}</small>
+                    </div>
+                    <div class="admin-actions-group">
+                        ${item.esInactivo 
+                            ? `<button class="btn-accion-activar" onclick="cambiarEstadoVideo('${item.archivoActual}', 'activar')">Aktiviraj / Activar</button>` 
+                            : `<button class="btn-accion-inactivar" onclick="cambiarEstadoVideo('${item.archivoActual}', 'inactivar')">Suspendiraj / Inactivar</button>`
+                        }
+                        <button class="btn-accion-eliminar" onclick="eliminarVideoDefinitivo('${item.archivoActual}')">Obriši / Eliminar</button>
+                    </div>
+                `;
+                container.appendChild(itemDiv);
+            });
+
+            document.getElementById('modalGestion').style.display = 'flex';
+        }
+
+        function cerrarModalGestion() {
+            document.getElementById('modalGestion').style.display = 'none';
+        }
+
+        async function cambiarEstadoVideo(nombreActual, accion) {
+            const esSuspension = (accion === 'inactivar');
+            const tituloModal = esSuspension ? "Suspendiraj / Suspender" : "Aktiviraj / Activar";
+            const textoModal = esSuspension 
+                ? "Želite li suspendirati (neaktivirati) ovaj video?\n¿Estás seguro de que deseas suspender/inactivar este video?" 
+                : "Želite li aktivirati (dati u rad) ovaj video?\n¿Estás seguro de que deseas activar/dar de alta este video?";
+
+            document.getElementById('modalGestion').style.display = 'none';
+
+            mostrarConfirmacionCroata(tituloModal, textoModal, async () => {
+                try {
+                    let limpioBase = nombreActual
+                        .replace(/^inactivo_[_-]*/i, '')
+                        .replace(/^alma[_-]*/i, '');
+
+                    let nuevoNombre = esSuspension ? `inactivo_${limpioBase}` : `alma_${limpioBase}`;
+
+                    // 1. Descargamos el archivo original seleccionado
+                    const { data: fileData, error: errDownload } = await supabaseClient.storage
+                        .from('Alumnos_fotos')
+                        .download(nombreActual);
+
+                    if (errDownload) throw errDownload;
+
+                    // 2. Subimos el archivo con el nuevo nombre (activado o suspendido)
+                    const { error: errUpload } = await supabaseClient.storage
+                        .from('Alumnos_fotos')
+                        .upload(nuevoNombre, fileData, { upsert: true });
+
+                    if (errUpload) throw errUpload;
+
+                    // 3. BORRADO EXCLUSIVO: Únicamente eliminamos el archivo origen exacto que el usuario manipuló.
+                    // (Ya no hay listas automáticas ni borrados tácitos de otros archivos).
+                    if (nombreActual !== nuevoNombre) {
+                        const { error: errRemove } = await supabaseClient.storage
+                            .from('Alumnos_fotos')
+                            .remove([nombreActual]);
+
+                        if (errRemove) {
+                            console.error("Error al eliminar el archivo anterior:", errRemove);
+                        }
+                    }
+
+                    mostrarConfirmacionCroata(
+                        "Uspjeh / Éxito", 
+                        esSuspension ? "Video uspješno suspendiran! / ¡Video suspendido con éxito!" : "Video uspješno aktiviran! / ¡Video activado con éxito!", 
+                        async () => {
+                            await cargarVideosDesdeSupabaseStorage();
+                            abrirModalGestion();
+                        }, 
+                        true
+                    );
+
+                } catch (err) {
+                    console.error("Error al cambiar estado:", err);
+                    mostrarConfirmacionCroata("Greška / Error", "Došlo je do pogreške pri ažuriranju stanja.", () => {
+                        abrirModalGestion();
+                    }, true);
+                }
+            }, false);
+        }
+
+        async function eliminarVideoDefinitivo(nombreArchivo) {
+            document.getElementById('modalGestion').style.display = 'none';
+
+            mostrarConfirmacionCroata(
+                "Obriši / Eliminar definitivo", 
+                "Jeste li sigurni da želite trajno izbrisati ovaj video?\n¿Estás seguro de que deseas borrar permanentemente este video?", 
+                async () => {
+                    try {
+                        // Borrado definitivo y directo únicamente del archivo que el administrador eligió borrar
+                        await supabaseClient.storage
+                            .from('Alumnos_fotos')
+                            .remove([nombreArchivo]);
+
+                        mostrarConfirmacionCroata("Uspjeh / Éxito", "Video je trajno izbrisan! / ¡Video eliminado definitivamente del sistema!", async () => {
+                            await cargarVideosDesdeSupabaseStorage();
+                            abrirModalGestion();
+                        }, true);
+
+                    } catch (err) {
+                        console.error("Error al eliminar:", err);
+                        mostrarConfirmacionCroata("Greška / Error", "Greška pri brisanju datoteke.", () => {
+                            abrirModalGestion();
+                        }, true);
+                    }
+                },
+                false
+            );
+        }
+
+        async function eliminarVideoDefinitivo(nombreArchivo) {
+            document.getElementById('modalGestion').style.display = 'none';
+
+            mostrarConfirmacionCroata(
+                "Obriši / Eliminar definitivo", 
+                "Jeste li sigurni da želite trajno izbrisati ovaj video?\n¿Estás seguro de que deseas borrar permanentemente este video?", 
+                async () => {
+                    try {
+                        let limpioBase = nombreArchivo
+                            .replace(/^inactivo_[_-]*/i, '')
+                            .replace(/^alma[_-]*/i, '');
+
+                        await supabaseClient.storage
+                            .from('Alumnos_fotos')
+                            .remove([`alma_${limpioBase}`, `inactivo_${limpioBase}`, nombreArchivo]);
+
+                        mostrarConfirmacionCroata("Uspjeh / Éxito", "Video je trajno izbrisan! / ¡Video eliminado definitivamente del sistema!", async () => {
+                            await cargarVideosDesdeSupabaseStorage();
+                            abrirModalGestion();
+                        }, true);
+
+                    } catch (err) {
+                        console.error("Error al eliminar:", err);
+                        mostrarConfirmacionCroata("Greška / Error", "Greška pri brisanju datoteke.", () => {
+                            abrirModalGestion();
+                        }, true);
+                    }
+                },
+                false
+            );
+        }
+    </script>
+</body>
+</html>
