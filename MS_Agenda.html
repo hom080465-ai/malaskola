@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda de Eventos - Učenici hrvatskog jezika</title>
+    <style>
+        :root {
+            --croatia-blue: #0051ba;
+            --croatia-red: #d90f13;
+            --white: #ffffff;
+            --dark-bg: #1b264f;
+        }
+
+        body {
+            margin: 0;
+            padding: 10px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
+                        url('imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
+            background-size: cover;
+            background-color: var(--dark-bg);
+            color: #222;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .agenda-container {
+            width: 100%;
+            max-width: 1300px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 4px solid var(--croatia-blue);
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .agenda-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--croatia-blue);
+            padding-bottom: 15px;
+        }
+
+        .agenda-header h1 {
+            margin: 0;
+            color: var(--croatia-blue);
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        .btn-volver {
+            background: var(--croatia-red);
+            color: var(--white);
+            border: 2px solid var(--white);
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .btn-volver:hover {
+            background: #b50b0f;
+            transform: translateY(-2px);
+        }
+
+        /* Sección del Próximo Evento Destacado */
+        .featured-event-box {
+            background: linear-gradient(135deg, rgba(0, 81, 186, 0.08), rgba(217, 15, 19, 0.08));
+            border: 2px dashed var(--croatia-blue);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .featured-badge {
+            background: var(--croatia-red);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            width: fit-content;
+        }
+
+        .event-main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .event-main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .event-details h2 {
+            margin: 0 0 10px 0;
+            color: var(--croatia-blue);
+            font-size: 1.5rem;
+        }
+
+        .event-info-item {
+            margin: 5px 0;
+            font-size: 0.95rem;
+            color: #333;
+        }
+
+        .event-info-item strong {
+            color: var(--croatia-blue);
+        }
+
+        /* Speech desplegable */
+        .event-speech {
+            background: #f1f5f9;
+            border-left: 4px solid var(--croatia-red);
+            padding: 10px 15px;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            color: #475569;
+        }
+
+        /* Contenedor Multimedia (Fotos con efecto / Video) */
+        .media-container {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .media-container img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .media-container img.active {
+            opacity: 1;
+        }
+
+        .media-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Listado completo de eventos */
+        .events-list-section h3 {
+            color: var(--croatia-blue);
+            margin-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 5px;
+        }
+
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .event-card {
+            background: white;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .event-card:hover {
+            border-color: var(--croatia-blue);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,81,186,0.15);
+        }
+
+        .event-card h4 {
+            margin: 0 0 8px 0;
+            color: var(--croatia-blue);
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="agenda-container">
+        <div class="agenda-header">
+            <h1>📅 Agenda de Eventos / Kalendar Događaja</h1>
+            <button class="btn-volver" onclick="window.location.href='MS_Index1.html'">⬅ Volver</button>
+        </div>
+
+        <!-- Evento Próximo Destacado Automático -->
+        <div class="featured-event-box">
+            <span class="featured-badge">🌟 Próximo Evento / Najbliže događanje</span>
+            <div class="event-main-content">
+                <div class="event-details">
+                    <h2 id="feat-titulo">Cargando evento...</h2>
+                    <p class="event-info-item"><strong>Fecha y Hora / Datum i vrijeme:</strong> <span id="feat-fecha">--</span></p>
+                    <p class="event-info-item"><strong>Lugar / Mjesto:</strong> <span id="feat-lugar">--</span></p>
+                    <p class="event-info-item"><strong>Asociación / Udruga:</strong> <span id="feat-asociacion">--</span></p>
+                    <div class="event-speech" id="feat-speech">--</div>
+                </div>
+                <div class="media-container" id="feat-media">
+                    <!-- Las fotos o videos se cargan dinámicamente aquí -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Listado de Todos los Eventos -->
+        <div class="events-list-section">
+            <h3>Todos los Eventos / Sva događanja</h3>
+            <div class="events-grid" id="listaEventosGrid">
+                <!-- Se generan mediante JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base de datos de eventos de ejemplo (puedes agregar o modificar fechas ISO reales)
+        const eventosData = [
+            {
+                id: 1,
+                titulo: "Encuentro de Coros Croatas",
+                fechaISO: "2026-06-15T18:30:00",
+                fechaTexto: "15 de Junio de 2026 - 18:30 hs",
+                lugar: "Teatro Municipal de Croacia",
+                asociacion: "Unión Croata",
+                speech: "Dobar dan svima! Celebramos la hermandad a través del canto tradicional croata, uniendo generaciones y corazones en cada melodía.",
+                fotos: ["imagenes/evento1_1.jpg", "imagenes/evento1_2.jpg"],
+                video: "" // Si hay video, poner ruta ej: "videos/evento1.mp4"
+            },
+            {
+                id: 2,
+                titulo: "Feria Gastronómica y Cultural",
+                fechaISO: "2026-07-20T12:00:00",
+                fechaTexto: "20 de Julio de 2026 - 12:00 hs",
+                lugar: "Plaza Central de Colectividades",
+                asociacion: "Hogar Croata",
+                speech: "¡Disfruta de los sabores auténticos! Desde štrukli hasta orehovača, ven a saborear la verdadera tradición culinaria.",
+                fotos: ["imagenes/evento2_1.jpg"],
+                video: "videos/feria_croata.mp4"
+            }
+        ];
+
+        let intervaloSlideshow = null;
+
+        window.addEventListener("DOMContentLoaded", () => {
+            inicializarAgenda();
+        });
+
+        function inicializarAgenda() {
+            // Ordenar eventos por fecha próxima
+            const ahora = new Date();
+            eventosData.sort((a, b) => new Date(a.fechaISO) - new Date(b.fechaISO));
+
+            // Filtrar el evento más próximo (futuro o el más cercano)
+            const proximoEvento = eventosData.find(e => new Date(e.fechaISO) >= ahora) || eventosData[0];
+
+            // Mostrar evento principal al inicio
+            mostrarDetalleEvento(proximoEvento);
+
+            // Renderizar la grilla de todos los eventos
+            const grid = document.getElementById("listaEventosGrid");
+            grid.innerHTML = "";
+
+            eventosData.forEach(ev => {
+                const card = document.createElement("div");
+                card.className = "event-card";
+                card.innerHTML = `
+                    <h4>${ev.titulo}</h4>
+                    <p style="margin:4px 0; font-size:0.85rem; color:#555;">📅 ${ev.fechaTexto}</p>
+                    <p style="margin:4px 0; font-size:0.85rem; color:#0051ba;">🏛️ ${ev.asociacion}</p>
+                `;
+                // Al pararse o hacer clic en el evento particular, cambia la vista principal
+                card.onmouseenter = () => mostrarDetalleEvento(ev);
+                card.onclick = () => mostrarDetalleEvento(ev);
+                grid.appendChild(card);
+            });
+        }
+
+        function mostrarDetalleEvento(ev) {
+            document.getElementById("feat-titulo").innerText = ev.titulo;
+            document.getElementById("feat-fecha").innerText = ev.fechaTexto;
+            document.getElementById("feat-lugar").innerText = ev.lugar;
+            document.getElementById("feat-asociacion").innerText = ev.asociacion;
+            document.getElementById("feat-speech").innerText = `"${ev.speech}"`;
+
+            const mediaContainer = document.getElementById("feat-media");
+            mediaContainer.innerHTML = "";
+
+            // Limpiar intervalo anterior de fotos si existe
+            if (intervaloSlideshow) {
+                clearInterval(intervaloSlideshow);
+            }
+
+            if (ev.video && ev.video !== "") {
+                // Si hay video, se reproduce
+                const videoEl = document.createElement("video");
+                videoEl.src = ev.video;
+                videoEl.controls = true;
+                videoEl.autoplay = true;
+                videoEl.muted = true;
+                mediaContainer.appendChild(videoEl);
+            } else if (ev.fotos && ev.fotos.length > 0) {
+                // Si hay fotos, creamos el efecto de transición una tras otra
+                ev.fotos.forEach((foto, index) => {
+                    const img = document.createElement("img");
+                    img.src = foto;
+                    if (index === 0) img.classList.add("active");
+                    mediaContainer.appendChild(img);
+                });
+
+                if (ev.fotos.length > 1) {
+                    let currentIndex = 0;
+                    intervaloSlideshow = setInterval(() => {
+                        const imgs = mediaContainer.querySelectorAll("img");
+                        if(imgs.length === 0) return;
+                        imgs[currentIndex].classList.remove("active");
+                        currentIndex = (currentIndex + 1) % imgs.length;
+                        imgs[currentIndex].classList.add("active");
+                    }, 3500); // Cambia de foto cada 3.5 segundos
+                }
+            } else {
+                mediaContainer.innerHTML = "<span style='color:white; font-size:0.9rem;'>Sin multimedia disponible</span>";
+            }
+        }
+    </script>
+</body>
+</html>
