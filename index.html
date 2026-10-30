@@ -120,7 +120,7 @@
             }
         }
 
-        /* Botón blanco de Clases de Idioma */
+        /* Botón general del menú */
         .btn-menu-item {
             background: #ffffff;
             color: var(--croatia-blue);
@@ -165,7 +165,7 @@
 
         <!-- Títulos solicitados -->
         <h1 id="tituloCroata">Dobrodošli u Malu školu</h1>
-        <p class="sub-espanol" id="subEspanol">Bienvenidos a Mala škola</p>
+        <p class="sub-espanol" id="subEspanol">Bienvenidos a Malu školu</p>
 
         <!-- Bloque de botones central -->
         <div class="menu-grid">
@@ -179,16 +179,11 @@
                 🎯 <span id="textActividades">Aktivnosti / Actividades</span>
             </button>
             
-            <!-- Botón de Agenda -->
+            <!-- Botón de Agenda (Libre para todos) -->
             <button class="btn-menu-item" onclick="window.location.href='MS_Agenda.html'" id="btnAgenda">
                 📅 <span id="textAgenda">Agenda / Agenda</span>
             </button>
             
-            <!-- Botón de Administración de Agenda / Login de Profesor -->
-            <button class="btn-menu-item full-width" onclick="gestionarAccesoAdmin()" id="btnAdminAgenda">
-                🔐 <span id="textAdminAgenda">Administrirati agendu / Administrar Agenda (Profesor)</span>
-            </button>
-
             <!-- Botón de Historia -->
             <button class="btn-menu-item full-width" onclick="alert('Sección de Historia en construcción')" id="btnHistoria">
                 🏛️ <span id="textHistoria">Povijest / Historia</span>
@@ -196,14 +191,12 @@
         </div>
     </div>
 
-    <!-- Librería de Supabase para validar la sesión actual -->
+    <!-- Librería de Supabase (opcional en el index, solo por si se requiere chequear perfiles) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="auth-check.js"></script>
 
     <script>
-        let sesionActiva = false;
-
-        window.addEventListener('DOMContentLoaded', async () => {
+        window.addEventListener('DOMContentLoaded', () => {
             let idiomaElegido = localStorage.getItem('idiomaApp');
             if (!idiomaElegido) {
                 idiomaElegido = 'hr-es';
@@ -217,7 +210,6 @@
             const badge = document.getElementById('badgeIdioma');
             const textActividades = document.getElementById('textActividades');
             const textAgenda = document.getElementById('textAgenda');
-            const textAdminAgenda = document.getElementById('textAdminAgenda');
             const textHistoria = document.getElementById('textHistoria');
 
             if (idiomaElegido === 'hr') {
@@ -227,43 +219,18 @@
                 btnLibro.innerHTML = "📖 Otvori knjigu";
                 textActividades.innerText = "Aktivnosti";
                 textAgenda.innerText = "Agenda";
-                textAdminAgenda.innerText = "Upravljanje agendom (Profesor)";
                 textHistoria.innerText = "Povijest";
             } else {
                 badge.innerText = "HR-ES";
                 subEspanol.style.display = 'block';
-                subEspanol.innerText = "Bienvenidos a Mala škola";
+                subEspanol.innerText = "Bienvenidos a Malu školu";
                 textClases.innerText = "Započni / Ingresar (Clases de Idioma)";
                 btnLibro.innerHTML = "📖 Otvori knjigu / Abrir libro";
                 textActividades.innerText = "Aktivnosti / Actividades";
                 textAgenda.innerText = "Agenda / Agenda";
-                textAdminAgenda.innerText = "Administrirati agendu / Administrar Agenda (Profesor)";
                 textHistoria.innerText = "Povijest / Historia";
             }
-
-            // Verificar si el usuario ya inició sesión como profesor mediante Supabase
-            if (typeof supabaseClient !== 'undefined') {
-                try {
-                    const { data: { session } } = await supabaseClient.auth.getSession();
-                    if (session) {
-                        sesionActiva = true;
-                        // Opcional: Podrías cambiar el texto del botón si ya está logueado para indicar que entra directo al panel
-                    }
-                } catch (err) {
-                    console.log("No se pudo verificar la sesión:", err);
-                }
-            }
         });
-
-        function gestionarAccesoAdmin() {
-            if (sesionActiva) {
-                // Si ya está logueado, va directo a la administración de la agenda
-                window.location.href = 'MS_AdminAgenda.html';
-            } else {
-                // Si no está logueado, lo manda al login general para que ingrese con sus credenciales de profesor
-                window.location.href = 'MS_Login.html';
-            }
-        }
 
         function alternarIdioma() {
             let idiomaActual = (localStorage.getItem('idiomaApp') || 'hr').trim().toLowerCase();
