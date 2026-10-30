@@ -9,6 +9,14 @@ if (typeof supabase !== 'undefined') {
     supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
 
+// Función para ir al login guardando la página actual como origen de retorno
+function iniciarSesionYVolver() {
+    if (!window.location.pathname.includes('MS_Login.html')) {
+        sessionStorage.setItem('urlOrigen', window.location.href);
+    }
+    window.location.href = 'MS_Login.html';
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
     const rutaActual = window.location.pathname;
 
