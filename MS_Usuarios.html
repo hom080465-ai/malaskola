@@ -616,7 +616,7 @@
 
                     if (rolUsuarioLogueado === 'alumno') {
                         document.getElementById('emailAlumno').readOnly = true;
-                        document.getElementById('telefonoAlumno').value = data.telefono || ''; // <-- LÍNEA NUEVA
+                        document.getElementById('telefonoAlumno').value = data.tel || '';
                         document.getElementById('rolUsuario').disabled = true;
                         document.getElementById('estadoUsuario').disabled = true;
 
@@ -994,7 +994,7 @@
                         { 
                             id: nuevoId, 
                             email: email,
-                            telefono: telefono, // <-- LÍNEA NUEVA
+                            tel: telefono, // <-- LÍNEA NUEVA
                             nombre: nombre, 
                             apellido: apellido, 
                             apellido_materno: apellidoMaterno, 
@@ -1056,7 +1056,7 @@
                         apellido: apellido,
                         apellido_materno: apellidoMaterno,
                         email: email,
-                        telefono: telefono, // <-- LÍNEA NUEVA
+                        tel: telefono, // <-- LÍNEA NUEVA
                         role: rol, 
                         fecha_nacimiento: fechaNac || null,
                         nivel_idioma: nivel,
