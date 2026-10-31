@@ -60,11 +60,12 @@ function mostrarModalAccesoDenegado(mensajeCroataEsp) {
 document.addEventListener("DOMContentLoaded", async () => {
     const rutaActual = window.location.pathname;
 
-    // 1. Páginas donde el login es OPCIONAL (Libres para todos)
+    // 1. Páginas donde el login es OPCIONAL (Libres para todos, incluido MS_Evento)
     const esPaginaLibre = rutaActual.includes('index.html') || 
                            rutaActual.endsWith('/') || 
                            rutaActual.includes('MS_Agenda.html') || 
-                           rutaActual.includes('MS_Login.html');
+                           rutaActual.includes('MS_Login.html') ||
+                           rutaActual.includes('MS_Evento.html'); // <--- ¡Agregado aquí!
 
     // 2. Si NO es una página libre, exigimos sesión obligatoria
     if (!esPaginaLibre && supabaseClient) {
@@ -79,7 +80,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 "Morate se prijaviti za pristup ovom dijelu sustava." : 
                 "Pristup odbijen. Morate se prijaviti za pristup sustavu. / Debes iniciar sesión para ingresar.";
             
-            // Muestra el modal con las dos opciones (Ir al login o Cancelar/Volver)
             mostrarModalAccesoDenegado(msgAcceso);
         }
     }
