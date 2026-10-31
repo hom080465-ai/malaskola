@@ -394,7 +394,14 @@
                 <span id="subEmail" class="sub-label">Correo electrónico institucional (para enviar invitación)</span>
                 <input type="email" id="emailAlumno" class="campo-obligatorio" placeholder="alumno@malaskola.com" autocomplete="new-email" oninput="validarFormularioCompleto()">
             </div>
-
+            
+            <!-- NUEVO CAMPO: TELÉFONO / WHATSAPP -->
+            <div class="form-grid-full">
+                <label id="lblTelefono">Telefon / WhatsApp</label>
+                <span id="subTelefono" class="sub-label">Número de contacto (con código de área o país)</span>
+                <input type="tel" id="telefonoAlumno" placeholder="Ej. +54 9 11 1234-5678">
+            </div>
+            
             <!-- Campo Rol (role) -->
             <div class="form-grid-full">
                 <label id="lblRol">Uloga / Rol <span class="asterisco-obligatorio">*</span></label>
@@ -609,6 +616,7 @@
 
                     if (rolUsuarioLogueado === 'alumno') {
                         document.getElementById('emailAlumno').readOnly = true;
+                        document.getElementById('telefonoAlumno').value = data.telefono || ''; // <-- LÍNEA NUEVA
                         document.getElementById('rolUsuario').disabled = true;
                         document.getElementById('estadoUsuario').disabled = true;
 
@@ -808,11 +816,15 @@
             if (idiomaElegido === 'hr') {
                 document.getElementById('modalTitulo').innerText = tituloHr;
                 document.getElementById('modalTexto').innerHTML = mensajeHr;
+                document.getElementById('lblTelefono').innerText = "Telefon / WhatsApp";
+                document.getElementById('subTelefono').innerText = "Broj za kontakt";
                 document.getElementById('btnModalOkGen').innerText = "U redu";
             } else {
                 document.getElementById('modalTitulo').innerText = `${tituloHr} / ${tituloEs}`;
                 document.getElementById('modalTexto').innerHTML = mensajeEs ? `${mensajeHr}<br>${mensajeEs}` : mensajeHr;
                 document.getElementById('btnModalOkGen').innerText = "U redu / Aceptar";
+                document.getElementById('lblTelefono').innerText = "Telefon / WhatsApp";
+                document.getElementById('subTelefono').innerText = "Número de contacto (con código de área o país)";
             }
 
             document.getElementById('modalFotoContainer').innerHTML = '';
@@ -905,6 +917,7 @@
             const apellido = document.getElementById('apellidoAlumno').value.trim();
             const apellidoMaterno = document.getElementById('apellidoMaterno').value.trim();
             let email = document.getElementById('emailAlumno').value.trim();
+            let telefono = document.getElementById('telefonoAlumno').value.trim(); // <-- LÍNEA NUEVA
             let rol = document.getElementById('rolUsuario').value;
             const fechaNac = document.getElementById('fechaNacimiento').value;
             const nivel = document.getElementById('nivelIdioma').value;
@@ -980,7 +993,8 @@
                     const { error: dbError } = await supabaseClient.from('perfiles').insert([
                         { 
                             id: nuevoId, 
-                            email: email, 
+                            email: email,
+                            telefono: telefono, // <-- LÍNEA NUEVA
                             nombre: nombre, 
                             apellido: apellido, 
                             apellido_materno: apellidoMaterno, 
@@ -1042,6 +1056,7 @@
                         apellido: apellido,
                         apellido_materno: apellidoMaterno,
                         email: email,
+                        telefono: telefono, // <-- LÍNEA NUEVA
                         role: rol, 
                         fecha_nacimiento: fechaNac || null,
                         nivel_idioma: nivel,
