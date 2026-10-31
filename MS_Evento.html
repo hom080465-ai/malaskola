@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raspored Stolova / Distribución de Mesas - Mala Škola</title>
+    
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --croatia-blue: #0051ba;
+            --croatia-red: #d90f13;
+            --white: #ffffff;
+            --bg-color: #1b264f;
+            --chair-reserved: #d90f13; 
+            --chair-pending: #f59e0b; 
+        }
+
+        body {
+            margin: 0;
+            padding: 12px 4px 4px 4px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                        url('imagenes/Bandera-Croacia.avif') no-repeat center center fixed;
+            background-size: cover;
+            background-color: var(--bg-color);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            box-sizing: border-box;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Insignia de usuario conectado (Arriba a la izquierda) */
+        .user-profile-badge {
+            display: none; 
+            position: absolute;
+            top: 12px;
+            left: 15px;
+            background: rgba(27, 38, 79, 0.92);
+            border: 2px solid var(--white);
+            border-radius: 30px;
+            padding: 4px 12px 4px 4px;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            z-index: 1000;
+        }
+
+        .user-profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--croatia-red);
+            background: #cbd5e1;
+        }
+
+        .user-profile-info {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            line-height: 1.1;
+        }
+
+        .user-profile-name {
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .user-profile-role {
+            font-size: 0.65rem;
+            color: #6ee7b7;
+            text-transform: uppercase;
+        }
+
+        /* Botón dinámico de Login / Logout (Arriba a la derecha) */
+        .btn-auth-quick {
+            position: absolute;
+            top: 12px;
+            right: 15px;
+            background: rgba(0, 81, 186, 0.95);
+            color: white;
+            border: 2px solid var(--white);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            transition: transform 0.2s, background 0.2s;
+            z-index: 1000;
+        }
+
+        .btn-auth-quick:hover {
+            transform: scale(1.05);
+            background: #003d91;
+        }
+
+        /* Encabezado */
+        header {
+            text-align: center;
+            background: linear-gradient(135deg, rgba(0, 81, 186, 0.95), rgba(27, 38, 79, 0.95));
+            border: 3px solid var(--white);
+            border-radius: 14px;
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 1100px;
+            box-sizing: border-box;
+            flex-shrink: 0;
+            margin-top: 5px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+        }
+
+        header p {
+            margin: 4px 0 2px 0;
+            font-size: 0.85rem;
+            color: #e2e8f0;
+        }
+
+        .header-aviso {
+            margin: 4px 0 0 0;
+            font-size: 0.8rem;
+            color: #ffd700;
+            font-weight: 600;
+        }
+
+        .rol-badge {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 2px 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: #6ee7b7;
+        }
+
+        /* Cuadro flotante interactivo de selección de sillas */
+        .cuadro-progreso-seleccion {
+            display: none;
+            background: rgba(27, 38, 79, 0.95);
+            border: 3px solid var(--croatia-red);
+            padding: 10px 18px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.6);
+            text-align: center;
+            max-width: 90%;
+            z-index: 2000;
+        }
+
+        .cuadro-progreso-seleccion h4 {
+            margin: 0 0 6px 0;
+            font-size: 0.85rem;
+            color: #fff;
+        }
+
+        .progreso-sillas-container {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .miniatura-silla {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            font-size: 0.6rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1.5px solid white;
+            color: white;
+            background-color: #10b981;
+        }
+
+        .miniatura-silla.seleccionada {
+            background-color: var(--croatia-red);
+        }
+
+        /* Contenedor principal */
+        .layout-principal {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 25px;
+            width: 100%;
+            max-width: 1150px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+
+        .mesas-grid {
+            display: grid;
+            grid-template-columns: repeat(2, auto);
+            gap: 7px 35px; 
+            box-sizing: border-box;
+            justify-items: center;
+        }
+
+        /* Cuadro Resumen a la Derecha */
+        .resumen-panel {
+            background: rgba(27, 38, 79, 0.92);
+            border: 2px solid var(--white);
+            border-radius: 12px;
+            padding: 12px;
+            width: 270px;
+            max-height: 480px;
+            overflow-y: auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+
+        .resumen-panel h3 {
+            margin: 0 0 8px 0;
+            font-size: 0.95rem;
+            text-align: center;
+            color: #ffd700;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            padding-bottom: 6px;
+        }
+
+        .resumen-lista {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 0.78rem;
+        }
+
+        .resumen-item {
+            background: rgba(255, 255, 255, 0.1);
+            margin-bottom: 6px;
+            padding: 6px 8px;
+            border-radius: 6px;
+            border-left: 3px solid var(--croatia-blue);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .resumen-item:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .resumen-item strong {
+            color: #6ee7b7;
+        }
+
+        @media (max-width: 900px) {
+            .layout-principal {
+                flex-direction: column;
+                align-items: center;
+            }
+            .resumen-panel {
+                width: 100%;
+                max-width: 400px;
+            }
+        }
+
+        /* Tarjeta de Mesa */
+        .mesa-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 6px;
+            border: 2px solid var(--croatia-blue);
+            padding: 3px 6px;
+            color: #222;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            display: grid;
+            grid-template-columns: 24px minmax(90px, 110px) 24px;
+            grid-template-rows: auto auto auto;
+            gap: 2px;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            width: fit-content;
+        }
+
+        .sillas-arriba {
+            grid-column: 2 / 3;
+            grid-row: 1 / 2;
+            display: flex;
+            gap: 3px;
+            justify-content: center;
+        }
+
+        .silla-izq {
+            grid-column: 1 / 2;
+            grid-row: 2 / 3;
+            justify-self: center;
+        }
+
+        .mesa-central {
+            grid-column: 2 / 3;
+            grid-row: 2 / 3;
+            background: var(--croatia-blue);
+            color: white;
+            border-radius: 4px;
+            padding: 4px 3px;
+            text-align: center;
+            font-weight: 800;
+            font-size: 0.65rem;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            transition: background 0.2s, transform 0.1s;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #ffffff;
+            white-space: nowrap;
+        }
+
+        .mesa-central:hover {
+            background: #003d91;
+            transform: scale(1.02);
+        }
+
+        .mesa-central.ocupada-total {
+            background: var(--croatia-red);
+            border-color: #ffd700;
+        }
+
+        .mesa-central.resaltado-activo {
+            box-shadow: 0 0 12px 4px #ffd700 !important;
+            transform: scale(1.06);
+            border: 2px solid #ffd700 !important;
+        }
+
+        .silla-der {
+            grid-column: 3 / 4;
+            grid-row: 2 / 3;
+            justify-self: center;
+        }
+
+        .sillas-abajo {
+            grid-column: 2 / 3;
+            grid-row: 3 / 4;
+            display: flex;
+            gap: 3px;
+            justify-content: center;
+        }
+
+        .silla {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 1.5px solid var(--croatia-blue);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 0.58rem;
+            font-weight: bold;
+            transition: transform 0.1s, box-shadow 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+            background-color: #10b981; 
+            color: white;
+            box-sizing: border-box;
+        }
+
+        .silla:hover {
+            transform: scale(1.12);
+        }
+
+        .silla.ocupada {
+            background-color: #ffffff;
+            background-image: url('imagenes/Escudo-Croacia.jpg');
+            background-size: 65%;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: transparent; 
+            border-color: var(--croatia-red);
+        }
+
+        .silla.pendiente-pago {
+            background-color: var(--chair-pending) !important;
+            background-image: none !important;
+            color: white !important;
+            border-color: #d97706 !important;
+        }
+
+        .silla.resaltado-activo {
+            box-shadow: 0 0 10px 3px #ffd700 !important;
+            transform: scale(1.25);
+            border-color: #ffd700 !important;
+            z-index: 50;
+        }
+
+        /* Botones Inferiores */
+        .acciones-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 5px 0 35px 0;
+            width: 100%;
+            max-width: 650px;
+            flex-wrap: wrap;
+        }
+
+        .btn-accion {
+            padding: 8px 14px;
+            border: 2px solid var(--white);
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.78rem;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+            transition: transform 0.1s, opacity 0.2s;
+            color: white;
+        }
+
+        .btn-accion:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+
+        .btn-aceptar { background-color: var(--croatia-blue); }
+        .btn-imprimir { background-color: #0d9488; }
+        .btn-cancelar { background-color: #64748b; }
+        .btn-salir { background-color: var(--croatia-red); }
+
+        .info-panel {
+            position: fixed;
+            bottom: 2px;
+            background: rgba(27, 38, 79, 0.95);
+            border: 1.5px solid var(--white);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.68rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            z-index: 1000;
+            text-align: center;
+            max-width: 90%;
+        }
+
+        /* ESTÁNDAR CROATA DE MODALES */
+        .croatian-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 4000;
+        }
+
+        .croatian-modal-card {
+            background: #ffffff;
+            width: 90%;
+            max-width: 380px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 16px;
+            border: 3px solid var(--croatia-blue);
+            padding: 20px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            color: #222;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .croatian-modal-badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background-color: var(--croatia-red);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .croatian-modal-input, .croatian-modal-select {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid var(--croatia-blue);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .croatian-modal-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+            margin-top: 10px;
+            flex-shrink: 0;
+        }
+
+        .btn-modal {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-align: center;
+            transition: transform 0.1s;
+        }
+        .btn-modal:hover { transform: scale(1.02); }
+        .btn-modal-cancelar { background: #64748b; color: white; }
+        .btn-modal-aceptar { background: var(--croatia-blue); color: white; }
+        .btn-modal-eliminar { background: var(--croatia-red); color: white; }
+        .btn-modal-imprimir { background: #0d9488; color: white; }
+
+        /* ESTILOS DE IMPRESIÓN EXCLUSIVOS PARA EL COMPROBANTE DE RESERVA */
+        @media print {
+            body * {
+                visibility: hidden !important;
+            }
+            #modalComprobante, #modalComprobante * {
+                visibility: visible !important;
+            }
+            #modalComprobante {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                background: white !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            .croatian-modal-card {
+                border: 2px solid #0051ba !important;
+                box-shadow: none !important;
+                width: 100% !important;
+                max-width: 450px !important;
+            }
+            /* Ocultar los botones dentro del comprobante impreso */
+            .croatian-modal-buttons {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Insignia de usuario conectado (Arriba a la izquierda) -->
+    <div id="userProfileBadge" class="user-profile-badge">
+        <img id="userAvatarImg" src="imagenes/Escudo-Croacia.jpg" alt="Avatar" class="user-profile-avatar" onerror="this.src='imagenes/Escudo-Croacia.jpg'">
+        <div class="user-profile-info">
+            <span id="userNameText" class="user-profile-name">Korisnik</span>
+            <span id="userRoleText" class="user-profile-role">Gost</span>
+        </div>
+    </div>
+
+    <!-- Botón dinámico Arriba a la Derecha -->
+    <button id="btnAuthQuick" class="btn-auth-quick" onclick="manejarAccionAuth()">🔑 Prijava / Login</button>
+
+    <header>
+        <h1>💙 Raspored Stolova / Distribución de Mesas - Mala Škola</h1>
+        <p>12 stolova s po 10 mjesta. / 12 mesas de 10 lugares.</p>
+        <p class="header-aviso">⚠️ Službeni raspored / Distribución oficial</p>
+        <div id="rolIndicador" class="rol-badge">Učitavanje statusa... / Cargando estado...</div>
+    </header>
+
+    <div id="cuadroProgreso" class="cuadro-progreso-seleccion">
+        <h4 id="tituloProgreso">Odabir stolica / Seleccionando sillas</h4>
+        <div id="miniaturasContainer" class="progreso-sillas-container"></div>
+    </div>
+
+    <div class="layout-principal">
+        <div class="mesas-grid" id="mesasGrid"></div>
+
+        <div class="resumen-panel">
+            <h3>Pregled Rezervacija / Resumen</h3>
+            <ul class="resumen-lista" id="resumenLista">
+                <li style="text-align:center; color:#94a3b8; font-style:italic;">Učitavanje... / Cargando...</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Botones Inferiores -->
+    <div class="acciones-container">
+        <button class="btn-accion btn-aceptar" onclick="aceptarCambios()">Prihvati / Aceptar</button>
+        <button class="btn-accion btn-cancelar" onclick="cancelarCambios()">Osvježi / Recargar</button>
+        <button class="btn-accion btn-salir" onclick="salirAlIndex()">Izlaz / Salir</button>
+    </div>
+
+    <div class="info-panel" id="infoPanel">Odaberite stolicu ili stol za pregled dodjele. / Selecciona una silla o mesa para ver su asignación.</div>
+
+    <!-- Modal de asignación y administración -->
+    <div class="croatian-modal-overlay" id="modalAsignar">
+        <div class="croatian-modal-card">
+            <div class="croatian-modal-badge-pill">🇭🇷 Mala Škola</div>
+            <h3 id="modalTitulo" style="color: var(--croatia-blue); margin: 0; font-size: 1rem; font-weight: bold;">Dodjela Mjesta / Asignar Lugar</h3>
+            
+            <input type="text" id="inputNombreAsignado" class="croatian-modal-input" placeholder="Ime ili obitelj / Nombre o Familia">
+            
+            <div id="contenedorCantidadSillas" style="width: 100%; text-align: left; font-size: 0.78rem; color: #475569;">
+                <label for="selectCantidad" style="display: block; font-weight: bold; margin-bottom: 2px;">Broj stolica / Cantidad de sillas:</label>
+                <select id="selectCantidad" class="croatian-modal-select">
+                    <option value="1">1 stolicu / 1 silla</option>
+                    <option value="2">2 stolice / 2 sillas</option>
+                    <option value="3">3 stolice / 3 sillas</option>
+                    <option value="4">4 stolice / 4 sillas</option>
+                    <option value="5">5 stolica / 5 sillas</option>
+                    <option value="6">6 stolica / 6 sillas</option>
+                    <option value="7">7 stolica / 7 sillas</option>
+                    <option value="8">8 stolica / 8 sillas</option>
+                    <option value="9">9 stolica / 9 sillas</option>
+                    <option value="10">10 stolica / 10 sillas (Cijeli stol)</option>
+                </select>
+            </div>
+
+            <div style="width: 100%; text-align: left; font-size: 0.78rem; color: #475569; margin-top: 4px;">
+                <label for="selectEstadoPago" style="display: block; font-weight: bold; margin-bottom: 2px;">Status plaćanja / Estado de pago:</label>
+                <select id="selectEstadoPago" class="croatian-modal-select">
+                    <option value="no pago">Nije plaćeno / Vacía (No pago)</option>
+                    <option value="pago reserva">Plaćena rezervacija / Pago reserva</option>
+                    <option value="completa">Potpuno plaćeno / Completa (Pago almuerzo)</option>
+                </select>
+            </div>
+
+            <div class="croatian-modal-buttons" id="botonesModalNormal">
+                <button class="btn-modal btn-modal-cancelar" onclick="cerrarModal()">Odustani / Cancelar</button>
+                <button class="btn-modal btn-modal-aceptar" onclick="iniciarSeleccionManual()">Prihvati / Aceptar</button>
+            </div>
+
+            <div class="croatian-modal-buttons" id="botonesModalAdmin" style="display:none;">
+                <button class="btn-modal btn-modal-cancelar" onclick="cerrarModal()">Odustani / Cancelar</button>
+                <button class="btn-modal btn-modal-eliminar" onclick="adminLiberarLugar()">Oslobodi / Cancelar reserva</button>
+                <button class="btn-modal btn-modal-aceptar" onclick="adminGuardarCambiosLugar()">Ažuriraj / Actualizar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal dedicado de Comprobante / Número de Reserva -->
+    <div class="croatian-modal-overlay" id="modalComprobante">
+        <div class="croatian-modal-card">
+            <div class="croatian-modal-badge-pill">🎟️ Rezervacija / Comprobante</div>
+            <h3 style="color: var(--croatia-blue); margin: 0; font-size: 1rem; font-weight: bold;">Uspješna Rezervacija / Reserva Exitosa</h3>
+            
+            <p id="textoComprobante" style="font-size: 0.85rem; color: #334155; margin: 6px 0; text-align: center; line-height: 1.4;">
+                <!-- Se inyecta dinámicamente -->
+            </p>
+
+            <div class="croatian-modal-buttons">
+                <button class="btn-modal btn-modal-imprimir" onclick="imprimirComprobanteModal()">🖨️ Ispis / Imprimir PDF</button>
+                <button class="btn-modal btn-modal-aceptar" onclick="cerrarModalComprobante()">Zatvori / Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script de control global -->
+    <script src="auth-check.js"></script>
+
+    <script>
+        let asignaciones = {}; 
+        let totalMesas = 12;
+        let esSabuesoOAdmin = false; 
+        let sesionActivaGlobal = null;
+
+        let seleccionActiva = {
+            enProceso: false,
+            nombre: "",
+            pagoEstado: "no pago",
+            codigoReserva: "",
+            objetivoTotal: 0,
+            seleccionadasActuales: 0
+        };
+
+        function generarCodigoUnico() {
+            return Math.random().toString(36).substring(2, 8).toUpperCase();
+        }
+
+        async function manejarAccionAuth() {
+            if (sesionActivaGlobal) {
+                try {
+                    await supabaseClient.auth.signOut();
+                    sesionActivaGlobal = null;
+                    alert("Uspješno ste se odjavili. / Sesión cerrada correctamente.");
+                    await cargarReservasSupabase();
+                } catch (err) {
+                    console.error("Error al cerrar sesión:", err);
+                }
+            } else {
+                if (typeof iniciarSesionYVolver === 'function') {
+                    iniciarSesionYVolver();
+                } else {
+                    window.location.href = 'MS_Login.html';
+                }
+            }
+        }
+
+        async function verificarRolUsuarioOpcional() {
+            try {
+                if (typeof supabaseClient === 'undefined' || !supabaseClient) {
+                    document.getElementById('rolIndicador').innerText = "Gost / Público (Javni način rada)";
+                    return;
+                }
+
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                const badgeEl = document.getElementById('userProfileBadge');
+                const btnAuth = document.getElementById('btnAuthQuick');
+
+                if (!session || !session.user) {
+                    esSabuesoOAdmin = false;
+                    sesionActivaGlobal = null;
+                    document.getElementById('rolIndicador').innerText = "Gost / Público (Javni način rada)";
+                    badgeEl.style.display = 'none'; 
+                    btnAuth.innerText = "🔑 Prijava / Login";
+                    return;
+                }
+
+                sesionActivaGlobal = session.user;
+                btnAuth.innerText = "🚪 Odjava / Logout";
+
+                const userId = session.user.id;
+                const { data: perfil, error } = await supabaseClient
+                    .from('perfiles')
+                    .select('nombre, role, foto_url')
+                    .eq('id', userId)
+                    .single();
+
+                if (perfil) {
+                    let rolUsuario = perfil.role ? perfil.role.trim().toLowerCase() : 'korisnik';
+                    let nombreUsuario = perfil.nombre || 'Korisnik';
+                    
+                    document.getElementById('userNameText').innerText = nombreUsuario;
+                    document.getElementById('userRoleText').innerText = rolUsuario;
+                    
+                    if (perfil.foto_url) {
+                        document.getElementById('userAvatarImg').src = perfil.foto_url;
+                    }
+                    badgeEl.style.display = 'flex';
+
+                    if (rolUsuario === 'admin' || rolUsuario === 'profesor' || rolUsuario === 'administrador' || rolUsuario === 'sabueso') {
+                        esSabuesoOAdmin = true;
+                        document.getElementById('rolIndicador').innerHTML = `🔍 Povezan kao: <strong>${rolUsuario.toUpperCase()}</strong> / Modo Sabueso Activado`;
+                    } else {
+                        esSabuesoOAdmin = false;
+                        document.getElementById('rolIndicador').innerText = "Korisnik / Usuario conectado";
+                    }
+                } else {
+                    esSabuesoOAdmin = false;
+                    badgeEl.style.display = 'none';
+                    document.getElementById('rolIndicador').innerText = "Korisnik / Korisnik povezan";
+                }
+            } catch (err) {
+                console.error("Error verificando rol opcional:", err);
+                esSabuesoOAdmin = false;
+                sesionActivaGlobal = null;
+                document.getElementById('userProfileBadge').style.display = 'none';
+                document.getElementById('rolIndicador').innerText = "Gost / Público general";
+            }
+        }
+
+        async function cargarReservasSupabase() {
+            try {
+                await verificarRolUsuarioOpcional();
+
+                const { data, error } = await supabaseClient.from('reservas_mesas').select('*');
+                if (error) throw error;
+
+                asignaciones = {};
+                if (data) {
+                    data.forEach(row => {
+                        let mesa = row.mesa;
+                        let silla = row.silla;
+                        let pagoEstado = row.pago || 'no pago';
+                        
+                        let info = { 
+                            nombre: row.nombre, 
+                            pago: pagoEstado,
+                            codigo: row.codigo_reserva || ''
+                        };
+
+                        if (silla === 'completa' || silla === 'mesa') {
+                            asignaciones[`mesa_${mesa}`] = info;
+                            for (let s = 1; s <= 10; s++) {
+                                asignaciones[`${mesa}.${s}`] = info;
+                            }
+                        } else {
+                            asignaciones[`${mesa}.${silla}`] = info;
+                        }
+                    });
+                }
+                actualizarVista();
+            } catch (err) {
+                console.error("Error cargando reservas:", err.message);
+            }
+        }
+
+        function generarGrillaVisual() {
+            const grid = document.getElementById('mesasGrid');
+            grid.innerHTML = '';
+
+            for (let m = 1; m <= totalMesas; m++) {
+                const mesaCard = document.createElement('div');
+                mesaCard.className = 'mesa-card';
+
+                const contenedorArriba = document.createElement('div');
+                contenedorArriba.className = 'sillas-arriba';
+                [1, 2, 3, 4].forEach(s => {
+                    contenedorArriba.appendChild(crearElementoSilla(m, s));
+                });
+                mesaCard.appendChild(contenedorArriba);
+
+                const sillaIzq = crearElementoSilla(m, 10);
+                sillaIzq.classList.add('silla-izq');
+                mesaCard.appendChild(sillaIzq);
+
+                const mesaCentral = document.createElement('div');
+                mesaCentral.className = 'mesa-central';
+                mesaCentral.id = `mesa-central-${m}`;
+                mesaCentral.innerHTML = `Stol ${m}`;
+                mesaCentral.onclick = () => manejarClickMesaCompleta(m);
+                mesaCentral.onmouseenter = () => mostrarInfoHoverMesa(m);
+                mesaCard.appendChild(mesaCentral);
+
+                const sillaDer = crearElementoSilla(m, 5);
+                sillaDer.classList.add('silla-der');
+                mesaCard.appendChild(sillaDer);
+
+                const contenedorAbajo = document.createElement('div');
+                contenedorAbajo.className = 'sillas-abajo';
+                [6, 8, 7, 9].forEach(s => {
+                    contenedorAbajo.appendChild(crearElementoSilla(m, s));
+                });
+                mesaCard.appendChild(contenedorAbajo);
+
+                grid.appendChild(mesaCard);
+            }
+        }
+
+        function crearElementoSilla(mesa, lugar) {
+            const idSilla = `${mesa}.${lugar}`;
+            const silla = document.createElement('div');
+            silla.className = 'silla';
+            silla.innerText = lugar; 
+            silla.id = `silla-${idSilla}`;
+
+            silla.onclick = (e) => {
+                e.stopPropagation();
+                manejarClickSilla(mesa, lugar);
+            };
+            silla.onmouseenter = () => mostrarInfoHoverSilla(idSilla);
+
+            return silla;
+        }
+
+        async function manejarClickSilla(mesa, lugar) {
+            const idSilla = `${mesa}.${lugar}`;
+            
+            if (seleccionActiva.enProceso) {
+                if (asignaciones[idSilla]) {
+                    alert("Ovo mjesto je već zauzeto! / ¡Este lugar ya está ocupado!");
+                    return;
+                }
+                
+                asignaciones[idSilla] = { 
+                    nombre: seleccionActiva.nombre, 
+                    pago: seleccionActiva.pagoEstado, 
+                    codigo: seleccionActiva.codigoReserva 
+                };
+                seleccionActiva.seleccionadasActuales++;
+
+                await supabaseClient.from('reservas_mesas').insert([
+                    { 
+                        mesa: mesa, 
+                        silla: lugar.toString(), 
+                        nombre: seleccionActiva.nombre, 
+                        pago: seleccionActiva.pagoEstado,
+                        codigo_reserva: seleccionActiva.codigoReserva 
+                    }
+                ]);
+
+                actualizarVista();
+                actualizarCuadroProgreso();
+
+                if (seleccionActiva.seleccionadasActuales >= seleccionActiva.objetivoTotal) {
+                    finalizarSeleccionManual();
+                }
+                return;
+            }
+
+            if (asignaciones[idSilla]) {
+                let titular = asignaciones[idSilla];
+
+                if (esSabuesoOAdmin) {
+                    window.objetivoActualAdmin = { tipo: 'silla', mesa: mesa, lugar: lugar, codigo: titular.codigo };
+                    document.getElementById('modalTitulo').innerText = `Admin - Stol ${mesa} - Stolica ${lugar}`;
+                    document.getElementById('inputNombreAsignado').value = titular.nombre;
+                    document.getElementById('selectEstadoPago').value = titular.pago;
+                    document.getElementById('contenedorCantidadSillas').style.display = 'none';
+                    
+                    document.getElementById('botonesModalNormal').style.display = 'none';
+                    document.getElementById('botonesModalAdmin').style.display = 'flex';
+                    document.getElementById('modalAsignar').style.display = 'flex';
+                    document.getElementById('inputNombreAsignado').focus();
+                } else {
+                    let codigoIngresado = prompt(`Mjesto ${idSilla} zauzeto je za "${titular.nombre}". Unesite kod rezervacije za oslobođenje: / El lugar está ocupado por "${titular.nombre}". Ingresa el código de reserva para liberar:`);
+                    if (codigoIngresado === null) return;
+
+                    if (codigoIngresado.trim().toUpperCase() === titular.codigo.toUpperCase()) {
+                        await supabaseClient.from('reservas_mesas').delete().eq('mesa', mesa).eq('silla', lugar.toString()).eq('codigo_reserva', titular.codigo);
+                        
+                        delete asignaciones[idSilla];
+                        delete asignaciones[`mesa_${mesa}`];
+                        await supabaseClient.from('reservas_mesas').delete().eq('mesa', mesa).eq('silla', 'completa');
+
+                        await cargarReservasSupabase();
+                        alert("Mjesto uspješno oslobođeno. / Lugar liberado correctamente.");
+                    } else {
+                        alert("Netočan kod rezervacije! Obratite se organizatorima. / ¡Código de reserva incorrecto!");
+                    }
+                }
+            } else {
+                window.objetivoActualTemp = { mesa: mesa, lugar: lugar };
+                document.getElementById('modalTitulo').innerText = `Stol ${mesa} - Stolica ${lugar}`;
+                document.getElementById('inputNombreAsignado').value = '';
+                document.getElementById('selectCantidad').value = "1";
+                document.getElementById('selectEstadoPago').value = "no pago";
+                document.getElementById('contenedorCantidadSillas').style.display = 'block';
+                
+                document.getElementById('botonesModalAdmin').style.display = 'none';
+                document.getElementById('botonesModalNormal').style.display = 'flex';
+                document.getElementById('modalAsignar').style.display = 'flex';
+                document.getElementById('inputNombreAsignado').focus();
+            }
+        }
+
+        async function manejarClickMesaCompleta(mesa) {
+            if (seleccionActiva.enProceso) {
+                alert("Molimo dovršite odabir pojedinačnih stolica. / Por favor termina de seleccionar las sillas pendientes.");
+                return;
+            }
+
+            const idMesaKey = `mesa_${mesa}`;
+            let titular = asignaciones[idMesaKey] || buscarTitularEnMesa(mesa);
+
+            if (titular || haySillasOcupadasEnMesa(mesa)) {
+                if (esSabuesoOAdmin) {
+                    window.objetivoActualAdmin = { tipo: 'mesa', mesa: mesa, codigo: titular ? titular.codigo : '' };
+                    document.getElementById('modalTitulo').innerText = `Admin - Stol ${mesa} (Cijeli stol)`;
+                    document.getElementById('inputNombreAsignado').value = titular ? titular.nombre : '';
+                    document.getElementById('selectEstadoPago').value = titular ? titular.pago : 'no pago';
+                    document.getElementById('contenedorCantidadSillas').style.display = 'none';
+                    
+                    document.getElementById('botonesModalNormal').style.display = 'none';
+                    document.getElementById('botonesModalAdmin').style.display = 'flex';
+                    document.getElementById('modalAsignar').style.display = 'flex';
+                    document.getElementById('inputNombreAsignado').focus();
+                } else {
+                    let codigoIngresado = prompt(`Stol ${mesa} sadrži rezervacije. Unesite kod rezervacije za oslobođenje cijelog stola: / La mesa contiene reservas. Ingresa el código de reserva para liberar toda la mesa:`);
+                    if (codigoIngresado === null) return;
+
+                    if (titular && codigoIngresado.trim().toUpperCase() === titular.codigo.toUpperCase()) {
+                        await supabaseClient.from('reservas_mesas').delete().eq('mesa', mesa).eq('codigo_reserva', titular.codigo);
+
+                        delete asignaciones[idMesaKey];
+                        for(let s=1; s<=10; s++) { delete asignaciones[`${mesa}.${s}`]; }
+                        
+                        await cargarReservasSupabase();
+                        alert("Stol u cijelosti oslobođen. / Mesa completa liberada.");
+                    } else {
+                        alert("Netočan kod rezervacije! Obratite se organizatorima.");
+                    }
+                }
+            } else {
+                window.objetivoActualTemp = { mesa: mesa };
+                document.getElementById('modalTitulo').innerText = `Rezervacija cijelog stola / Reservar Mesa ${mesa}`;
+                document.getElementById('inputNombreAsignado').value = '';
+                document.getElementById('selectEstadoPago').value = "no pago";
+                document.getElementById('contenedorCantidadSillas').style.display = 'none';
+                
+                document.getElementById('botonesModalAdmin').style.display = 'none';
+                document.getElementById('botonesModalNormal').style.display = 'flex';
+                document.getElementById('modalAsignar').style.display = 'flex';
+                document.getElementById('inputNombreAsignado').focus();
+                window.esMesaEnteraTemp = true;
+            }
+        }
+
+        async function adminGuardarCambiosLugar() {
+            const nuevoNombre = document.getElementById('inputNombreAsignado').value.trim();
+            const nuevoPago = document.getElementById('selectEstadoPago').value;
+
+            if (!nuevoNombre) {
+                alert("Unesite ime. / Ingresa un nombre.");
+                return;
+            }
+
+            let obj = window.objetivoActualAdmin;
+            cerrarModal();
+
+            if (obj.tipo === 'silla') {
+                await supabaseClient.from('reservas_mesas')
+                    .update({ nombre: nuevoNombre, pago: nuevoPago })
+                    .eq('mesa', obj.mesa)
+                    .eq('silla', obj.lugar.toString());
+            } else if (obj.tipo === 'mesa') {
+                await supabaseClient.from('reservas_mesas')
+                    .update({ nombre: nuevoNombre, pago: nuevoPago })
+                    .eq('mesa', obj.mesa);
+            }
+
+            await cargarReservasSupabase();
+            alert("Uspješno ažurirano u bazi! / ¡Actualizado correctamente!");
+        }
+
+        async function adminLiberarLugar() {
+            let obj = window.objetivoActualAdmin;
+            
+            let mensajeConfirmacion = (obj.tipo === 'silla') 
+                ? "Želite li otkazati rezervaciju ove pojedinačne stolice? / ¿Deseas cancelar la reserva de esta silla?" 
+                : "Želite li u potpunosti otkazati rezervaciju cijelog stola? / ¿Deseas cancelar la reserva completa de esta mesa?";
+
+            if (!confirm(mensajeConfirmacion)) return;
+            
+            cerrarModal();
+
+            if (obj.tipo === 'silla') {
+                await supabaseClient.from('reservas_mesas')
+                    .delete()
+                    .eq('mesa', obj.mesa)
+                    .eq('silla', obj.lugar.toString());
+            } else if (obj.tipo === 'mesa') {
+                await supabaseClient.from('reservas_mesas')
+                    .delete()
+                    .eq('mesa', obj.mesa);
+            }
+
+            await cargarReservasSupabase();
+            alert("Rezervacija uspješno otkazana. / Reserva cancelada con éxito.");
+        }
+
+        function haySillasOcupadasEnMesa(mesa) {
+            for(let s=1; s<=10; s++) {
+                if(asignaciones[`${mesa}.${s}`]) return true;
+            }
+            return false;
+        }
+
+        function buscarTitularEnMesa(mesa) {
+            for(let s=1; s<=10; s++) {
+                if(asignaciones[`${mesa}.${s}`]) return asignaciones[`${mesa}.${s}`];
+            }
+            return null;
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalAsignar').style.display = 'none';
+            window.esMesaEnteraTemp = false;
+            window.objetivoActualAdmin = null;
+        }
+
+        function mostrarModalComprobante(mensajeCroataEsp) {
+            document.getElementById('textoComprobante').innerHTML = mensajeCroataEsp;
+            document.getElementById('modalComprobante').style.display = 'flex';
+        }
+
+        function cerrarModalComprobante() {
+            document.getElementById('modalComprobante').style.display = 'none';
+        }
+
+        function imprimirComprobanteModal() {
+            window.print();
+        }
+
+        async function iniciarSeleccionManual() {
+            const nombre = document.getElementById('inputNombreAsignado').value.trim();
+            const estadoPago = document.getElementById('selectEstadoPago').value;
+
+            if (!nombre) {
+                alert("Molimo unesite ime ili obitelj. / Por favor ingresa un nombre o familia.");
+                return;
+            }
+
+            let codigoGenerado = generarCodigoUnico();
+            let esMesaEntera = window.esMesaEnteraTemp || false;
+            window.esMesaEnteraTemp = false;
+            cerrarModal();
+
+            if (esMesaEntera) {
+                let mesa = window.objetivoActualTemp.mesa;
+                
+                await supabaseClient.from('reservas_mesas').insert([
+                    { 
+                        mesa: mesa, 
+                        silla: 'completa', 
+                        nombre: nombre, 
+                        pago: estadoPago, 
+                        codigo_reserva: codigoGenerado 
+                    }
+                ]);
+
+                await cargarReservasSupabase();
+                
+                mostrarModalComprobante(`
+                    Stol ${mesa} uspješno rezerviran!<br>
+                    <strong>Kod rezervacije / N° de reserva: <span style="color:#d90f13; font-size:1.15rem;">${codigoGenerado}</span></strong><br><br>
+                    ¡Mesa ${mesa} reservada con éxito!<br>
+                    Guarde o imprima su número de reserva.
+                `);
+            } else {
+                let cantidad = parseInt(document.getElementById('selectCantidad').value);
+                let mesaInicio = window.objetivoActualTemp.mesa;
+                let lugarInicio = window.objetivoActualTemp.lugar;
+                let keyInicial = `${mesaInicio}.${lugarInicio}`;
+
+                if (asignaciones[keyInicial]) {
+                    alert("Ovo mjesto je već zauzeto! / ¡Este lugar ya está ocupado!");
+                    return;
+                }
+
+                await supabaseClient.from('reservas_mesas').insert([
+                    { 
+                        mesa: mesaInicio, 
+                        silla: lugarInicio.toString(), 
+                        nombre: nombre, 
+                        pago: estadoPago, 
+                        codigo_reserva: codigoGenerado 
+                    }
+                ]);
+
+                if (cantidad > 1) {
+                    seleccionActiva = {
+                        enProceso: true,
+                        nombre: nombre,
+                        pagoEstado: estadoPago,
+                        codigoReserva: codigoGenerado,
+                        objetivoTotal: cantidad,
+                        seleccionadasActuales: 1
+                    };
+                    document.getElementById('cuadroProgreso').style.display = 'block';
+                    actualizarCuadroProgreso();
+                } else {
+                    seleccionActiva.enProceso = false;
+                    mostrarModalComprobante(`
+                        Mjesto uspješno rezervirano!<br>
+                        <strong>Kod rezervacije / N° de reserva: <span style="color:#d90f13; font-size:1.15rem;">${codigoGenerado}</span></strong><br><br>
+                        ¡Lugar reservado con éxito!<br>
+                        Guarde o imprima su número de reserva.
+                    `);
+                }
+
+                await cargarReservasSupabase();
+            }
+        }
+
+        function actualizarCuadroProgreso() {
+            const titulo = document.getElementById('tituloProgreso');
+            const container = document.getElementById('miniaturasContainer');
+            
+            titulo.innerHTML = `Odabir za: <strong>${seleccionActiva.nombre}</strong> (${seleccionActiva.seleccionadasActuales}/${seleccionActiva.objetivoTotal} odabrano)`;
+            container.innerHTML = '';
+
+            for (let i = 1; i <= seleccionActiva.objetivoTotal; i++) {
+                let miniatura = document.createElement('div');
+                miniatura.className = 'miniatura-silla';
+                miniatura.innerText = i;
+                
+                if (i <= seleccionActiva.seleccionadasActuales) {
+                    miniatura.classList.add('seleccionada');
+                }
+                container.appendChild(miniatura);
+            }
+        }
+
+        function finalizarSeleccionManual() {
+            let codigoUsado = seleccionActiva.codigoReserva;
+            seleccionActiva.enProceso = false;
+            document.getElementById('cuadroProgreso').style.display = 'none';
+            actualizarVista();
+            
+            mostrarModalComprobante(`
+                Sve odabrane stolice su uspješno rezervirane!<br>
+                <strong>Kod rezervacije / N° de reserva: <span style="color:#d90f13; font-size:1.15rem;">${codigoUsado}</span></strong><br><br>
+                ¡Todas las sillas seleccionadas fueron reservadas!<br>
+                Guarde o imprima su número de reserva.
+            `);
+        }
+
+        async function cancelarCambios() {
+            if (seleccionActiva.enProceso) {
+                seleccionActiva.enProceso = false;
+                document.getElementById('cuadroProgreso').style.display = 'none';
+                await cargarReservasSupabase();
+                return;
+            }
+            if (confirm("Želite li osvježiti podatke iz baze? / ¿Deseas recargar los datos desde la base de datos?")) {
+                await cargarReservasSupabase();
+                document.getElementById('infoPanel').innerText = "Podaci sinkronizirani. / Datos sincronizados.";
+            }
+        }
+
+        function salirAlIndex() {
+            if (confirm("Želite li izaći i vratiti se na glavnu stranicu? / ¿Deseas salir y volver a la página principal?")) {
+                window.location.href = "index.html";
+            }
+        }
+
+        function mostrarInfoHoverSilla(idSilla) {
+            const panel = document.getElementById('infoPanel');
+            if (asignaciones[idSilla]) {
+                let info = asignaciones[idSilla];
+                let estadoTexto = (info.pago === 'no pago' && !esSabuesoOAdmin) ? 'Rezervirano / Reservado' : `Zauzeto: ${info.nombre} [${info.pago}]`;
+                panel.innerText = `Mjesto ${idSilla} ➔ ${estadoTexto}`;
+            } else {
+                panel.innerText = `Mjesto ${idSilla} ➔ Slobodno / Disponible (Libre)`;
+            }
+        }
+
+        function mostrarInfoHoverMesa(mesa) {
+            const panel = document.getElementById('infoPanel');
+            const idMesaKey = `mesa_${mesa}`;
+            if (asignaciones[idMesaKey]) {
+                let info = asignaciones[idMesaKey];
+                let estadoTexto = (info.pago === 'no pago' && !esSabuesoOAdmin) ? 'Rezerviran / Reservada' : `Rezerviran za: ${info.nombre} [${info.pago}]`;
+                panel.innerText = `Stol ${mesa} ➔ ${estadoTexto}`;
+            } else {
+                panel.innerText = `Stol ${mesa} ➔ Slobodan stol / Mesa completa libre`;
+            }
+        }
+
+        function resaltarReservaPorNombre(nombreFamilia) {
+            for (let m = 1; m <= totalMesas; m++) {
+                let mesaKey = `mesa_${m}`;
+                let mesaEl = document.getElementById(`mesa-central-${m}`);
+                
+                if (asignaciones[mesaKey] && asignaciones[mesaKey].nombre === nombreFamilia) {
+                    if(mesaEl) mesaEl.classList.add('resaltado-activo');
+                }
+
+                for (let s = 1; s <= 10; s++) {
+                    let idSilla = `${m}.${s}`;
+                    let sillaEl = document.getElementById(`silla-${idSilla}`);
+                    if (asignaciones[idSilla] && asignaciones[idSilla].nombre === nombreFamilia) {
+                        if(sillaEl) sillaEl.classList.add('resaltado-activo');
+                    }
+                }
+            }
+        }
+
+        function quitarResaltadoPorNombre() {
+            document.querySelectorAll('.resaltado-activo').forEach(el => {
+                el.classList.remove('resaltado-activo');
+            });
+        }
+
+        function actualizarVista() {
+            for (let m = 1; m <= totalMesas; m++) {
+                let mesaEl = document.getElementById(`mesa-central-${m}`);
+                let idMesaKey = `mesa_${m}`;
+                if (mesaEl) {
+                    if (asignaciones[idMesaKey]) {
+                        mesaEl.classList.add('ocupada-total');
+                        mesaEl.innerHTML = `Stol ${m} <span style="font-size:0.5rem;">[Res.]</span>`;
+                    } else {
+                        mesaEl.classList.remove('ocupada-total');
+                        mesaEl.innerHTML = `Stol ${m}`;
+                    }
+                }
+
+                for (let s = 1; s <= 10; s++) {
+                    let idSilla = `${m}.${s}`;
+                    let el = document.getElementById(`silla-${idSilla}`);
+                    if (el) {
+                        el.classList.remove('ocupada', 'pendiente-pago');
+                        if (asignaciones[idSilla]) {
+                            let info = asignaciones[idSilla];
+                            if (info.pago === 'no pago' && esSabuesoOAdmin) {
+                                el.classList.add('pendiente-pago');
+                            } else {
+                                el.classList.add('ocupada');
+                            }
+                        }
+                    }
+                }
+            }
+            actualizarPanelResumen();
+        }
+
+        function actualizarPanelResumen() {
+            const lista = document.getElementById('resumenLista');
+            lista.innerHTML = '';
+
+            let resumenPorNombre = {};
+
+            for (let m = 1; m <= totalMesas; m++) {
+                let keyMesa = `mesa_${m}`;
+                if (asignaciones[keyMesa]) {
+                    let info = asignaciones[keyMesa];
+                    if (!resumenPorNombre[info.nombre]) resumenPorNombre[info.nombre] = { mesasCompletas: [], sillasIndividuales: 0, pagos: info.pago };
+                    resumenPorNombre[info.nombre].mesasCompletas.push(m);
+                }
+            }
+
+            for (let m = 1; m <= totalMesas; m++) {
+                for (let s = 1; s <= 10; s++) {
+                    let keySilla = `${m}.${s}`;
+                    if (asignaciones[keySilla]) {
+                        let info = asignaciones[keySilla];
+                        if (!resumenPorNombre[info.nombre] || !resumenPorNombre[info.nombre].mesasCompletas.includes(m)) {
+                            if (!resumenPorNombre[info.nombre]) resumenPorNombre[info.nombre] = { mesasCompletas: [], sillasIndividuales: 0, pagos: info.pago };
+                            resumenPorNombre[info.nombre].sillasIndividuales++;
+                        }
+                    }
+                }
+            }
+
+            let nombres = Object.keys(resumenPorNombre);
+            if (nombres.length === 0) {
+                lista.innerHTML = `<li style="text-align:center; color:#94a3b8; font-style:italic;">Nema rezervacija / Sin reservas</li>`;
+                return;
+            }
+
+            nombres.forEach(nombre => {
+                let datos = resumenPorNombre[nombre];
+                let descripciones = [];
+
+                if (datos.mesasCompletas.length > 0) {
+                    datos.mesasCompletas.forEach(numMesa => {
+                        descripciones.push(`Mesa ${numMesa}`);
+                    });
+                }
+                if (datos.sillasIndividuales > 0) {
+                    let txtSillas = datos.sillasIndividuales === 1 ? '1 silla' : `${datos.sillasIndividuales} sillas`;
+                    descripciones.push(txtSillas);
+                }
+
+                let etiquetaPago = esSabuesoOAdmin ? `<span style="color:#ffd700; font-size:0.7rem;">(${datos.pagos})</span>` : '';
+
+                let li = document.createElement('li');
+                li.className = 'resumen-item';
+                li.onmouseenter = () => resaltarReservaPorNombre(nombre);
+                li.onmouseleave = () => quitarResaltadoPorNombre();
+
+                li.innerHTML = `<strong>${nombre}:</strong> ${descripciones.join(', ')} <br>${etiquetaPago}`;
+                lista.appendChild(li);
+            });
+        }
+
+        function aceptarCambios() {
+            if (seleccionActiva.enProceso) {
+                alert("Molimo dovršite odabir preostalih stolica. / Por favor termina de seleccionar las sillas pendientes.");
+                return;
+            }
+            alert("Sve promjene su pohranjene u baze podataka! / ¡Todos los cambios están guardados en la base de datos!");
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            generarGrillaVisual();
+            await cargarReservasSupabase();
+        });
+    </script>
+</body>
+</html>
